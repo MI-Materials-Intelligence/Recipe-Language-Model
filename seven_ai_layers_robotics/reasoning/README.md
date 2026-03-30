@@ -10,13 +10,7 @@ From a data flow perspective, this layer takes structured experimental records o
 
 These reasoning results serve as an important bridge between trained model capability and practical scientific decision-making, and also provide candidate knowledge and reasoning evidence for the downstream Evaluation Layer and Optimization Layer.
 
-Key Atomic Skills:
-- **Scientific Report Generation**: Automatically generates complete scientific analysis reports from experimental data
-- **Mechanistic Reasoning**: Infers physical-chemical mechanisms of material behavior from data patterns
-- **Structure-Activity Relationship Analysis**: Establishes correlations between material composition, structure, and properties
-- **Database Integration**: Directly reads experimental records from database and generates structured text
-
-## Layer Structure with Atomic Skills
+## Layer Structure
 
 ```
 Reasoning/
