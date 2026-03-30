@@ -48,34 +48,50 @@ DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 # Import Step Modules
 # ==============================
 
-try:
-    # Attempt to import each step module
-    STEP_MODULES = {}
+# Attempt to import each step module
+STEP_MODULES = {}
+MODULES_AVAILABLE = False
 
+try:
     # Add Edge_Reporting directory to sys.path
     _edge_reporting_dir = os.path.join(_script_dir, 'Edge_Reporting')
     if _edge_reporting_dir not in sys.path:
         sys.path.insert(0, _edge_reporting_dir)
+    
+    print(f"[DEBUG] Edge_Reporting dir: {_edge_reporting_dir}")
+    print(f"[DEBUG] sys.path contains: {_edge_reporting_dir in sys.path}")
+    print(f"[DEBUG] Directory exists: {os.path.exists(_edge_reporting_dir)}")
+    print(f"[DEBUG] Files in directory: {os.listdir(_edge_reporting_dir)}")
 
     # Step 2: Generate Report
     try:
         import step2_report
         STEP_MODULES['step2'] = step2_report
+        print(f"✅ step2_report imported successfully")
     except ImportError as e:
         print(f"⚠️ Warning: Unable to import step2_report module. Error: {e}")
+        import traceback
+        traceback.print_exc()
 
     # Step 3: DeepSeek Analysis
     try:
         import step3_deepseek
         STEP_MODULES['step3'] = step3_deepseek
+        print(f"✅ step3_deepseek imported successfully")
     except ImportError as e:
         print(f"⚠️ Warning: Unable to import step3_deepseek module. Error: {e}")
+        import traceback
+        traceback.print_exc()
 
     MODULES_AVAILABLE = len(STEP_MODULES) > 0
+    print(f"[DEBUG] STEP_MODULES keys: {list(STEP_MODULES.keys())}")
+    print(f"[DEBUG] MODULES_AVAILABLE: {MODULES_AVAILABLE}")
 
 except Exception as e:
     MODULES_AVAILABLE = False
     print(f"⚠️ Warning: Unable to load step modules, some functionality will be unavailable. Error: {e}")
+    import traceback
+    traceback.print_exc()
 
 
 # ==============================

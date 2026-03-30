@@ -83,7 +83,7 @@ class DBConfig:
 class LLMConfig:
     api_key: str = None  # Loaded from config file
     base_url: str = None
-    model: str = "qwen3-max-preview"
+    model: str = "qwen-plus"
     temperature: float = 0.4
     max_concurrent: int = 5
     max_retries: int = 5
