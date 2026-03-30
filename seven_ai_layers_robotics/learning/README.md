@@ -42,21 +42,8 @@ Learning/
     └── variable_reporting_match.py            # Variable report matching
 ```
 
-## Input Requirements
+## Input Demo
 
-Provides raw experimental data via SQL dump files. The system imports these files into the MySQL database to initialize the experimental records table.
-
-### Configuration Details
-
-| # | Database | Target Table | File Format | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | `seven_ai_layers_robotics` | `experimental_records` | `.sql` | Raw experimental records (3000+ entries) |
-| 2 | `seven_ai_layers_robotics` | `sam` | `.sql` | Extended experimental records (5000+ entries) |
-| 3 | `seven_ai_layers_robotics` | `add` | `.sql` | Robotics-integrated experimental data |
-| 4 | `seven_ai_layers_robotics` | `process` | `.sql` | Control-target matching pairs for analysis |
-| 5 | `seven_ai_layers_robotics` | `passive` | `.sql` | Control-target matching pairs for analysis |
-
-### experimental_records Table Structure (JSON Format)
 ```json
 {
   "No": 2965,
@@ -113,14 +100,8 @@ Provides raw experimental data via SQL dump files. The system imports these file
 }
 ```
 
-## Output Data
-| # | Database | Target Table | File Format | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | `seven_ai_layers_robotics` | `match_pair` | `.sql` | Raw experimental records (3000+ entries) |
-| 2 | `seven_ai_layers_robotics` | `experiments_characterization_pairs` | `.sql` | Extended experimental records (5000+ entries) |
-| 3 | `seven_ai_layers_robotics` | `single_report` | `.sql` | Robotics-integrated experimental data |
+## Output Demo
 
-### match_pair Table Structure (JSON Format)
 ```json
 {
   "id": 10882,
@@ -155,22 +136,9 @@ Activate the conda environment and navigate to the agent framework directory.
 
 ```bash
 conda activate MIAgent
-cd agent_framework
-```
-
-### Run Agent
-Start the main agent process.
-
-```bash
 python main.py
 ```
 
-###  Interactive Command
-Once the agent is running, input the learning command to trigger the data pipeline.
-
-```text
-> do learning
-```
 
 ### Key Modules for Executing Task
 
