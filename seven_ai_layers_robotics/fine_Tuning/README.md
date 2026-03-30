@@ -10,13 +10,8 @@ From a data flow perspective, this layer takes RecipeQA corpora as training supe
 
 In this way, the Fine-Tuning Layer serves as the critical bridge between structured training corpora and executable domain intelligence models.
 
-Key Atomic Skills:
-- **Training Data Preparation**: Merges multiple corpora and generates standardized training configurations
-- **Training Automation**: One-click training launch based on LLaMA-Factory
-- **Inference Service**: Automatic deployment of fine-tuned models as API services
-- **Status Monitoring**: Real-time tracking of training and inference service status
 
-## Layer Structure with Atomic Skills
+## Layer Structure
 
 ```
 Fine_Tuning/
