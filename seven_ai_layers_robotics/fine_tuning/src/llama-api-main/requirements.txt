@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+PyYAML>=6.0
+pydantic
+requests
+python-multipart
