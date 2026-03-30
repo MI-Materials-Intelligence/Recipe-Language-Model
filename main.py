@@ -19,8 +19,8 @@ if __name__ == "__main__":
     # pipeline1 = RoboticDataPipeline()
     # pipeline1.run_full_process(table_name="data3000")
 
-    # pipeline2 = EdgeReportPipeline()
-    # pipeline2.run_full_process("data3000")
+    pipeline2 = EdgeReportPipeline()
+    pipeline2.run_full_process("data3000")
 
     # pipeline3 = CharacterizationDataPipeline()
 #     # pipeline3.run_full_process()
@@ -42,8 +42,8 @@ if __name__ == "__main__":
 
     
     # Asynchronously call generate_all_async() to generate all corpora
-    generator = CorpusGenerator()
-    result = asyncio.run(generator.generate_all_async())
+    # generator = CorpusGenerator()
+    # result = asyncio.run(generator.generate_all_async())
 
 
     # generator = PerovskiteReportGenerator.from_config()
