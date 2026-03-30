@@ -2,7 +2,13 @@
 
 ## Overview
 
-The Fine-Tuning layer performs domain-adaptive fine-tuning of base language models using RecipeQA corpora.
+The Fine-Tuning Layer is the model adaptation layer within the seven-layer Materials Intelligence architecture. It is responsible for transforming structured supervision data from the RecipeQA Layer into domain-adapted language models.
+
+The core objective of this layer is not only to perform model fine-tuning, but also to provide a complete training-to-deployment pipeline, including training data preparation, configuration generation, automated training execution, inference service deployment, and status monitoring.
+
+From a data flow perspective, this layer takes RecipeQA corpora as training supervision, converts them into standardized training configurations, and performs domain-adaptive fine-tuning on base language models through a unified training framework. Once training is completed, the fine-tuned models can be automatically deployed as inference services for downstream reasoning, evaluation, and optimization tasks.
+
+In this way, the Fine-Tuning Layer serves as the critical bridge between structured training corpora and executable domain intelligence models.
 
 Key Atomic Skills:
 - **Training Data Preparation**: Merges multiple corpora and generates standardized training configurations
