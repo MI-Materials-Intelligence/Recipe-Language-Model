@@ -2,7 +2,8 @@
 
 ## Overview
 
-The Learning layer performs extraction, cleaning, and matching on robotic experimental data to establish a reliable data foundation for subsequent recipe learning and model.  
+The Learning Layer serves as the foundational layer of the seven-layer Materials Intelligence architecture.Its primary function is to transform raw robotic experimental data into clean, structured, and comparable data representations, enabling reliable downstream learning and reasoning.This transformation is achieved through three core processes: data cleaning, variable-controlled matching and information extraction.
+
 Key Atomic Skill:
 - **Cleaning**: Preprocessing and outlier cleaning
 - **Matching**: Matching data pairs based on variables
