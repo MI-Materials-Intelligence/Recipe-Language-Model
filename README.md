@@ -17,18 +17,18 @@
 
 ## 1. Introduction
 
-We present a language agent for materials intelligence, with seven AI layers of learning, generating, RecipeQA, fine-tuning, reasoning, evaluation, and optimisation. Guided by MIAgent, eleven robotic boxes enabled the controllable synthesis, fabrication, and characterisation of 50,764 samples, while more than 578 million tokens, generated and augmented from tokenised formulas and parameters paired with their corresponding mechanisms. Through the process, a domain-specific Recipe Language Model (RLM) is trained to address the vast combinatorial exploration of recipes in large chemical spaces. Progressively, the capabilities of the MIAgent with RLM in recipe recommendation and mechanistic reasoning have been enhanced to a level comparable to that of an experienced researcher. 
-Herein, with this MIAgent, robotic boxes for fabricating perovskite solar cells  as a demonstration is to show a general framework and scientific tool for next-generation materials research through a closed recommendation–synthesis–fabrication–characterisation–mechanism loop, enabling exploration of the large space of recipes and their underlying mechanisms. Therefore, MIAgent enables a closed AI–robotics discovery process in which specialised language modelling and robotic hardware continuously improve one another, suggesting a new form of physical AI for materials research.
+We present a language agent for materials intelligence, with seven AI layers of learning, generating, RecipeQA, fine-tuning, reasoning, evaluation, and optimisation. Guided by the framework, eleven robotic boxes enabled the controllable synthesis, fabrication, and characterisation of 50,764 samples, while more than 578 million tokens, generated and augmented from tokenised formulas and parameters paired with their corresponding mechanisms. Through the process, a domain-specific Recipe Language Model (RLM) is trained to address the vast combinatorial exploration of recipes in large chemical spaces. Progressively, the capabilities of the RLM in recipe recommendation and mechanistic reasoning have been enhanced to a level comparable to that of an experienced researcher. Herein, with a language agent, robotic boxes for fabricating perovskite solar cells as a demonstration is to show a general framework and scientific tool for next-generation materials research through a closed recommendation–synthesis–fabrication–characterisation–mechanism loop, enabling exploration of the large space of recipes and their underlying mechanisms. Therefore, the integration of the RLM with robotic boxes enables a closed AI–robotics discovery process in which specialised language modelling and robotic hardware continuously improve one another, suggesting a new form of physical AI for materials research.
 
 ---
 
 ## 2. Model Summary
 
-### Language Agent with Seven AI Layers Architecture
+### Seven AI Layers Architecture for RLM Training
 
-- On top of the structured formulas and parameters of PSC recipes, we develop a language agent–coordinated seven AI layers architecture for RLM development, enabling unified optimisation of recipes within a single framework.
+- We develop a seven AI layers architecture for a domain-specific RLM from structured formulas and parameters of recipes.
 
-- We establish a robotic closed loop for recipe learning and refinement, which drives the evolution of the RLM from numerical recipe modelling to semantic and mechanism-grounded reasoning.
+- With closed AI–robotics loop for recipes learning and refinement, the RLM advances from numerical recipe modelling to semantic and mechanism-grounded reasoning.
+
 
 ---
 
@@ -36,31 +36,31 @@ Herein, with this MIAgent, robotic boxes for fabricating perovskite solar cells 
 
 ### [Learning](seven_ai_layers_robotics/learning/README.md)
 
-Robotic experimental data serve as the input of the architecture, establishing the data foundation for recipe learning and iterative refinement.
+Robotic experimental data are taken as the input of this layer, including formulas, parameters, in situ characterisation results, and device performance. Through data extraction, cleaning, and matching, these data are organised into standardised datasets, providing the basis for RLM training and iterative recipe refinement.
 
 ### [Generating](seven_ai_layers_robotics/generating/README.md)
 
-Structured robotic recipe reports are generated from experimental data. Formulas, parameters, performance, and mechanistic information are organised into a standardised format.
+Standardised datasets are taken as the input of this layer. Through edge reporting, single-variable reporting and characterization reporting, these processed data are converted into robotic recipe reports integrating formulas, parameters, performance, and mechanistic information. This layer provides structured textual data for corpus construction and RLM development.
 
 ### [RecipeQA](seven_ai_layers_robotics/recipeQA/README.md)
 
-Domain-specific corpora are extracted from robotic recipe reports. Experimental knowledge is transformed into semantically structured QA pairs for recipe understanding and reasoning.
+Standardised robotic recipe reports are taken as the input of this layer. Through report-to-QA conversion and knowledge distillation, experimental knowledge is transformed into semantically structured RecipeQA corpora as output. This layer converts structured reports into domain-specific training data for RLM training.
 
 ### [Fine-tuning](seven_ai_layers_robotics/fine_tuning/README.md)
 
-Low-Rank Adaptation (LoRA) is employed to construct the domain-specific RLM, enabling efficient adaptation to recipe corpora with reduced training cost.
+The base model (Qwen3-32B) together with the RecipeQA corpora are taken as the input of this layer. Through low-rank adaptation (LoRA), the model is efficiently adapted to domain-specific recipe knowledge and transformed into a domain-specific RLM as output. This layer establishes the specialised language modelling capability required for recipe understanding.
 
 ### [Reasoning](seven_ai_layers_robotics/reasoning/README.md)
 
-The fine-tuned RLM generates recommended recipes along with mechanistic explanations, serving as inputs for subsequent evaluation.
+The base recipe report is taken as the input of this layer. Through the domain-specific RLM, it is refined into an recommended recipe report together with a corresponding mechanistic explanation as output. This layer supports model-guided recipe recommendation and provides interpretable rationales for subsequent evaluation.
 
 ### [Evaluation](seven_ai_layers_robotics/evaluation/README.md)
 
-Both numerical and semantic evaluations are conducted on recommended recipe reports, systematically assessing the capabilities of recipe recommendation and mechanistic reasoning.
+Recommended recipe reports are taken as the input of this layer. Through joint numerical and semantic evaluation, the capabilities of recipe recommendation and mechanistic reasoning are systematically assessed. This layer outputs structured evaluation results that provide the basis for RLM capability assessment and subsequent optimisation.
 
 ### [Optimization](seven_ai_layers_robotics/optimization/README.md)
 
-Direct Preference Optimisation (DPO) is applied to further align the RLM, promoting preference-consistent and high-performance recipe recommendations.
+The RLM to be optimised and preference pairs of positive and negative samples are taken as the input of this layer. Through Direct Preference Optimisation (DPO), an optimised RLM is obtained as output. This layer further aligns the model towards preference-consistent and high-performance recipe recommendation.
 
 ---
 
