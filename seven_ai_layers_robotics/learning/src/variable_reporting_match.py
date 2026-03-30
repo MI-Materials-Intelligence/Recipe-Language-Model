@@ -32,7 +32,7 @@ try:
     project_root = current_file.parent.parent.parent.parent
     # print(f"Project root: {project_root}")
     config_path = project_root /  "config.toml"
-    print(f"Config path: {config_path}")
+    # print(f"Config path: {config_path}")
     if config_path.exists():
         with config_path.open("rb") as f:
             config_data = tomllib.load(f)
@@ -147,7 +147,7 @@ class RoboticDataPipeline:
 
     def _record_exists(self, cursor, sid1, sid2, reverse_diff_class, analysis_type) -> bool:
         query = """
-        SELECT 1 FROM match_pair_copy1
+        SELECT 1 FROM match_pair
         WHERE sample_id_1 = %s AND sample_id_2 = %s
           AND reverse_diff_class = %s AND analysis_type = %s
         LIMIT 1
@@ -157,7 +157,7 @@ class RoboticDataPipeline:
 
     def _insert_record(self, cursor, analysis_type, reverse_diff_class, sid1, sid2, ctrl_fab, tgt_fab, file_path, meta_info):
         query = """
-        INSERT INTO match_pair_copy1
+        INSERT INTO match_pair
         (analysis_type, reverse_diff_class, sample_id_1, sample_id_2,
          control_device_fabrication, target_device_fabrication, json_file_path, meta_info)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -403,20 +403,20 @@ class RoboticDataPipeline:
 
             # Step 4: Ingest
             # Scan BOTH date directory and tasks directory for JSON files
-            json_folder_date = os.path.join(self.data_dir, "fp", "date")
+            # json_folder_date = os.path.join(self.data_dir, "fp", "date")
             json_folder_tasks = os.path.join(self.data_dir, "fp", "tasks")
             
             print(f"\n📥 Starting to write JSON results to database...")
             total_stats = {'inserted': 0, 'skipped': 0}
             
             # First, scan date directory (original matched pairs)
-            if os.path.exists(json_folder_date):
-                print(f"   Scanning date directory: {json_folder_date}")
-                date_stats = self.ingest_json_to_db(json_folder_path=json_folder_date, do_cleanup=False)
-                total_stats['inserted'] += date_stats['inserted']
-                total_stats['skipped'] += date_stats['skipped']
-            else:
-                print(f"   ⚠️ Date directory not found: {json_folder_date}")
+            # if os.path.exists(json_folder_date):
+            #     print(f"   Scanning date directory: {json_folder_date}")
+            #     date_stats = self.ingest_json_to_db(json_folder_path=json_folder_date, do_cleanup=False)
+            #     total_stats['inserted'] += date_stats['inserted']
+            #     total_stats['skipped'] += date_stats['skipped']
+            # else:
+            #     print(f"   ⚠️ Date directory not found: {json_folder_date}")
             
             # Then, scan tasks directory (classified by diff type)
             if os.path.exists(json_folder_tasks):

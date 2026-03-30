@@ -5,19 +5,19 @@ from seven_ai_layers_robotics.learning import (
     CharacterizationDataPipeline
 )
 
-from seven_ai_layers_robotics.generating import (
-    VariableReportPipeline,
-    CharacterisationReportPipeline,
-    EdgeReportPipeline
-)
-from seven_ai_layers_robotics.recipeQA import CorpusGenerator
-import asyncio
-from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
+# from seven_ai_layers_robotics.generating import (
+#     VariableReportPipeline,
+#     CharacterisationReportPipeline,
+#     EdgeReportPipeline
+# )
+# from seven_ai_layers_robotics.recipeQA import CorpusGenerator
+# import asyncio
+# from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
 
-from seven_ai_layers_robotics.evaluation import MIRecipeEvaluator
+# from seven_ai_layers_robotics.evaluation import MIRecipeEvaluator
 if __name__ == "__main__":
-    # pipeline1 = RoboticDataPipeline()
-    # pipeline1.run_full_process(table_name="data3000")
+    pipeline1 = RoboticDataPipeline()
+    pipeline1.run_full_process(table_name="data3000")
 
     # pipeline2 = EdgeReportPipeline()
     # pipeline2.run_full_process("data50764")
@@ -50,5 +50,5 @@ if __name__ == "__main__":
     # print("✓ Successfully loaded configuration from config.toml")
     # print("\nStarting report generation...")
     # generator.run_once(total_runs=3, max_workers=3)
-    evaluator = MIRecipeEvaluator()
-    evaluator.run()
+    # evaluator = MIRecipeEvaluator()
+    # evaluator.run()

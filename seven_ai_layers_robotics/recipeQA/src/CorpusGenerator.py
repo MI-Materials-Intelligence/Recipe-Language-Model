@@ -79,7 +79,7 @@ class CorpusGenerator:
             try:
                 project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
                 config_path = project_root / "config.toml"
-                print(f"[INFO] Config path111: {config_path}")
+                # print(f"[INFO] Config path111: {config_path}")
                 if not config_path.exists():
                     # Try alternative path
                     project_root = Path(__file__).resolve().parent.parent.parent.parent.parent.parent

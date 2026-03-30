@@ -500,7 +500,7 @@ class Config:
     def _get_config_path() -> Path:
         root = PROJECT_ROOT
         config_path = root  / "config.toml"
-        print(f"Config path: {config_path}")
+        # print(f"Config path: {config_path}")
         if config_path.exists():
             return config_path
         example_path = root  / "config.example.toml"
