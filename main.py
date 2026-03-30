@@ -28,7 +28,7 @@ if __name__ == "__main__":
 #     success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
 #     print("VariableReportPipeline", success)
 # # 
-#     # Run characterisation report generation pipeline
+#     # Run characterisation report generation 
 #     pipeline2 = CharacterisationReportPipeline()
 #     success = pipeline2.run(report_type='all', verbose=True)
 #     print("CharacterisationReportPipeline", success)
