@@ -2,7 +2,13 @@
 
 ## Overview
 
-Structured robotic recipe reports are generated from robotic experimental data. Formulas, parameters, performance, and mechanistic information are organised into a standardised format.
+The Generating Layer is the text generation layer within the seven-layer Materials Intelligence architecture. It is responsible for transforming the structured experimental data produced by the Learning Layer into standardized natural language reports and training-ready textual samples.The core objective of this layer is not merely to generate experimental reports, but to organize experimental compositions, process parameters, device performance, and characterization or mechanistic information into a unified textual format. These outputs are designed to support downstream tasks. From a data flow perspective, this layer takes as input the cleaned data, matched experimental pairs, and extracted features from the Learning Layer, and generates three types of textual outputs under different task scenarios:
+
+- Characterization reports based on matched data with characterization information  
+- Edge reports based on individual experimental samples  
+- Variable reports based on single-variable controlled experimental pairs  
+
+These generated outputs serve as essential textual foundations for the subsequent RecipeQA Layer and Fine-tuning Layer.
 
 Key Atomic skills:
 - **Characterization Reporing**: Characterization report generation from matched data with in situ characterization.
