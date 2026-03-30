@@ -34,31 +34,31 @@ We present a language agent for materials intelligence, with seven AI layers of 
 
 ### Architecture Overview
 
-### [Learning](seven_ai_layers_loop/learning/README.md)
+### [Learning](seven_ai_layers_robotics/learning/README.md)
 
 Robotic experimental data are taken as the input of this layer, including formulas, parameters, in situ characterisation results, and device performance. Through data extraction, cleaning, and matching, these data are organised into standardised datasets, providing the basis for RLM training and iterative recipe refinement.
 
-### [Generating](seven_ai_layers_loop/generating/README.md)
+### [Generating](seven_ai_layers_robotics/generating/README.md)
 
 Standardised datasets are taken as the input of this layer. Through edge reporting, single-variable reporting and characterization reporting, these processed data are converted into robotic recipe reports integrating formulas, parameters, performance, and mechanistic information. This layer provides structured textual data for corpus construction and RLM development.
 
-### [RecipeQA](seven_ai_layers_loop/recipeQA/README.md)
+### [RecipeQA](seven_ai_layers_robotics/recipeQA/README.md)
 
 Standardised robotic recipe reports are taken as the input of this layer. Through report-to-QA conversion and knowledge distillation, experimental knowledge is transformed into semantically structured RecipeQA corpora as output. This layer converts structured reports into domain-specific training data for RLM training.
 
-### [Fine-tuning](seven_ai_layers_loop/fine_tuning/README.md)
+### [Fine-tuning](seven_ai_layers_robotics/fine_tuning/README.md)
 
 The base model (Qwen3-32B) together with the RecipeQA corpora are taken as the input of this layer. Through low-rank adaptation (LoRA), the model is efficiently adapted to domain-specific recipe knowledge and transformed into a domain-specific RLM as output. This layer establishes the specialised language modelling capability required for recipe understanding.
 
-### [Reasoning](seven_ai_layers_loop/reasoning/README.md)
+### [Reasoning](seven_ai_layers_robotics/reasoning/README.md)
 
 The base recipe report is taken as the input of this layer. Through the domain-specific RLM, it is refined into an recommended recipe report together with a corresponding mechanistic explanation as output. This layer supports model-guided recipe recommendation and provides interpretable rationales for subsequent evaluation.
 
-### [Evaluation](seven_ai_layers_loop/evaluation/README.md)
+### [Evaluation](seven_ai_layers_robotics/evaluation/README.md)
 
 Recommended recipe reports are taken as the input of this layer. Through joint numerical and semantic evaluation, the capabilities of recipe recommendation and mechanistic reasoning are systematically assessed. This layer outputs structured evaluation results that provide the basis for RLM capability assessment and subsequent optimisation.
 
-### [Optimization](seven_ai_layers_loop/optimization/README.md)
+### [Optimization](seven_ai_layers_robotics/optimization/README.md)
 
 The RLM to be optimised and preference pairs of positive and negative samples are taken as the input of this layer. Through Direct Preference Optimisation (DPO), an optimised RLM is obtained as output. This layer further aligns the model towards preference-consistent and high-performance recipe recommendation.
 
