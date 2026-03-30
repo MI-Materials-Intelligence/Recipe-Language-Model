@@ -100,13 +100,20 @@ Generating/
 
 ## Basic Usage
 
-### Environment Setup
-Activate the conda environment and navigate to the agent framework directory.
+1. **Initialize Database**  
+   Run the SQL script to create tables:
+   ```bash
+   mysql -u <user> -p <database> < schema.sql
+   ```
 
-```bash
-conda activate MIAgent
-python main.py
-```
+2. **Configure Settings**  
+   Edit `config.toml` with your database and path details.
+
+3. **Run Program**  
+   ```bash
+   conda activate rlm
+   python main.py
+   ```
 
 ### Key Modules for Executing Task
 

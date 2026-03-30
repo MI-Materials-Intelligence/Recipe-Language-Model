@@ -27,6 +27,12 @@ def load_recipeqa_config():
             "temperature": config.recipeqa_llm.temperature if hasattr(config, 'recipeqa_llm') else 0.4,
         }
 
+        # Debug print to verify API key is loaded
+        if llm_config.get("api_key"):
+            print(f"[INFO] RecipeQA LLM config loaded: api_key={llm_config['api_key'][:10]}...***")
+        else:
+            print("[WARN] RecipeQA LLM api_key is empty!")
+
         return llm_config
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
