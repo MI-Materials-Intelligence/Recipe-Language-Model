@@ -19,10 +19,17 @@ def load_recipeqa_config():
         from pathlib import Path
         import tomllib
 
-        # 项目根目录：当前文件位于 .../RecipeQA/src/report_to_qa/，需要回到 OpenManus/
-        # 路径层级：report_to_qa -> src -> RecipeQA -> RLM -> tool -> app -> OpenManus (6 层)
-        project_root = Path(__file__).resolve().parent.parent.parent.parent.parent.parent.parent
-        config_path = project_root / "config" / "config.toml"
+        # Try multiple possible paths
+        current_file = Path(__file__).resolve()
+        
+        # Path 1: recipeQA -> seven_ai_layers_robotics -> project root (2 levels up)
+        project_root = current_file.parent.parent.parent
+        config_path = project_root / "config.toml"
+        
+        # Path 2: Try alternative path structure
+        if not config_path.exists():
+            project_root = current_file.parent.parent.parent.parent
+            config_path = project_root / "config.toml"
 
         if not config_path.exists():
             print(f"[WARN] Config file not found: {config_path}, using default values")
@@ -31,7 +38,17 @@ def load_recipeqa_config():
         with config_path.open("rb") as f:
             config = tomllib.load(f)
 
-        return config.get("recipeqa", {})
+        # Return recipeqa_llm configuration
+        recipeqa_llm_config = config.get("recipeqa_llm", {})
+        recipeqa_db_config = config.get("recipeqa", {}).get("database", {})
+        
+        result = {}
+        if recipeqa_llm_config:
+            result.update(recipeqa_llm_config)
+        if recipeqa_db_config:
+            result["database"] = recipeqa_db_config
+            
+        return result
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
         return {}
@@ -45,7 +62,7 @@ if str(recipeqa_root) not in sys.path:
     sys.path.insert(0, str(recipeqa_root))
 
 try:
-    from app.config import config
+    from seven_ai_layers_robotics.config import config
     RECIPEQA_LLM_CONFIG = {
         'api_key': config.recipeqa_llm.dashscope_api_key,
         'base_url': config.recipeqa_llm.base_url,
@@ -224,7 +241,7 @@ def build_background_from_names(names: List[str], material_type: Optional[str], 
                 md_path = md_map[ck]
                 break
         if not md_path:
-            print(f"[WARN] no md found for '{name}' (type={material_type})")
+            # print(f"[WARN] no md found for '{name}' (type={material_type})")
             continue
         if md_path not in md_text_cache:
             try:
@@ -248,35 +265,45 @@ def get_tasks_from_db(
     db_config: Optional[Dict[str, Any]] = None
 ):
     if db_config is None:
-        # 尝试从 config.toml 加载数据库配置
+        # Try to load from RECIPEQA_CONFIG first
         recipeqa_db = RECIPEQA_CONFIG.get("database", {})
-        if recipeqa_db:
-            db_config = recipeqa_db
-        else:
-            # 使用主数据库配置
+        
+        if not recipeqa_db:
+            # Try to load from main config file
             try:
                 from pathlib import Path
                 import tomllib
-                project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
-                config_path = project_root / "config" / "config.toml"
-
+                
+                current_file = Path(__file__).resolve()
+                # Try path 1: project root / config.toml
+                project_root = current_file.parent.parent.parent
+                config_path = project_root / "config.toml"
+                
+                # Try path 2: alternative structure
+                if not config_path.exists():
+                    project_root = current_file.parent.parent.parent.parent
+                    config_path = project_root / "config.toml"
+                
                 if config_path.exists():
                     with config_path.open("rb") as f:
                         config = tomllib.load(f)
-                    db_config = config.get("database", {})
-            except:
+                    # First try recipeqa.database, then fallback to main database
+                    recipeqa_db = config.get("recipeqa", {}).get("database", {})
+                    if not recipeqa_db:
+                        recipeqa_db = config.get("database", {})
+            except Exception as e:
+                print(f"[WARN] Failed to load config: {e}")
                 pass
 
-        # 如果还是没有配置，使用默认值
-        if db_config is None:
-            db_config = {
-                "host": "",
-                "port": 13330,
-                "user": "",
-                "password": "",
-                "database": "",
-                "charset": "utf8mb4"
-            }
+        # Use loaded config or default values
+        db_config = recipeqa_db if recipeqa_db else {
+            "host": "223.76.236.170",
+            "port": 13330,
+            "user": "root",
+            "password": "zkxjh800",
+            "database": "exp_data",
+            "charset": "utf8mb4"
+        }
 
     md_map = build_md_knowledge_map(expert_data_root)
     md_text_cache = {}
@@ -284,7 +311,7 @@ def get_tasks_from_db(
     conn = pymysql.connect(**db_config)
     try:
         with conn.cursor() as cursor:
-            # ✅ 关键优化：只查 status = 0 的记录
+
             cursor.execute("""
                 SELECT
                     id,
@@ -371,7 +398,7 @@ def get_tasks_from_db(
 
     print(f"[INFO] Total tasks built: {len(total_task)}")
     save_json_file(total_task, save_path)
-    return [t["record_id"] for t in total_task]  # 返回所有 record_id
+    return [t["record_id"] for t in total_task]  
 
 # ===== Inference =====
 async def process_single_item(item: Dict[str, Any], save_root: str, success_ids: list) -> None:
@@ -432,7 +459,7 @@ async def process_single_item(item: Dict[str, Any], save_root: str, success_ids:
                     "meta_info": item.get("meta_info", {}),
                 }
                 atomic_write_json(save_path, payload)
-                success_ids.append(record_id)  # 标记成功
+                success_ids.append(record_id)  
                 return
 
             except Exception as e:
@@ -527,48 +554,11 @@ def rebuild_mechanism_from_db(output_root: str, db_config: dict, table_name: str
 
 # ===== Main =====
 def main():
-    # DB_CONFIG = {
-    #     'host': '',
-    #     'port': ,
-    #     'user': '',
-    #     'password': '',
-    #     'database': '',
-    #     'charset': 'utf8mb4'
-    # }
 
-    # MECHANISM_DIR = "./mechanism"
-    # rebuild_mechanism_from_db(MECHANISM_DIR, DB_CONFIG)
-
-    # task_save_path = "tasks_from_db.json"
     dist_save_root = osp.join(BASE_DIR, "..","..", "Generating", "data", "single")
     print(f"[PATH] dist: {osp.abspath(dist_save_root)}")
     dataset_path = osp.join(DATA_DIR,"dataset", "single_dataset.json")
 
-    # # 只处理 status=0 的任务
-    # all_record_ids = get_tasks_from_db(
-    #     expert_data_root=MECHANISM_DIR,
-    #     save_path=task_save_path,
-    #     num_thres=100,
-    #     db_config=DB_CONFIG
-    # )
-
-    # if not all_record_ids:
-    #     print("[INFO] No tasks with status=0, exit.")
-
-
-    # tasks = read_json_file(task_save_path)
-    # print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
-
-    # # 异步生成
-    # success_ids = asyncio.run(request_llm(tasks, dist_save_root))
-
-    # # 批量更新状态
-    # batch_update_status(DB_CONFIG, success_ids, status=1)
-    # failed_ids = [rid for rid in all_record_ids if rid not in success_ids]
-    # if failed_ids:
-    #     batch_update_status(DB_CONFIG, failed_ids, status=3)
-
-    # 构建数据集
     dist_files = read_files_by_extension(dist_save_root, extensions=[".json"])
     print(f"[INFO] dist files: {len(dist_files)}")
 

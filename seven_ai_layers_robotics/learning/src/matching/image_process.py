@@ -45,9 +45,9 @@ import os
 
 def export_table_to_csv_exclude_id(table_name, output_csv, mysql_config):
     """
-    将 MySQL 表导出为 CSV，排除 'id' 列，并安全处理输出路径。
+    Export MySQL table to CSV, excluding 'id' column, and safely handle output path.
     """
-    # 安全创建输出目录（仅当路径非空时）
+    # Safely create output directory (only when path is not empty)
     output_dir = os.path.dirname(output_csv)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
@@ -60,15 +60,15 @@ def export_table_to_csv_exclude_id(table_name, output_csv, mysql_config):
         rows = cursor.fetchall()
 
         if not rows:
-            print(f"⚠️ 表 `{table_name}` 为空。")
-            # 获取列名
+            print(f"⚠️ Table `{table_name}` is empty.")
+            # Get column names
             cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
             columns_info = cursor.fetchall()
             all_columns = [col['Field'] for col in columns_info]
         else:
             all_columns = list(rows[0].keys())
 
-        # 排除 'id' 列（不区分大小写）
+        # Exclude 'id' column (case insensitive)
         data_columns = [col for col in all_columns if col.lower() != 'id']
 
         with open(output_csv, "w", encoding="utf-8", newline='') as f:
@@ -78,19 +78,28 @@ def export_table_to_csv_exclude_id(table_name, output_csv, mysql_config):
                 writer.writerow(row)
 
         row_count = len(rows) if rows else 0
-        print(f"✅ 表 `{table_name}` 已导出为 `{output_csv}`（{row_count} 行，不含 'id' 列）")
+        print(f"✅ Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
 
     except Error as e:
-        print(f"❌ 导出失败: {e}")
+        print(f"❌ Export failed: {e}")
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
 
 # =========================
-# Import configuration from app.config
+# Import configuration from config
 # =========================
-from app.config import config
+import sys
+from pathlib import Path
+
+# Add project root to Python path to find config module
+current_file = Path(__file__).resolve()
+project_root = current_file.parent.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from config import config
 
 MYSQL_CONFIG = {
     'host': config.learning_database.host,
@@ -101,14 +110,14 @@ MYSQL_CONFIG = {
     'charset': config.learning_database.charset,
 }
 
-# 替换为你的实际表名
-TABLE_NAME = "image_process"  # ← 例如你之前导入的表
+# Replace with your actual table name
+TABLE_NAME = "image_process"  # ← e.g., the table you imported before
 OUTPUT_CSV = "image_process_db.csv"
 
 
 # export_table_to_csv_exclude_id(TABLE_NAME, OUTPUT_CSV, MYSQL_CONFIG)
 
-# 后续你的处理脚本可直接使用：
+# Subsequent processing scripts can directly use:
 INPUT_CSV = OUTPUT_CSV
 # =========================
 # CONFIG (edit here)
@@ -894,14 +903,6 @@ def main() -> None:
     print("✅ Done.")
     print("Output JSON:", OUTPUT_JSON)
     print("Records:", summary["n_rows_main"])
-
-    # print("Main rows:", summary["n_rows_main"])
-    # print("Total mined pairs: formula =", summary["formula_pairs"], ", concentration =", summary["concentration_pairs"])
-    # print("Filtered pairs: formula =", (len(filtered_formula) if filtered_formula is not None else 0),
-        #   ", concentration =", (len(filtered_conc) if filtered_conc is not None else 0))
-    # print("Output JSON:", out_path.resolve())
-    # if WRITE_DEBUG_CSV:
-    #     print("Debug folder:", (out_path.parent / (out_path.stem + "_debug")).resolve())
 
     pass
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-数据提取器
-负责从数据库导出数据并转换为 Excel 格式
+Data Extractor
+Responsible for exporting data from database and converting to Excel format
 """
 
 import os
@@ -13,16 +13,16 @@ import tomllib
 
 def load_database_config() -> Dict[str, Any]:
     """
-    从项目根目录的 config/config.toml 加载数据库配置
+    Load database configuration from config/config.toml in project root
 
     Returns:
-        Dict[str, Any]: 数据库配置字典
+        Dict[str, Any]: Database configuration dictionary
     """
-    # 获取当前模块所在目录
+    # Get current module directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = None
 
-    # 向上查找项目根目录的 config.toml
+    # Search upward for project root config.toml
     for _ in range(5):
         potential_config = os.path.join(current_dir, '..', '..', '..', '..', 'config', 'config.toml')
         if os.path.exists(potential_config):
@@ -32,31 +32,32 @@ def load_database_config() -> Dict[str, Any]:
 
     if not config_path or not os.path.exists(config_path):
         raise FileNotFoundError(
-            "未找到 config/config.toml 配置文件。请确保文件存在于项目根目录的 config 目录下。"
+            "config/config.toml configuration file not found. Please ensure the file exists in the config directory under project root."
         )
 
     with open(config_path, 'rb') as f:
         config = tomllib.load(f)
 
-    return config.get('database', {})
+    # Use learning_database configuration instead of database
+    return config.get('learning_database', {})
 
 
 class DataExtractor:
-    """数据提取器 - 处理数据库导出和格式转换"""
+    """Data Extractor - Handles database export and format conversion"""
 
     def __init__(self, db_config: Optional[Dict[str, Any]] = None):
         """
-        初始化提取器
-        :param db_config: 数据库配置字典，如果为 None 则从 config.toml 加载
+        Initialize extractor
+        :param db_config: Database configuration dictionary, if None will load from config.toml
         """
         self.db_config = db_config if db_config is not None else load_database_config()
 
     def export_table_to_csv_exclude_id(self, table_name: str, output_csv: str) -> bool:
         """
-        导出 MySQL 表为 CSV（排除 id 列）
-        :param table_name: 表名
-        :param output_csv: 输出 CSV 文件路径
-        :return: 成功返回 True，失败返回 False
+        Export MySQL table as CSV (excluding id column)
+        :param table_name: Table name
+        :param output_csv: Output CSV file path
+        :return: True if successful, False if failed
         """
         output_dir = os.path.dirname(output_csv)
         if output_dir:
@@ -73,7 +74,7 @@ class DataExtractor:
             rows = cursor.fetchall()
 
             if not rows:
-                print(f"⚠️ 表 `{table_name}` 为空。")
+                print(f"⚠️ Table `{table_name}` is empty.")
                 cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
                 columns_info = cursor.fetchall()
                 all_columns = [col['Field'] for col in columns_info]
@@ -89,11 +90,11 @@ class DataExtractor:
                     writer.writerow(row)
 
             row_count = len(rows) if rows else 0
-            print(f"✅ 表 `{table_name}` 已导出为 `{output_csv}`（{row_count} 行，不含 'id' 列）")
+            print(f"✅ Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
             return True
 
         except Error as e:
-            print(f"❌ 导出失败：{e}")
+            print(f"❌ Export failed: {e}")
             return False
         finally:
             if conn and conn.is_connected():
@@ -102,34 +103,34 @@ class DataExtractor:
 
     def csv_to_xlsx(self, csv_path: str, xlsx_path: str) -> bool:
         """
-        将 CSV 转换为 XLSX
-        :param csv_path: CSV 文件路径
-        :param xlsx_path: XLSX 文件路径
-        :return: 成功返回 True，失败返回 False
+        Convert CSV to XLSX
+        :param csv_path: CSV file path
+        :param xlsx_path: XLSX file path
+        :return: True if successful, False if failed
         """
         try:
             df = pd.read_csv(csv_path, low_memory=False)
             df.to_excel(xlsx_path, index=False, engine='openpyxl')
-            print(f"✅ 已转换为 Excel: {xlsx_path}")
+            print(f"✅ Converted to Excel: {xlsx_path}")
             return True
         except Exception as e:
-            print(f"❌ CSV 转 XLSX 失败：{e}")
+            print(f"❌ CSV to XLSX conversion failed: {e}")
             return False
 
     def extract_and_convert(self, table_name: str, output_csv: str, output_xlsx: str) -> bool:
         """
-        执行完整的提取和转换流程
-        :param table_name: 表名
-        :param output_csv: CSV 输出路径
-        :param output_xlsx: XLSX 输出路径
-        :return: 成功返回 True，失败抛出异常
+        Execute complete extraction and conversion workflow
+        :param table_name: Table name
+        :param output_csv: CSV output path
+        :param output_xlsx: XLSX output path
+        :return: True if successful, raises exception on failure
         """
-        print("📤 正在从数据库导出数据...")
+        print("📤 Exporting data from database...")
         if not self.export_table_to_csv_exclude_id(table_name, output_csv):
-            raise Exception("导出失败")
+            raise Exception("Export failed")
 
-        print("🔄 正在转换为 Excel 格式...")
+        print("🔄 Converting to Excel format...")
         if not self.csv_to_xlsx(output_csv, output_xlsx):
-            raise Exception("转换失败")
+            raise Exception("Conversion failed")
 
         return True

@@ -90,13 +90,13 @@ def save_dataframe_to_csv(
 
 def format_number(element, num):
     if num == 0:
-        return ""  # 不保留该元素
+        return ""  # Do not keep this element
     if element == "Pb" and num == 1:
         return "Pb"  # Pb1 → Pb
     if num == int(num):
-        return f"{element}{int(num)}"  # 如 I1 → I1
+        return f"{element}{int(num)}"  # e.g., I1 → I1
     else:
-        return f"{element}{str(num).rstrip('0').rstrip('.')}"  # 如 Cs0.05 → Cs0.05
+        return f"{element}{str(num).rstrip('0').rstrip('.')}"  # e.g., Cs0.05 → Cs0.05
 
 
 def generate_dedup_data(data_path):
@@ -140,27 +140,3 @@ def preprocess(
     save_dataframe_to_csv(df_fp_dedup, fp_dedup_path)
     save_dataframe_to_csv(df_with_group_id, no_dedup_path)
 
-
-def main():
-    src_path = "/data/sunyao/Workspace/Projects/Reasoning/data/src/latest_50764/re_formula_remove_abnormal.csv"
-    save_root = "/data/sunyao/Workspace/Projects/Reasoning/data/src/latest_50764/"
-
-    df_formula_dedup, df_fp_dedup, df_with_group_id = generate_dedup_data(src_path)
-    if not osp.exists(save_root):
-        os.makedirs(save_root, exist_ok=True)
-
-    formula_dedup_path = osp.join(save_root, "formula_dedup_remove_abnormal.csv")
-    fp_dedup_path = osp.join(save_root, "fp_dedup_remove_abnormal.csv")
-    no_dedup_path = osp.join(save_root, "reformula_with_group_id.csv")
-
-    print(len(df_formula_dedup))
-    print(len(df_fp_dedup))
-    print(len(df_with_group_id))
-
-    save_dataframe_to_csv(df_formula_dedup, formula_dedup_path)
-    save_dataframe_to_csv(df_fp_dedup, fp_dedup_path)
-    save_dataframe_to_csv(df_with_group_id, no_dedup_path)
-
-
-if __name__ == "__main__":
-    main()

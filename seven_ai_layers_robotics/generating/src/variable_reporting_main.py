@@ -21,7 +21,7 @@ if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
 # Load configuration from app.config
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 # Load database and LLM configuration from app.config
 DB_CONFIG = {

@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ================== Configuration Area ==================
 # Load configuration from app.config
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 # Load from app.config
 MYSQL_CONFIG = {

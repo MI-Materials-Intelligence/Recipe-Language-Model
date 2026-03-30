@@ -5,7 +5,7 @@ from mechanistic_reasoning.mechanistic_reasoning import calculate_mechanistic_re
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[3]))
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 evaluation_custom_bp = Blueprint('evaluation_custom', __name__)
 

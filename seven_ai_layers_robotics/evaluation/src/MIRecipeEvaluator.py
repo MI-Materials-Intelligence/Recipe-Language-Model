@@ -11,7 +11,7 @@ from sqlalchemy import create_engine, text
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 # Import local evaluation functions
 from evaluation.evaluation_custom import calculate_evaluation_custom, get_required_params
@@ -39,7 +39,7 @@ class MIRecipeEvaluator:
         Loads configuration from app.config and initializes database connection.
         """
         db = config.database
-        svc = config.services
+        # svc = config.services
 
         self.db_config = {
             "host": db.host,
@@ -49,8 +49,8 @@ class MIRecipeEvaluator:
             "port": db.port,
             "table": "MIRecipe"
         }
-        self.api_url = svc.evaluation_api_url
-        self.timeout = svc.http_timeout_sec
+        # self.api_url = svc.evaluation_api_url
+        # self.timeout = svc.http_timeout_sec
 
         self.engine = create_engine(
             f"mysql+pymysql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}?charset={db.charset}",

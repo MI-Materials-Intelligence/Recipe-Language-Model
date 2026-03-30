@@ -18,7 +18,7 @@ from recipe_recommendation.predictor.main_predictor import get_prediction
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[3]))
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 
 

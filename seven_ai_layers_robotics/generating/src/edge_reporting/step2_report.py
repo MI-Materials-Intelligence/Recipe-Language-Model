@@ -19,7 +19,7 @@ from docx import Document
 # Database Configuration
 # =========================
 # Load configuration from app.config
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 MYSQL_CONFIG = {
     'host': config.generating_database.host,

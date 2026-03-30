@@ -17,14 +17,14 @@ from collections import defaultdict
 def load_recipeqa_config():
     """Load RecipeQA configuration from app.config"""
     try:
-        from app.config import config
+        from seven_ai_layers_robotics.config import config
 
-        # Build LLM config from app.config
+        # Build LLM config from app.config - use recipeqa_llm instead of learning
         llm_config = {
-            "api_key": config.learning.api_key if hasattr(config, 'learning') else "",
-            "base_url": config.learning.base_url if hasattr(config, 'learning') else "https://dashscope.aliyuncs.com/compatible-mode/v1",
-            "model": config.learning.model if hasattr(config, 'learning') else "qwen-plus",
-            "temperature": config.learning.temperature if hasattr(config, 'learning') else 0.4,
+            "api_key": config.recipeqa_llm.dashscope_api_key if hasattr(config, 'recipeqa_llm') else "",
+            "base_url": config.recipeqa_llm.base_url if hasattr(config, 'recipeqa_llm') else "https://dashscope.aliyuncs.com/compatible-mode/v1",
+            "model": config.recipeqa_llm.dashscope_model if hasattr(config, 'recipeqa_llm') else "qwen-plus",
+            "temperature": config.recipeqa_llm.temperature if hasattr(config, 'recipeqa_llm') else 0.4,
         }
 
         return llm_config
@@ -147,7 +147,7 @@ def atomic_write_json(path: str, data: Any) -> None:
 
 def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
     parent_dir = os.path.dirname(file_path)
-    if parent_dir:  # 只有当父目录非空时才创建
+    if parent_dir:  # Create only when parent directory is not empty
         os.makedirs(parent_dir, exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=indent, ensure_ascii=False)
@@ -161,24 +161,35 @@ def rebuild_mechanism_from_db(
     table_name: str = "markdown_records"
 ):
     """
-    从数据库重建 mechanism 文件夹结构。
+    Rebuild mechanism folder structure from database.
 
     Args:
-        output_root: 输出根目录，如 "./mechanism"
-        db_config: MySQL 配置
-        table_name: 表名
+        output_root: Output directory, e.g., "./mechanism"
+        db_config: MySQL configuration
+        table_name: Table name
     """
-    # 创建输出目录
+    print(f"[INFO] Starting rebuild_mechanism_from_db...")
+    print(f"[INFO] DB config: {db_config['host']}:{db_config['port']}/{db_config['database']}")
+    print(f"[INFO] Table: {table_name}")
+    print(f"[INFO] Output dir: {output_root}")
+    
+    # Create output directory
     os.makedirs(output_root, exist_ok=True)
+    print(f"[INFO] Created output directory: {output_root}")
 
     try:
+        print(f"[INFO] Connecting to database...")
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
+        print(f"[INFO] Database connection successful")
 
+        print(f"[INFO] Executing query: SELECT category_2, material, content FROM `{table_name}`")
         cursor.execute(f"SELECT category_2, material, content FROM `{table_name}`")
         rows = cursor.fetchall()
+        print(f"[INFO] Retrieved {len(rows)} records from database")
 
         valid_categories = {"sam", "additive", "passivator"}
+        written_count = 0
 
         for row in rows:
             raw_category = row.get("category_2")
@@ -186,45 +197,58 @@ def rebuild_mechanism_from_db(
             content = row.get("content", "")
 
             if not material_key or not isinstance(material_key, str):
-                print(f"[WARN] skip invalid material: {material_key}")
+                print(f"[WARN] skip invalid material: '{material_key}' (type: {type(material_key)})")
                 continue
 
-            # 生成标准化文件名（不含 .md）
+            # Generate standardized filename (without .md)
             filename_base = material_key
             if not filename_base:
                 print(f"[WARN] empty filename for key: {material_key}")
                 continue
 
-            # 确定目标子目录
+            # Determine target subdirectory
             if raw_category and isinstance(raw_category, str):
                 cat_lower = raw_category.strip().lower()
                 if cat_lower in valid_categories:
                     subdir = cat_lower.upper().capitalize()  # 'sam' → 'SAM'
                     target_dir = os.path.join(output_root, subdir)
+                    print(f"[DEBUG] Category '{raw_category}' -> subdir '{subdir}'")
                 else:
-                    target_dir = output_root  # 其他类别 → 根目录
+                    target_dir = output_root  # Other categories → root directory
+                    print(f"[DEBUG] Category '{raw_category}' not in valid_categories, using root")
             else:
-                target_dir = output_root  # category 为 NULL/空 → 根目录
+                target_dir = output_root  # category is NULL/empty → root directory
 
             os.makedirs(target_dir, exist_ok=True)
             md_path = os.path.join(target_dir, f"{filename_base}.md")
 
-            # 写入文件
+            # Write file
             try:
                 with open(md_path, "w", encoding="utf-8") as f:
                     f.write(content)
-                print(f"[INFO] wrote {md_path}")
+                written_count += 1
+                if written_count <= 10 or written_count % 100 == 0:  # Print first 10 and every 100th
+                    print(f"[INFO] wrote {md_path}")
             except Exception as e:
                 print(f"[ERROR] failed to write {md_path}: {e}")
 
-        print(f"\n✅ Rebuilt {len(rows)} markdown files into '{output_root}'")
+        print(f"\n✅ Rebuilt {written_count} markdown files into '{output_root}'")
+        print(f"[INFO] Total records processed: {len(rows)}")
+        print(f"[INFO] Total files written: {written_count}")
 
     except Error as e:
-        print(f"[ERROR] database error: {e}")
+        print(f"[ERROR] Database error: {e}")
+        import traceback
+        traceback.print_exc()
+    except Exception as e:
+        print(f"[ERROR] Unexpected error: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
+            print(f"[INFO] Database connection closed")
 # ===== Main =====
 def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
     if not os.path.isdir(directory):
@@ -246,10 +270,10 @@ def _safe_get(d: dict, path: List[str], default: str = "") -> str:
 
 def normalize_material_key(name: str) -> str:
     """
-    将材料 / 变量名标准化成一个 key，用于 md 文件匹配：
-    - 先用 MAPPING_RELATION 做一次别名修正（如 PEACI -> PEACl）
-    - 再全部转大写，只保留字母和数字
-    -> 文件名匹配自动忽略大小写
+    Normalize material/variable name to a key for md file matching:
+    - First use MAPPING_RELATION for alias correction (e.g., PEACI -> PEACl)
+    - Then convert all to uppercase, keep only letters and numbers
+    -> Filename matching automatically ignores case
     """
     if not name:
         return ""
@@ -261,10 +285,10 @@ def normalize_material_key(name: str) -> str:
 
 def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], str], str]:
     """
-    扫描 expert_data_root 下所有 .md/.markdown 文件，建立：
-        (类型, 标准化 key) -> md 文件路径
+    Scan all .md/.markdown files under expert_data_root and create:
+        (type, normalized key) -> md file path
 
-    这里的“类型”来自 md 所在父文件夹名（小写）：
+    Here "type" comes from md's parent folder name (lowercase):
         expert_data_root/
           SAM/
             2PACz.md         -> ('sam', '2PACZ')
@@ -273,7 +297,7 @@ def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], s
             MACl.md          -> ('additive', 'MACL')
           Passivator/
             PSP.md           -> ('passivator', 'PSP')
-          其它/根目录 md
+          Other/root directory md
             Annealed Temperature PVK.md -> (None, 'ANNEALEDTEMPERATUREPVK')
     """
     md_files = read_files_by_extension(expert_data_root, extensions=[".md", ".markdown"])
@@ -302,7 +326,7 @@ def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], s
 
 def read_text_file(path: str) -> str:
     """
-    读 md 文本内容
+    Read md text content
     """
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
@@ -310,22 +334,22 @@ def read_text_file(path: str) -> str:
 
 def extract_material_names_from_filename(base: str) -> List[str]:
     """
-    更鲁棒的材料名解析：
-    - 支持：Adding PDADI / Removing PSP
-    - 支持：Increasing PEABr / Decreasing PMACl
-    - 支持：PEABr_ Decreasing / PMACl_ Increasing
-    - 支持：A -> B / A → B / A->B
-    - 支持：2PACz -_ CB-PA / MACl+_PEABr
-    - 支持：2PACz_ Adding / 2PACz - Removing
+    More robust material name parsing:
+    - Supports: Adding PDADI / Removing PSP
+    - Supports: Increasing PEABr / Decreasing PMACl
+    - Supports: PEABr_ Decreasing / PMACl_ Increasing
+    - Supports: A -> B / A → B / A->B
+    - Supports: 2PACz -_ CB-PA / MACl+_PEABr
+    - Supports: 2PACz_ Adding / 2PACz - Removing
     """
     s = (base or "").strip()
     if not s:
         return []
 
-    # 统一箭头
+    # Unify arrows
     s = s.replace("→", "->").replace("➡", "->").replace("=>", "->")
 
-    # ✅ 动作词统一管理（新增 Increasing/Decreasing）
+    # ✅ Unify action words
     ACTION_WORDS = (
         r"adding|removing|add|remove|"
         r"replacing|replace|replaced|"
@@ -340,29 +364,29 @@ def extract_material_names_from_filename(base: str) -> List[str]:
         if not t:
             return ""
 
-        # 去掉前缀动作词：Adding/Removing/Increasing/Decreasing...
+        # Remove prefix action words: Adding/Removing/Increasing/Decreasing...
         t = re.sub(rf'^(?:{ACTION_WORDS})\s+', "", t, flags=re.IGNORECASE).strip()
 
-        # ✅ 去掉后缀动作词：PEABr Decreasing / PMACl Increasing
+        # ✅ Remove suffix action words: PEABr Decreasing / PMACl Increasing
         t = re.sub(rf'\s+(?:{ACTION_WORDS})$', "", t, flags=re.IGNORECASE).strip()
 
-        # 去掉括号内容（浓度/单位常在括号里）
+        # Remove parentheses content (concentration/units often in parentheses)
         t = re.sub(r'\(.*?\)', "", t).strip()
 
-        # 截断逗号后内容（常见“PDADI, xxx”）
+        # Truncate content after comma (common "PDADI, xxx")
         t = t.split(",")[0].strip()
 
-        # 如果还带了“mg/mL”这类单位，通常材料名在第一个token
+        # If still has units like "mg/mL", usually material name is in first token
         if " " in t:
             first = t.split()[0].strip()
             if re.search(r'\d', t) or re.search(r'(mg/ml|mM|mol|wt%|%)', t, flags=re.IGNORECASE):
                 t = first
 
-        # 清理边界符号
+        # Clean boundary symbols
         t = t.strip(" _-+")
         return t
 
-    # 1) 处理箭头替换：A -> B （可能出现多段 A->B->C）
+    # 1) Handle arrow replacement: A -> B (may have multiple segments A->B->C)
     if "->" in s:
         parts = [p.strip() for p in s.split("->") if p.strip()]
         names = []
@@ -372,55 +396,53 @@ def extract_material_names_from_filename(base: str) -> List[str]:
                 names.append(p)
         return names if names else [_clean_token(s)]
 
-    # 2) 处理前缀动作词：Adding X / Removing Y / Increasing X / Decreasing Y
+    # 2) Handle prefix action words: Adding X / Removing Y / Increasing X / Decreasing Y
     m = re.match(rf'^({ACTION_WORDS})\s+(.+)$', s, flags=re.IGNORECASE)
     if m:
         tok = _clean_token(m.group(2))
         return [tok] if tok else [_clean_token(s)]
 
-    # ✅ 2.5) 处理 “PEABr_ Decreasing / PMACl_ Increasing”
-    # 只在 "_" 后面明显是动作词时才切分，避免误伤复杂命名
+    # ✅ 2.5) Handle "PEABr_ Decreasing / PMACl_ Increasing"
+    # Only split when action word is clearly after "_", to avoid misinterpreting complex names
     m = re.match(rf'^(.*?)\s*_\s*({ACTION_WORDS})\b', s, flags=re.IGNORECASE)
     if m:
         left = _clean_token(m.group(1))
         return [left] if left else [_clean_token(s)]
 
-    # 3) 处理 “2PACz -_ CB-PA”, “MACl+_PEABr”
+    # 3) Handle "2PACz -_ CB-PA", "MACl+_PEABr"
     parts = re.split(r'\s*[-+]+_\s*', s)
     if len(parts) > 1:
         names = [_clean_token(p) for p in parts if _clean_token(p)]
         return names if names else [_clean_token(s)]
 
-    # 4) 处理 “2PACz_ Adding / 2PACz - Removing / PEABr Increasing”（关键词在后）
+    # 4) Handle "2PACz_ Adding / 2PACz - Removing / PEABr Increasing" (keyword at end)
     m = re.search(rf'^(.*?)[\s_+-]*({ACTION_WORDS})\b', s, flags=re.IGNORECASE)
     if m:
         left = _clean_token(m.group(1))
         return [left] if left else [_clean_token(s)]
 
-    # 5) 默认：整串当材料名
+    # 5) Default: treat entire string as material name
     return [_clean_token(s)]
-
-
 
 # ===== Task building =====
 def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_path: str, num_thres: int = 100):
     """
-    新版 task 构造逻辑（按你更新后的匹配关系）：
+    New task construction logic (according to updated matching relationship):
 
-    expert_data_root：
-        - 下面有若干 md 文件，可以直接在根目录；
-        - 也可以按类别分子文件夹：
+    expert_data_root:
+        - Contains md files directly in root directory;
+        - Or organized by category subfolders:
             expert_data_root/
               SAM/
               Additive/
               Passivator/
-              (其它可有可无)
-        - SAM 子目录下放 SAM 材料的 md，
-          Additive 子目录下放添加剂 md，
-          Passivator 子目录下放钝化剂 md。
+              (others optional)
+        - SAM materials md under SAM/,
+          Additives md under Additive/,
+          Passivators md under Passivator/.
 
     single_var_match_result_root:
-        - 下面有很多子文件夹，例如：
+        - Contains many subfolders, e.g.:
             Annealed Temperature Passivator/
             Annealed Temperature PVK/
             Antisolvent Dropping Timing/
@@ -433,21 +455,21 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
             Formula PVK/
             ...
 
-    匹配关系：
-    1）Formula SAM* 目录：
-        - 对 json 文件名（去 .json）做拆分：
+    Matching relationship:
+    1) Formula SAM* directories:
+        - Split json filename (remove .json):
             '2PACz -_ CB-PA'   -> ['2PACz', 'CB-PA']
             '2PACz_ Adding'    -> ['2PACz']
-        - 每个材料名去 expert_data_root/SAM/ 里找对应 md（忽略大小写和符号）。
-    2）Formula Additive* 目录：
-        - 同样拆文件名，材料名去 expert_data_root/Additive/ 里找 md。
-    3）Formula Passivator* 目录：
-        - 拆文件名，材料名去 expert_data_root/Passivator/ 里找 md。
-    4）其它（非 Formula*）目录：
-        - 直接用 json 文件名（去 .json）作为 key，在 expert_data_root 的“通用” md 中匹配
-          （即类型为 None 的那一类，通常是根目录或其它未特别指定的文件夹）。
+        - Find corresponding md in expert_data_root/SAM/ for each material name (ignore case and symbols).
+    2) Formula Additive* directories:
+        - Similarly split filename, find md in expert_data_root/Additive/ for material names.
+    3) Formula Passivator* directories:
+        - Split filename, find md in expert_data_root/Passivator/ for material names.
+    4) Other (non-Formula*) directories:
+        - Use json filename (remove .json) directly as key, match in "general" md of expert_data_root
+          (i.e., type is None, usually root directory or other unspecified folders).
 
-    文件名匹配忽略大小写：通过 normalize_material_key 实现。
+    Filename matching ignores case: implemented via normalize_material_key.
     """
 
     def _pure_id(s: str) -> str:
@@ -455,14 +477,14 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
             return ""
         return str(s).split(",")[0].strip()
 
-    # 1. 预先构建 md 映射： (type_key, normalized_name) -> path
+    # 1. Pre-build md mapping: (type_key, normalized_name) -> path
     md_map = build_md_knowledge_map(expert_data_root)
     md_text_cache: Dict[str, str] = {}
 
     def build_background_from_names(names: List[str], material_type: Optional[str]) -> Dict[str, Any]:
         """
-        给定一组材料 / 变量名 + 类型（'sam'/'additive'/'passivator'/None），
-        拼出对应 md 内容，组成 summary_text。
+        Given a list of material/variable names + type ('sam'/'additive'/'passivator'/None),
+        concatenate corresponding md content to form summary_text.
         """
         pieces: List[str] = []
         used_files: List[str] = []
@@ -470,11 +492,11 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
         for name in names:
             key = normalize_material_key(name)
 
-            # 先按类型精确匹配，比如 ('sam', '2PACZ')
+            # First match by type precisely, e.g., ('sam', '2PACZ')
             candidate_keys: List[Tuple[Optional[str], str]] = []
             if material_type is not None:
                 candidate_keys.append((material_type, key))
-            # 再退回到类型为 None 的通用 md（如果有）
+            # Then fallback to general md with type None (if any)
             candidate_keys.append((None, key))
 
             md_path: Optional[str] = None
@@ -484,7 +506,7 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
                     break
 
             if not md_path:
-                print(f"[WARN] no md found for '{name}' (type={material_type}, key='{key}')")
+                # print(f"[WARN] no md found for '{name}' (type={material_type}, key='{key}')")
                 continue
 
             if md_path not in md_text_cache:
@@ -512,7 +534,7 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
         save_json_file(total_task, save_path)
         return
 
-    # 2. 遍历 single_var_match_result_root 下的一级子文件夹
+    # 2. Traverse single_var_match_result_root's first-level subfolders
     for folder_name in os.listdir(single_var_match_result_root):
         folder_path = osp.join(single_var_match_result_root, folder_name)
         if not osp.isdir(folder_path):
@@ -520,13 +542,13 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
 
         folder_lower = folder_name.strip().lower()
 
-        # 判断是否是 Formula SAM / Additive / Passivator 三类
+        # Determine if it's Formula SAM / Additive / Passivator categories
         is_formula_sam = folder_lower.startswith("formula sam")
         is_formula_additive = folder_lower.startswith("formula additive")
         is_formula_passivator = folder_lower.startswith("formula passivator")
         is_formula_folder = folder_lower.startswith("formula")
 
-        # 对应 md 类型 key
+        # Corresponding md type key
         if is_formula_sam:
             mat_type: Optional[str] = "sam"
         elif is_formula_additive:
@@ -534,27 +556,27 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
         elif is_formula_passivator:
             mat_type = "passivator"
         else:
-            mat_type = None   # 其它情况用通用 md
+            mat_type = None   # Use general md for other cases
 
         json_files = read_files_by_extension(folder_path, extensions=[".json"])
         print(f"[INFO] folder '{folder_name}' | is_formula={is_formula_folder} | mat_type={mat_type} | json_files={len(json_files)}")
 
-        # 3. 遍历该文件夹下的每个 json 文件
+        # 3. Traverse each json file in this folder
         for jf in json_files:
             base_name = osp.splitext(osp.basename(jf))[0]
 
-            # 3.1 根据是否 Formula 目录，决定如何解析“名字”
+            # 3.1 Decide how to parse "names" based on whether it's Formula directory
             if is_formula_folder and mat_type in ("sam", "additive", "passivator"):
-                # Formula SAM / Additive / Passivator -> 拆文件名得到多个材料名
+                # Formula SAM / Additive / Passivator -> split filename to get multiple material names
                 material_names = extract_material_names_from_filename(base_name)
             else:
-                # 非上述 Formula 类（包括 Formula PVK 和所有非 Formula），
-                # 直接用文件名作为一个变量名
+                # Non-above Formula categories (including Formula PVK and all non-Formula),
+                # use filename directly as variable name
                 material_names = [base_name]
 
             expert_data = build_background_from_names(material_names, material_type=mat_type)
 
-            # 3.2 读取匹配 json 内容，取出样本池
+            # 3.2 Read matching json content, extract sample pool
             data_obj = read_json_file(jf)
             pool: List[Dict[str, Any]] = []
             if isinstance(data_obj, dict):
@@ -573,11 +595,11 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
                 print(f"[WARN] empty pool in {jf}")
                 continue
 
-            # 3.3 每个文件最多采样 num_thres 条
+            # 3.3 Sample at most num_thres entries per file
             k = min(len(pool), num_thres)
             sampled = random.sample(pool, k=k) if len(pool) > k else pool
 
-            # 3.4 构造最终的 task item（process_item 会用 expert_data.summary_text 当背景知识）
+            # 3.4 Construct final task item (process_item will use expert_data.summary_text as background knowledge)
             for m in sampled:
                 meta = m.get("Meta Info") or m.get("Meta_Info") or {}
                 inputs = m.get("Input") or {}
@@ -585,7 +607,7 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
                 sid1 = _pure_id(meta.get("Sample_ID_1", ""))
                 sid2 = _pure_id(meta.get("Sample_ID_2", ""))
 
-                # 用 (sid1, sid2, folder_name, base_name) 做去重 key
+                # Use (sid1, sid2, folder_name, base_name) as deduplication key
                 dedup_key = (sid1, sid2, folder_name, base_name)
                 if dedup_key in seen:
                     continue
@@ -754,7 +776,7 @@ def get_tasks_from_db(
                     break
 
             if not md_path:
-                print(f"[WARN] no md found for '{name}' (type={material_type})")
+                # print(f"[WARN] no md found for '{name}' (type={material_type})")
                 continue
 
             if md_path not in md_text_cache:
@@ -779,7 +801,7 @@ def get_tasks_from_db(
     # Auto-get db_config from app.config
     if db_config is None:
         try:
-            from app.config import config
+            from seven_ai_layers_robotics.config import config
             db_config = {
                 "host": config.learning_database.host,
                 "port": config.learning_database.port,
@@ -788,17 +810,18 @@ def get_tasks_from_db(
                 "database": config.learning_database.database,
                 "charset": config.learning_database.charset,
             }
-        except:
+        except Exception as e:
+            print(f"[WARN] Failed to load config from seven_ai_layers_robotics.config: {e}")
             pass
 
-    # If still no config, use default values
+    # If still no config, use remote database default values
     if db_config is None:
         db_config = {
-            "host": "   ",
-            "port": 3306,
-            "user": "",
-            "password": "",
-            "database": "",
+            "host": "223.76.236.170",
+            "port": 13330,
+            "user": "root",
+            "password": "zkxjh800",
+            "database": "exp_data",
             "charset": "utf8mb4"
         }
 
@@ -822,7 +845,7 @@ def get_tasks_from_db(
 
     print(f"[INFO] Loaded {len(rows)} records from database")
 
-    # 3. 按 task_name 分组（模拟原“文件夹”逻辑）
+    # 3. Group by task_name (simulate original "folder" logic)
     grouped: Dict[str, List[Dict]] = defaultdict(list)
     for row in rows:
         record = {
@@ -839,7 +862,7 @@ def get_tasks_from_db(
     total_task: List[Dict[str, Any]] = []
     seen = set()
 
-    # 4. 遍历每个 task_name（即原 folder_name）
+    # 4. Traverse each task_name (i.e., original folder_name)
     for folder_name, records in grouped.items():
         folder_lower = folder_name.strip().lower()
 
@@ -862,9 +885,9 @@ def get_tasks_from_db(
             continue
 
 
-        # 5. 对每条记录解析材料名
+        # 5. Parse material names for each record
         for rec in records:
-            # 解析 meta_info
+            # Parse meta_info
             meta = {}
             try:
                 if isinstance(rec["meta_info"], str):
@@ -877,8 +900,8 @@ def get_tasks_from_db(
             sid1 = _pure_id(meta.get("Sample_ID_1") or rec["sample_id_1"])
             sid2 = _pure_id(meta.get("Sample_ID_2") or rec["sample_id_2"])
 
-            # ✅ 关键：用 json_filename 替代 base_name
-            base_name = rec["json_filename"]  # 已去 .json
+            # ✅ Key: Use json_filename instead of base_name
+            base_name = rec["json_filename"]  # Already removed .json
 
             if is_formula_folder and mat_type in ("sam", "additive", "passivator"):
                 material_names = extract_material_names_from_filename(base_name)
@@ -897,13 +920,13 @@ def get_tasks_from_db(
                 "control_device_fabrication": rec["control_device_fabrication"],
                 "target_device_fabrication": rec["target_device_fabrication"],
                 "category_folder": folder_name,
-                "match_file": f"{base_name}.json",  # 模拟原文件名
+                "match_file": f"{base_name}.json",  # Simulate original filename
                 "expert_data": expert_data,
                 "primary_materials": material_names,
             })
 
-        # 可选：按类别采样（原逻辑是每个 JSON 文件采样，现在可按类别或全局采样）
-        # 此处省略，因你可能希望保留全部
+        # Optional: Sample by category (original logic samples per JSON file, now can sample by category or globally)
+        # Omitted here, as you may want to retain all
 
     print(f"[INFO] Total tasks built: {len(total_task)}")
     save_json_file(total_task, save_path)
@@ -913,7 +936,7 @@ def get_tasks_from_db(
 def main():
     # Load database configuration from app.config
     try:
-        from app.config import config
+        from seven_ai_layers_robotics.config import config
         DB_CONFIG = {
             'host': config.learning_database.host,
             'port': config.learning_database.port,
@@ -922,20 +945,24 @@ def main():
             'database': config.learning_database.database,
             'charset': 'utf8mb4'
         }
-    except:
+        print(f"[INFO] Loaded DB config: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+    except Exception as e:
+        print(f"[WARN] Failed to load config from seven_ai_layers_robotics.config: {e}")
+        # Use default remote database config
         DB_CONFIG = {
-            'host': '',
-            'port': 3306,
-            'user': '',
-            'password': '',
-            'database': '',
+            'host': '223.76.236.170',
+            'port': 13330,
+            'user': 'root',
+            'password': 'zkxjh800',
+            'database': 'exp_data',
             'charset': 'utf8mb4'
         }
+        print(f"[INFO] Using default DB config: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
 
     MECHANISM_DIR = osp.join(DATA_DIR, "mechanism")  # RecipeQA/data/mechanism/
     rebuild_mechanism_from_db(MECHANISM_DIR, DB_CONFIG)
 
-# 然后继续使用你原有的流程
+# Then continue with your original workflow
     # expert_data_root = osp.join(DATA_DIR, "mechanism")  # RecipeQA/data/mechanism/
     # single_var_match_result_root = osp.join(DATA_DIR, "single_var_match_v4")
     task_save_path = osp.join(DATA_DIR, "optimized_tasks_from_db.json")

@@ -1,0 +1,418 @@
+[
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Systematic parameter adjustments underlie the fabrication of a perovskite cell that was constituted, capturing how controlled conditions influence a PCE of 10.936%, FF of 54.852%, Voc of 0.96692 V, and Jsc of 20.619 mA/cm². The core perovskite solution, composed of Cs0.05MA0.1FA0.85Pb1I3.0 at 1.73 mol/L, served as the foundational matrix for the solar cell. The prepared precursor solution was spin-coated at 1000 rpm for 10 s and 5000 rpm for 40 s onto the substrate. In the last 10 s of the second step, the anti-solvent (200 µL of chlorobenzene) was dropped in the center at a constant rate The substrates were sequentially heated at 110 °C for 15 min for perovskite crystal formation. Image analysis shows that the spin-coating coverage reaches 56.3%, and the average grayscale value of the film is 54.8001",
+    "target": "This study emerges from parameter-centric experimentation, producing a perovskite solar cell that was prepared, with a PCE of 14.368%, FF of 67.41%, Voc of 1.0046 V, and Jsc of 21.217 mA/cm². Then, perovskite precursor solution (1.73 mol/L) was prepared at the stoichiometric ratio of Cs0.05MA0.1FA0.85Pb1I3.0. The perovskite solution was spin coated on the substrates at 1000 rpm for 10 s and at 5000 rpm for 30 s, respectively. During the second spin coating step, 200 µL of CB was deposited onto the perovskite film 10 s before the program ended. The sample underwent a controlled anneal at 110 °C for 15 min, optimizing the film’s morphological and crystalline properties. Image analysis shows that the spin-coating coverage reaches 99.7%, and the average grayscale value of the film is 19.7727",
+    "pair_source": "concentration",
+    "sample_id_1": "210",
+    "sample_id_2": "7590",
+    "sample_id_1_date": "20240911",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Spin Coating Time PVK 2"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The device demonstrated a champion efficiency of 10.936%, with a VOC of 0.96692 V, JSC of 20.619 mA/cm², and FF of 54.852%.The device achieved a champion PCE of 10.936% with a VOC of 0.96692 V, JSC of 20.619 mA/cm², and FF of 54.852%. A perovskite precursor solution was first prepared using Cs0.05MA0.1FA0.85Pb1I3.0 at 1.73 mol/L. The perovskite precursor solutions were spin-coated on the substrates at 1000 rpm for 10 s and 5000 rpm for 40 s. With 10 s of spin time remaining, CB (200 µL) was slowly dispensed onto the middle of the substrate. The wet perovskite films were then transferred onto hot plate and annealed at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 56.3%, and the average grayscale value of the film is 54.8001",
+    "target": "This study emerges from parameter-centric experimentation, producing a perovskite solar cell that was formulated, with a PCE of 13.002%, FF of 64.249%, Voc of 0.99442 V, and Jsc of 20.35 mA/cm². The Cs0.05MA0.1FA0.85Pb1I3.0 perovskite film was prepared with a concentration of 1.73 mol/L. Implementing a stepwise spin scheme, the layer was first spun at 1000 rpm (10 s) and then at 5000 rpm (30 s), improving surface coverage. 200 µL of antisolvents was dripped on the spinning substrate during the 10 s of the second spin-coating step. The film was immediately annealed at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 20.9663",
+    "pair_source": "concentration",
+    "sample_id_1": "210",
+    "sample_id_2": "7600",
+    "sample_id_1_date": "20240911",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Spin Coating Time PVK 2"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The champion target devices showed a JSC of 19.915 mA/cm², a VOC of 0.81683 V, and a FF of 33.515%, resulting in a PCE of 5.4519%. By preparing a base solution of Cs0.05MA0.1FA0.85Pb1I3.0 at 1.73 mol/L, the perovskite precursor was ready for further enhancements. The perovskite solutions were spin-coated at 1000 rpm for 10 s and 5000 rpm for 40 s, respectively. During the second spin coating step, 200 µL of CB was deposited onto the perovskite film 10 seconds before the program ended. Then the films were annealed at 110 °C for 15 min to form the perovskite layer. Image analysis shows that the spin-coating coverage reaches 99.8%, and the average grayscale value of the film is 57.2785",
+    "target": "A champion PCE of 13.002% with a JSC of 20.35 mA/cm², a VOC of 0.99442 V, and a FF of 64.249% was achieved with optimized perovskite layer prepared with non-stoichiometric precursor solution (NSPS). By preparing a base solution of Cs0.05MA0.1FA0.85Pb1I3.0 at 1.73 mol/L, the perovskite precursor was ready for further enhancements. The perovskite solution was spin coated on the substrates at 1000 rpm for 10 s and at 5000 rpm for 30 s, respectively. At last 10 s, the injection of 200 µL antisolvent aided in reducing defect density within the perovskite layer. The films were dried inside a N2 environment on a hot plate at a temperature of 110 for 15 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 20.9663",
+    "pair_source": "concentration",
+    "sample_id_1": "2445",
+    "sample_id_2": "7600",
+    "sample_id_1_date": "20240924",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Spin Coating Time PVK 2"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The PCE devices reached 10.936% and featured a VOC of 0.96692 V, FF of 54.852%, and short-circuit current density (JSC) of 20.619 mA/cm². The perovskite precursor solution (1.73 mol/L) was prepared in a solvent mixture of DMF and DMSO according to the formula of Cs0.05MA0.1FA0.85Pb1I3.0. The chosen spin-coating regimen first applied 1000 rpm for 10 s, then 5000 rpm for 40 s, ensuring layer consistency. After 10 s into the second stage, 200 µL chlorobenzene antisolvent was dropped on top of the spinning substrates (about 1 cm distance). Heat-treatment was implemented with the substrates for 15 min at 110 °C. Image analysis shows that the spin-coating coverage reaches 56.3%, and the average grayscale value of the film is 54.8001",
+    "target": "The device achieves a champion PCE of 12.816% with an open-circuit voltage (VOC) of 0.98504 V, a short-circuit current (JSC) of 20.723 mA/cm², and a fill factor (FF) of 62.782%. A 1.73 mol/L perovskite precursor solution was constructed by mixing FAI, PbI2, methylammonium iodide and caesium iodide in DMF: DMSO mixed solvent with the chemical formula of Cs0.05MA0.1FA0.85Pb1I3.0. The perovskite solutions were spin-coated at 1000 rpm for 10 s and then at 5000 rpm for 30 s. 200 µL of antisolvent was dropped on the film 10 s before the end of the program. The device architecture benefited from a final anneal at 110 °C for 15 min, ensuring robust crystallinity. Image analysis shows that the spin-coating coverage reaches 99.5%, and the average grayscale value of the film is 20.4652",
+    "pair_source": "concentration",
+    "sample_id_1": "210",
+    "sample_id_2": "7608",
+    "sample_id_1_date": "20240911",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Spin Coating Time PVK 2"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The inverted devices achieved optimal PCEs of 12.816%, a VOC of 0.98504 V, FF of 62.782%, and JSC of 20.723 mA/cm². The precursor solutions for all Cs0.05MA0.1FA0.85Pb1I3.0 films were prepared by dissolving equimolar concentrations (1.73 mol/L). For the perovskite deposition process, the perovskite films were deposited using a two-step spin-coating process at 1000 rpm for 10 s and 5000 rpm for 30 s. 200 µL CB as the antisolvent was dripped on the film at 10 s before the end of the last procedure. Subsequently, the sample was annealed at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 99.5%, and the average grayscale value of the film is 20.4652",
+    "target": "The cells showed an increase in VOC to 0.99444 V, accompanied by a slight increase in FF to 70.681% and JSC to 19.89 mA/cm², resulting in a peak PCE of 13.98%. The perovskite precursor solution was prepared based on the perovskite composition of Cs0.05MA0.1FA0.85Pb1I3.0 in anhydrous DMF solvent (total concentration of 1.73 mol/L). Perovskite solution was deposited in two steps, first at 1000 rpm for 10 s and then at 5000 rpm for 30 s. During this stage, 120 µL CB antisolvent was quickly dripped onto the centre of the substrate at 10 s before the end of the spin-coating process. The films were then dried on a hot plate at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 19.2493",
+    "pair_source": "concentration",
+    "sample_id_1": "7608",
+    "sample_id_2": "7616",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Antisolvent Volume"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Within a framework of controlled experimental inputs, a perovskite cell configuration was devised, ultimately manifesting a PCE of 14.144%, FF of 75.89%, Voc of 0.99193 V, and Jsc of 18.789 mA/cm². Commencing with a Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 solution at 1.75 mol/L, the perovskite precursor was meticulously formulated. For perovskite films fabrication, the perovskite precursor was spin-coated on the as prepared substrates at 1000 rpm for 10 s, subsequently at 5000 rpm for 25 s. 120 µL anti-solvent was quickly dripped at the 15 s before the end of spin coating step. Then the film is annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 95.4%, and the average grayscale value of the film is 10.9306",
+    "target": "PSC with device efficiency (PCE) of 15.704%, VOC of 0.97548 V, JSC of 20.612 mA/cm², and FF of 78.104% was obtained. For perovskite film, the solution concentration of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 was 1.75 mol/L. The perovskite precursor solutions were spin-coated on substrate at 1000 rpm for 10 s and then at 5000 rpm for 25 s. During the second step, 120 µL of chlorobenzene was dropped on the spinning substrate 15 s before the end of the process. Subsequent thermal treatment was carried out at 110 °C for 45 min to finalize the perovskite crystal structure. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 10.6823",
+    "pair_source": "concentration",
+    "sample_id_1": "6980",
+    "sample_id_2": "6936",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Temperature PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The devices exhibited an increased PCE from 14.492% to 14.492%, with a VOC of 1.0233 V, FF of 72.884%, and JSC of 19.431 mA/cm². The 1.38 mol/L perovskite precursor solution with a chemical formula of Cs0.05MA0.14FA0.81Pb1I2.85Br0.15. For the perovskite deposition process, the perovskite solutions were deposited using a two-step spin-coating process at 1000 rpm for 10 s and 5000 rpm for 30 s. During the second spin-coating step, 120 µL of antisolvent was introduced at last 10 s. The resulting wet perovskite films were annealed at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 72.6%, and the average grayscale value of the film is 105.2514",
+    "target": "The champion device showed a JSC of 19.034 mA/cm², a VOC of 0.97732 V, and a FF of 78.921%, resulting in a PCE of 14.682%. The 1.38 mol/L perovskite precursor solution with a chemical formula of Cs0.05MA0.14FA0.81Pb1I2.85Br0.15. The prepared precursor solution was spin coated at 1000 rpm for 10 s and 5000 rpm for 30 s onto the substrate. CB (120 µL) was dropped at the center of the spinning substrate approximately 10 s before the end of the spin coating procedure. The substrate was then transferred to a thermostatic heater and annealed at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 91.3%, and the average grayscale value of the film is 87.9338",
+    "pair_source": "concentration",
+    "sample_id_1": "1509",
+    "sample_id_2": "1611",
+    "sample_id_1_date": "20240919",
+    "sample_id_2_date": "20240919",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The inverted PSCs achieved a champion PCE of 4.8289% with an open-circuit voltage (VOC) of 0.70091 V, short-circuit current density (JSC) of 19.488 mA/cm², and fill factor (FF) of 35.352%. For the perovskite composition Cs0.05MA0.14FA0.81Pb1I2.85Br0.15, 1.38 mol/L perovskite precursor solution was prepared. The perovskite solutions were spin-coated at 1000 rpm for 10 s and then at 5000 rpm for 30 s. An antisolvent injection of 120 µL at last 10 s stabilized the intermediate phase, leading to enhanced film quality. The wet film was annealed at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 85.6%, and the average grayscale value of the film is 87.9894",
+    "target": "PSCs with a PCE of 14.682%, a JSC of 19.034 mA/cm², a VOC of 0.97732 V and an FF of 78.921% are demonstrated. The Cs0.05MA0.14FA0.81Pb1I2.85Br0.15 (1.38 mol/L) perovskite precursor solution was prepared. The perovskite precursor was spin-coated onto substrates with two stages program at 1000 rpm for 10 s, and 5000 rpm for 30 s, respectively. At the last 10 s of the second step, 120 µL CB was dropped as antisolvent. The perovskite film was obtained by annealing at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 91.3%, and the average grayscale value of the film is 87.9338",
+    "pair_source": "concentration",
+    "sample_id_1": "1514",
+    "sample_id_2": "1611",
+    "sample_id_1_date": "20240919",
+    "sample_id_2_date": "20240919",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "A significantly higher JSC of 19.543 mA/cm² is obtained while preserving VOC of 1.0261 V and FF of 62.051%, resulting in the highest PCE of 12.444% at reverse scan. The perovskite precursor solution (Cs0.05MA0.14FA0.81Pb1I2.85Br0.15) was prepared with a concentration of 1.6 mol/L in a mixed anhydrous solvent of DMF/DMSO (4/1, v/v). The perovskite layer was deposited via a two-step spin-coating procedure with 1000 rpm for 10 s and 5000 rpm for 30 s. During the second spin-coating step, 120 µL of EA was quickly poured onto the substrate after 10. Then, the as-prepared perovskite films were transferred onto a hotplate and annealed at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 99.8%, and the average grayscale value of the film is 20.9839",
+    "target": "The inverted devices based on perovskite achieved optimal PCEs of 14.693%, a VOC of 1.011 V, FF of 73.842%, and JSC of 19.681 mA/cm². With Cs0.05MA0.14FA0.81Pb1I2.85Br0.15 at 1.6 mol/L forming the primary solution, the perovskite precursor was synthesized accordingly. For the perovskite layer, the prepared perovskite solution was spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s. During the second step, 120 µL of chlorobenzene was dropped on the spinning substrate 10 s before the end of the process. The perovskite film was annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 9.7414",
+    "pair_source": "concentration",
+    "sample_id_1": "7298",
+    "sample_id_2": "6784",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Guided by experimental parameters such as spin speeds, antisolvent timing, and annealing profiles, this device was generated, realizing a PCE of 12.444%, FF of 62.051%, Voc of 1.0261 V, and Jsc of 19.543 mA/cm². By dissolving Cs0.05MA0.14FA0.81Pb1I2.85Br0.15 at 1.6 mol/L as the primary ingredient, the perovskite precursor was effectively prepared. For the perovskite films, the spin-coated process was divided by a consecutive two-step process, the spin rate of the first step is 1000 rpm for 10 s, and the spin rate of the second step is 5000 rpm for 30 s. Integrating 120 µL of antisolvent at last 10 s prompted more uniform perovskite grain growth. It was then heated at 100 °C for 30 min, resulting in the formation of the perovskite thin films. Image analysis shows that the spin-coating coverage reaches 99.8%, and the average grayscale value of the film is 20.9839",
+    "target": "In contrast, the device achieves a notably enhanced PCE of 14.318%, with a JSC of 18.99 mA/cm², VOC of 0.96446 V, and FF of 78.176%. The composition of the 1.6 mol/L perovskite film is Cs0.05MA0.14FA0.81Pb1I2.85Br0.15. The precursor solution was spin-coated in a two-step process at 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. During the spin-coating process, 120 µL of CB antisolvent was quickly dripped onto the centre of the perovskite film 10 s before the end of the process. The perovskite film was obtained by annealing at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 99.9%, and the average grayscale value of the film is 9.3815",
+    "pair_source": "concentration",
+    "sample_id_1": "7298",
+    "sample_id_2": "6788",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The devices exhibited an increased PCE from 14.144% to 14.144%, with a VOC of 0.99193 V, FF of 75.89%, and JSC of 18.789 mA/cm². The perovskite precursor solution (1.75 mol/L) was prepared in mixed solvents of DMF and DMSO according to chemical formula of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1. The perovskite precursor solution was then spin-coated onto a substrate at 1000 rpm for 10 s followed by an additional spin at 5000 rpm for 25 s. 120 µL CB was dripped onto the center of film at 15 s before the end of spin-coating. Heat-treatment was implemented with the substrates for 45 min at 100 °C. Image analysis shows that the spin-coating coverage reaches 95.4%, and the average grayscale value of the film is 10.9306",
+    "target": "The inverted devices based on perovskite achieved optimal PCEs of 15.227%, a VOC of 1.0195 V, FF of 70.621%, and JSC of 21.148 mA/cm². A stable precursor mixture was achieved by taking a Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 solution (1.75 mol/L) as the base. The precursor solution was spin-coated in a two-step process at 1000 rpm for 10 s and 5000 rpm for 25 s, respectively. Then, with 15 s of spin time remaining, chlorobenzene (120 µL) was dispensed onto the middle of the substrate. The films were then annealed at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 99.1%, and the average grayscale value of the film is 9.9235",
+    "pair_source": "concentration",
+    "sample_id_1": "6980",
+    "sample_id_2": "7230",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "PSC with device efficiency (PCE) of 14.182%, VOC of 1.0295 V, JSC of 19.566 mA/cm², and FF of 70.408% was obtained. The perovskite (Cs0.05MA0.15FA0.8Pb1I2.9Br0.1) precursor solution was prepared with a concentration of 1.75 mol/L in a mixed solvent of DMF and DMSO. The chosen spin-coating regimen first applied 1000 rpm for 10 s, then 5000 rpm for 25 s, ensuring layer consistency. At the 15 s of spinning, 120 µL of anti-solvent chlorobenzene was dripped at the center. By subjecting the film to 100 °C for 45 min, the perovskite lattice attained its ideal orientation. Image analysis shows that the spin-coating coverage reaches 99.4%, and the average grayscale value of the film is 10.6191",
+    "target": "The certified PCE was determined to be 15.848% with JSC of 20.626 mA/cm², VOC of 0.97407 V, and FF of 78.883%. The perovskite composition of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 was prepared with a concentration of 1.75 mol/L. For the perovskite deposition process, the perovskite films were deposited using a two-step spin-coating process at 1000 rpm for 10 s and 5000 rpm for 25 s. During the second spin-coating step, 120 µL of EA was quickly poured onto the substrate after 15. The device architecture benefited from a final anneal at 100 °C for 30 min, ensuring robust crystallinity. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 9.8023",
+    "pair_source": "concentration",
+    "sample_id_1": "6965",
+    "sample_id_2": "7240",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The PCE for the device reached 14.144%, with a JSC of 18.789 mA/cm², a VOC of 0.99193 V and a FF of 75.89%. The perovskite precursor solution (Cs0.05MA0.15FA0.8Pb1I2.9Br0.1) was prepared with a concentration of 1.75 mol/L in a mixed anhydrous solvent of DMF/DMSO (4/1, v/v). The perovskite precursor solution was then spin-coated onto a substrate at 1000 rpm for 10 s followed by an additional spin at 5000 rpm for 25 s. With 15 s of spin time remaining, CB (120 µL) was slowly dispensed onto the middle of the substrate. After the spin coating was completed, it was annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 95.4%, and the average grayscale value of the film is 10.9306",
+    "target": "A significantly higher JSC of 20.626 mA/cm² is obtained while preserving VOC of 0.97407 V and FF of 78.883%, resulting in the highest PCE of 15.848% at reverse scan. Starting with a Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 (1.75 mol/L) solution, the perovskite precursor was carefully crafted for optimal performance. The perovskite solution was spin coated on the substrate at 1000 rpm for 10 s and at 5000 rpm for 25 s, respectively. An antisolvent injection of 120 µL at last 15 s stabilized the intermediate phase, leading to enhanced film quality. To lock in the desired crystal phase, the film was heated at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 9.8023",
+    "pair_source": "concentration",
+    "sample_id_1": "6980",
+    "sample_id_2": "7240",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The target device achieved a champion PCE of 14.182% (VOC: 1.0295 V, JSC: 19.566 mA/cm², FF: 70.408%).The target PSCs achieved an average power conversion efficiency (PCE) of 14.182% with a short-circuit current density (JSC) of 19.566 mA/cm², an open-circuit voltage (VOC) of 1.0295 V and a fill factor (FF) of 70.408%. A solution of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 at 1.75 mol/L provided the foundational matrix for the perovskite layer. The perovskite film was deposited by spin-coating at 1000 rpm for 10 s and 5000 rpm for 25 s. The crystallization process was refined by injecting 120 µL of antisolvent at last 15 s during spin-coating. The wet film was annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 99.4%, and the average grayscale value of the film is 10.6191",
+    "target": "The PSCs exhibited a superior PCE of 15.407% (JSC: 20.401 mA/cm², VOC: 0.99308 V, FF: 76.05%). For the Cs0.05MA0.15FA0.8Pb1I2.9Br0.1, 1.75 mol/L perovskite precursor solution was prepared. The perovskite solution was spin coated on the substrate at 1000 rpm for 10 s and at 5000 rpm for 25 s, respectively. 120 µL of chlorobenzene was quickly poured to extract the mixed solvents at the last of 15 s. The subsequent film was then heated at 100 °C for 30 min to obtain the bright perovskite film. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 9.5594",
+    "pair_source": "concentration",
+    "sample_id_1": "6965",
+    "sample_id_2": "7248",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The device displayed a champion PCE of 14.144%, with a VOC of 0.99193 V, a JSC of 18.789 mA/cm², and an FF of 75.89%. The 1.75 mol/L perovskite solution (Cs0.05MA0.15FA0.8Pb1I2.9Br0.1) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films. For the perovskite deposition process, the perovskite solutions were deposited using a two-step spin-coating process at 1000 rpm for 10 s and 5000 rpm for 25 s. Then, 120 µL CB was dropped onto the substrate during the second spin-coating step at the last 15 s of the spin-coating. Employing an anneal step at 100 °C for 45 min delivered improved crystalline quality and grain uniformity. Image analysis shows that the spin-coating coverage reaches 95.4%, and the average grayscale value of the film is 10.9306",
+    "target": "The performance parameters (PCE, open-circuit voltage (VOC), short-circuit current density (JSC) and fill factor (FF)) of the control PSCs are significantly improved (15.407%, 0.99308 V, 20.401 mA/cm², and 76.05%). The Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 (1.75 mol/L) perovskite precursor solution was prepared. The perovskite solution was deposited on substrate by two consecutive spin-coating steps of 1000 rpm for 10 s and 5000 rpm for 25 s, respectively. The crystallization process was refined by injecting 120 µL of antisolvent at last 15 s during spin-coating. Then, the precursor films were placed on a 100 °C hotplate for 30 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 9.5594",
+    "pair_source": "concentration",
+    "sample_id_1": "6980",
+    "sample_id_2": "7248",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The PSCs displayed a significantly enhanced PCE of 13.822%, with VOC of 1.0338 V, JSC of 19.319 mA/cm², and FF of 69.209%. For perovskite film, the solution concentration of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 was 1.75 mol/L. A sequential spin-coating procedure was employed, first at 1000 rpm for 10 s, followed by 5000 rpm for 30 s. Antisolvent (120 µL) was dripped onto the center of film at 10 s before the end of spin-coating. The samples were subsequently annealed on a hotplate at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 99.4%, and the average grayscale value of the film is 12.464",
+    "target": "Through iterative refinements in substrate preparation, solution concentration, and coating protocols, this perovskite device was refined and produced, echoing a PCE of 14.605%, FF of 68.695%, Voc of 1.0399 V, and Jsc of 20.443 mA/cm². The composition of the 1.75 mol/L perovskite film with band gap is Cs0.05MA0.15FA0.8Pb1I2.9Br0.1. The perovskite precursor solution was then spin-coated at 1000 rpm for 10 s followed by an additional spin at 5000 rpm for 30 s. 120 µL CB was dripped onto the center of film at 10 s before the end of the spin-coating procedure. The subsequent film was then heated at 100 °C for 20 min to obtain the bright perovskite film. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 10.1547",
+    "pair_source": "concentration",
+    "sample_id_1": "6890",
+    "sample_id_2": "7465",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Within a framework of controlled experimental inputs, a perovskite cell configuration was developed, ultimately manifesting a PCE of 13.83%, FF of 76.462%, Voc of 0.98269 V, and Jsc of 18.407 mA/cm². A perovskite precursor featuring Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 at 1.75 mol/L was prepared to initiate the fabrication process. The perovskite precursor solution was then spin-coated onto a substrate at 1000 rpm for 10 s followed by an additional spin at 5000 rpm for 30 s. In the last 10 s of the second step, the anti-solvent (120 µL of CB) was dropped in the center of the substrate at a constant rate within 1 s. A post-deposition anneal at 100 °C for 45 min stabilized the absorber layer and enhanced device performance. Image analysis shows that the spin-coating coverage reaches 98.1%, and the average grayscale value of the film is 13.0839",
+    "target": "The champion device offers a high PCE of 14.605% for the reverse scan (JSC of 20.443 mA/cm², VOC of 1.0399 V, and FF of 68.695%). The Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 perovskite precursor (1.75 mol/L) was spin-coated onto the substrate. For perovskite films fabrication, the perovskite precursor was spin-coated on the as prepared substrates at 1000 rpm for 10 s and at 5000 rpm for 30 s. At a carefully chosen interval (10 s) during the second stage, 120 µL of antisolvent was gently dispensed to improve crystallization. Under well-defined conditions (100 °C, 20 min), the annealing step completed the perovskite layer formation process. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 10.1547",
+    "pair_source": "concentration",
+    "sample_id_1": "6912",
+    "sample_id_2": "7465",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Consequently, the device resulted in device efficiency of 13.83%, together with an enhanced fill factor (FF) of 76.462%, short-circuit current density of 18.407 mA/cm²and open circuit voltage (VOC) of 0.98269 V. The perovskite ink, prepared from Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 at 1.75 mol/L, formed the base layer for subsequent fabrication steps. The perovskite layer was deposited via a two-step spin-coating procedure with 1000 rpm for 10 s and 5000 rpm for 30 s. 120 µL chlorobenzene as antisolvent was dropped 10 s before the end of the spin-coating procedure. A post-deposition anneal at 100 °C for 45 min stabilized the absorber layer and enhanced device performance. Image analysis shows that the spin-coating coverage reaches 98.1%, and the average grayscale value of the film is 13.0839",
+    "target": "The cells showed an increase in VOC to 0.98351 V, accompanied by a slight increase in FF to 72.62% and JSC to 20.702 mA/cm², resulting in a peak PCE of 14.786%. For the preparation of perovskite precursor solution, 1.75 mol/L Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 perovskite precursor was prepared in DMF:DMSO (4:1 volume ratio, v:v) mixed solvent. For perovskite films fabrication, the perovskite precursor was spin-coated on the as prepared substrates at 1000 rpm for 10 s, subsequently at 5000 rpm for 30 s. 120 µL chlorobenzene as antisolvent was dropped 10 s before the end of the spin-coating procedure. Then the film is annealed at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 98.2%, and the average grayscale value of the film is 10.2481",
+    "pair_source": "concentration",
+    "sample_id_1": "6912",
+    "sample_id_2": "7474",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "With the improved uniformity of SAM, the SAM-based devices showed a maximum PCE of 13.822%, with a VOC of 1.0338 V, FF of 69.209%, and JSC of 19.319 mA/cm². For the preparation of perovskite precursor solution, 1.75 mol/L Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 perovskite precursor was prepared in DMF:DMSO (4:1 volume ratio, v:v) mixed solvent. The precursor solution was spin-coated in a two-step process at 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. During the second spin coating step, 120 µL CB was dripped onto the perovskite film at 10 s before ending the program. Then the film is annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 99.4%, and the average grayscale value of the film is 12.464",
+    "target": "The PSCs achieved a champion power conversion efficiency (PCE) of 14.376% under an active area of 0.09 cm², with a VOC value of 1.0031 V, an FF value of 70.373%, and a current density (JSC) of 20.366 mA/cm². The composition of perovskite is 1.75 mol/L Cs0.05MA0.15FA0.8Pb1I2.9Br0.1. The perovskite solution was deposited on substrate by two consecutive spin-coating steps of 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. A 120 µL CB was dropped onto the substrate at the last 10 s of the spin-coating, resulting in the formation of dark brown films. The perovskite film was annealed at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 99.7%, and the average grayscale value of the film is 10.4104",
+    "pair_source": "concentration",
+    "sample_id_1": "6890",
+    "sample_id_2": "7482",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Guided by experimental parameters such as spin speeds, antisolvent timing, and annealing profiles, this device was developed, realizing a PCE of 13.83%, FF of 76.462%, Voc of 0.98269 V, and Jsc of 18.407 mA/cm². The perovskite solution (1.75 mol/L) was made according to the composition of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 in a mixed solvent of DMF/DMSO. The perovskite solution was deposited on substrate by two consecutive spin-coating steps of 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. During the second step, CB as antisolvent (120 µL) was dropped at the middle of the spinning substrate 10 s prior to the end of the spinning. It was then heated at 100 °C for 45 min, resulting in the formation of the perovskite thin films. Image analysis shows that the spin-coating coverage reaches 98.1%, and the average grayscale value of the film is 13.0839",
+    "target": "The PSCs exhibited a superior PCE of 14.376% (JSC: 20.366 mA/cm², VOC: 1.0031 V, FF: 70.373%). The perovskite precursor solution was prepared based on the perovskite composition of Cs0.05MA0.15FA0.8Pb1I2.9Br0.1 in anhydrous DMF solvent (total concentration of 1.75 mol/L). The layer was cast via a two-step spin approach: initially at 1000 rpm for 10 s, then accelerated to 5000 rpm for 30 s. A gentle antisolvent drop of 120 µL at last 10 s guided the perovskite crystals into a more ideal arrangement. The films were then annealed on a hot plate at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 99.7%, and the average grayscale value of the film is 10.4104",
+    "pair_source": "concentration",
+    "sample_id_1": "6912",
+    "sample_id_2": "7482",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "In contrast, the device achieves a notably enhanced PCE of 14.527%, with a JSC of 19.681 mA/cm², VOC of 1.0163 V, and FF of 72.626%. The 1.65 mol/L perovskite solution (Cs0.05MA0.1FA0.85Pb1I2.85Br0.15) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films. The perovskite precursor solutions were spin-coated on substrate at 1000 rpm for 10 s and then at 5000 rpm for 30 s. The controlled addition of 120 µL antisolvent at last 10 s facilitated uniform crystal nucleation. The films were then annealed on a hot plate at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 99.7%, and the average grayscale value of the film is 21.8611",
+    "target": "With the improved uniformity of SAM, the SAM-based devices showed a maximum PCE of 14.816%, with a VOC of 0.98454 V, FF of 73.934%, and JSC of 20.354 mA/cm². The precursor solutions for all Cs0.05MA0.1FA0.85Pb1I2.85Br0.15 films were prepared by dissolving equimolar concentrations (1.65 mol/L). The perovskite solutions were spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. According to the antisolvent method, 120 µL of antisolvent was dropped on the film 10 s before the end of the program. The samples were subsequently annealed on a hotplate at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 11.3429",
+    "pair_source": "concentration",
+    "sample_id_1": "7092",
+    "sample_id_2": "7524",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "A champion PCE of 14.266% with a JSC of 19.858 mA/cm², a VOC of 0.96742 V, and a FF of 74.263% was achieved with optimized perovskite layer prepared with non-stoichiometric precursor solution (NSPS). The Cs0.05MA0.1FA0.85Pb1I2.85Br0.15 (1.65 mol/L) perovskite precursor solution was prepared. The perovskite precursor solution was deposited on the substrate via a two-step spin coating process; first, the solution was spin-coated at 1000 rpm for 10 s and then at 5000 rpm for 30 s. Immediately before the end spin-coating process, 120 µL of anisole was dropped onto the films. The films were dried inside a N2 environment on a hot plate at a temperature of 100 for 30 min. Image analysis shows that the spin-coating coverage reaches 98.6%, and the average grayscale value of the film is 20.8994",
+    "target": "The solar cells showed a champion PCE of 14.816% with a VOC of 0.98454 V, a JSC of 20.354 mA/cm², and a FF of 73.934%. The perovskite (Cs0.05MA0.1FA0.85Pb1I2.85Br0.15) solution was prepared with a concentration of 1.65 mol/L in mixed solvent of DMF and DMSO. Afterwards, the perovskite precursor solution was deposited on the substrate via a two-step spin coating process; first, the solution was spin-coated at 1000 rpm for 10 s and then at 5000 rpm for 30 s. During the spin-coating process, 120 µL of CB antisolvent was quickly dripped onto the centre of the perovskite film 10 s before the end of the process. The subsequent film was then heated at 100 °C for 20 min to obtain the bright perovskite film. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 11.3429",
+    "pair_source": "concentration",
+    "sample_id_1": "7098",
+    "sample_id_2": "7524",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": " The device achieves a notably enhanced PCE of 14.527%, corresponding to a JSC of 19.681 mA/cm², a VOC of 1.0163 V, and an FF of 72.626%.  By preparing a base solution of Cs0.05MA0.1FA0.85Pb1I2.85Br0.15 at 1.65 mol/L, the perovskite precursor was ready for further enhancements. The precursor solution was spin-coated on the substrate at 1000 rpm for 10 s and then, 5000 rpm for 30 s. A total of 120 µL of CB was slowly dripped onto the center of film at 10 s before the end of spin-coating. Then, it was annealed at 100 °C for 30 min. Image analysis shows that the spin-coating coverage reaches 99.7%, and the average grayscale value of the film is 21.8611",
+    "target": "Through deliberate control of solution composition, coating speeds, and thermal treatments, this perovskite cell was synthesized, leading to a PCE of 15.078%, a fill factor of 79.022%, a Voc of 0.97725 V, and a Jsc of 19.525 mA/cm². The perovskite ink, prepared from Cs0.05MA0.1FA0.85Pb1I2.85Br0.15 at 1.65 mol/L, formed the base layer for subsequent fabrication steps. The precursor solution was spin-coated in a two-step process at 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. 120 µL CB as the antisolvent was dripped on the film at 10 s before the end of the last procedure. Employing an anneal step at 100 °C for 20 min delivered improved crystalline quality and grain uniformity. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 11.5946",
+    "pair_source": "concentration",
+    "sample_id_1": "7092",
+    "sample_id_2": "7536",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The champion device fabricated by perovskite film showed a PCE of 14.266% with open-circuit voltage (VOC) of 0.96742 V, short current density (JSC) of 19.858 mA/cm², and a fill factor (FF) of 74.263%. The perovskite precursor is Cs0.05MA0.1FA0.85Pb1I2.85Br0.15. Spin-coating was conducted in two stages: 1000 rpm for 10 s, then 5000 rpm for 30 s. At the 10 s before the end of the progress, 120 µL CB was evenly dripped onto the substrate. The perovskite layer was thermally conditioned at 100 °C for 30 min, consolidating its morphology. Image analysis shows that the spin-coating coverage reaches 98.6%, and the average grayscale value of the film is 20.8994",
+    "target": "The cells showed an increase in VOC to 0.97725 V, accompanied by a slight increase in FF to 79.022% and JSC to 19.525 mA/cm², resulting in a peak PCE of 15.078%. The perovskite (Cs0.05MA0.1FA0.85Pb1I2.85Br0.15) precursor solution was prepared with a concentration of 1.65 mol/L in a mixed solvent of DMF and DMSO. The perovskite solutions were spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. During the last step, 120 µL of chlorobenzene was dropped on the film at 10 s. The sample was then annealed at 100 °C for 20 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 11.5946",
+    "pair_source": "concentration",
+    "sample_id_1": "7098",
+    "sample_id_2": "7536",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The current density-voltage (J-V) characteristics show that the target PSCs delivered a PCE of 14.063%, with an elevated VOC of 1.0125 V, a JSC of 18.935 mA/cm², and an FF of 73.352%. The perovskite composition was Cs0.15MA0.15FA0.7Pb1I2.85Br0.15, and the initial stock perovskite solution was 1.3 mol/L. The perovskite precursor solutions were spin-coated on the substrates at 1000 rpm for 10 s and 5000 rpm for 30 s. At the last 10 s, 120 µL of CB solution was dropped on the perovskite. The perovskite film was obtained by annealing at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 97.9%, and the average grayscale value of the film is 20.3617",
+    "target": "A higher PCE of 17.245% of the target device is achieved, where JSC, VOC and FF are 9.6105 mA/cm², 0.83154 V and 215800.0%, respectively. The perovskite solution (1.3 mol/L) was made according to the composition of Cs0.15MA0.15FA0.7Pb1I2.85Br0.15 in a mixed solvent of DMF/DMSO. The precursor solution was spin-coated onto the substrate surface at 1000 rpm for 10 s, then accelerated to 5000 rpm for 30 s. Integrating 120 µL of antisolvent at last 10 s prompted more uniform perovskite grain growth. After spin-coating, the films were annealed on the hot plate at 100 °C for 5 min. Image analysis shows that the spin-coating coverage reaches 99.3%, and the average grayscale value of the film is 10.2515",
+    "pair_source": "concentration",
+    "sample_id_1": "6760",
+    "sample_id_2": "7637",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The control device displays a JSC of 18.935 mA/cm², a VOC of 1.0125 V and an FF of 73.352%, turning out a moderate PCE of 14.063%. For the inorganic perovskite layers, 1.3 mol/L Cs0.15MA0.15FA0.7Pb1I2.85Br0.15 inorganic perovskite precursor solution was prepared in DMSO solvent. Then, the prepared precursor solution was spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s onto the ITO substrate. At the last 10 s, 120 µL of CB solution was dropped on the perovskite. Afterwards, the perovskite film was annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 97.9%, and the average grayscale value of the film is 20.3617",
+    "target": "A significantly higher JSC of 38.204 mA/cm² is obtained while preserving VOC of 0.003934 V and FF of 10333.0%, resulting in the highest PCE of 15.53% at reverse scan. The perovskite solution, 1.3 mol/L Cs0.15MA0.15FA0.7Pb1I2.85Br0.15 was prepared. The perovskite solutions were spin-coated onto the substrate at 1000 rpm for 10 s and at 5000 rpm for 30 s. An antisolvent injection of 120 µL at last 10 s stabilized the intermediate phase, leading to enhanced film quality. The subsequent film was then heated at 100 °C for 5 min to obtain the bright perovskite film. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 10.2969",
+    "pair_source": "concentration",
+    "sample_id_1": "6760",
+    "sample_id_2": "7653",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The PSCs achieved a quasi-steady-state PCE of 14.112% (VOC: 0.98105 V, JSC: 18.883 mA/cm², FF: 76.177%). The 1.3 mol/L perovskite solution (Cs0.15MA0.15FA0.7Pb1I2.85Br0.15) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films. Then, the prepared precursor solution was spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s onto the ITO substrate. Immediately before the end spin-coating process, 120 µL of anisole was dropped onto the films. Then the substrate was annealed at 100 °C for 45 min to form the perovskite layer. Image analysis shows that the spin-coating coverage reaches 99.1%, and the average grayscale value of the film is 20.3855",
+    "target": "The certified PCE was determined to be 17.245% with JSC of 9.6105 mA/cm², VOC of 0.83154 V, and FF of 215800.0%. The core perovskite solution, composed of Cs0.15MA0.15FA0.7Pb1I2.85Br0.15 at 1.3 mol/L, served as the foundational matrix for the solar cell. Then, the prepared precursor solution was spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s onto the ITO substrate. After 10 s of the second spin-coating step, 120 µL of chlorobenzene was dripped onto the center of the substrate to induce fast crystallization of the perovskite film. The films were then dried on a hot plate at 100 °C for 5 min. Image analysis shows that the spin-coating coverage reaches 99.3%, and the average grayscale value of the film is 10.2515",
+    "pair_source": "concentration",
+    "sample_id_1": "6764",
+    "sample_id_2": "7637",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "PSCs with (111)-preferred crystallographic orientation displayed a remarkable PCE of 14.112%, with VOC of 0.98105 V, JSC of 18.883 mA/cm², and FF of 76.177%. The core perovskite solution, composed of Cs0.15MA0.15FA0.7Pb1I2.85Br0.15 at 1.3 mol/L, served as the foundational matrix for the solar cell. A meticulously timed spin procedure included 1000 rpm for 10 s, succeeded by 5000 rpm for 30 s to refine crystal growth. During the second step, CB as antisolvent (120 µL) was dropped at the middle of the spinning substrate 10 s prior to the end of the spinning. The wet perovskite films were then transferred onto hot plate and annealed at 100 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 99.1%, and the average grayscale value of the film is 20.3855",
+    "target": "PSCs based on additives achieved a PCE of 15.53%, with a VOC of 0.003934 V, FF of 10333.0%, and JSC of 38.204 mA/cm². Then, perovskite precursor solution (1.3 mol/L) was prepared at the stoichiometric ratio of Cs0.15MA0.15FA0.7Pb1I2.85Br0.15. For the perovskite deposition process, the perovskite solutions were deposited using a two-step spin-coating process at 1000 rpm for 10 s and 5000 rpm for 30 s. After 10 s, 120 µL chlorobenzene as antisolvent was casted vertically. After the spin coating was completed, it was annealed on a hot stage at 100 °C for 5 min. Image analysis shows that the spin-coating coverage reaches 100.0%, and the average grayscale value of the film is 10.2969",
+    "pair_source": "concentration",
+    "sample_id_1": "6764",
+    "sample_id_2": "7653",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "A methodical exploration of fabrication parameters ensured the perovskite cell was meticulously prepared, translating each controlled variable into a PCE of 9.0112%, FF of 24777.0%, Voc of 0.001738 V, and Jsc of 20.931 mA/cm². The composition of the 1.6 mol/L perovskite film is Cs0.1FA0.9Pb1I2.8Br0.2. The deposition process involved a two-step spin sequence (1000 rpm/10 s and 5000 rpm/30 s) to achieve a controlled film thickness. At the last 10 s, 120 µL of CB solution was dropped on the perovskite. The resulting perovskite film was then annealed at 110 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 98.3%, and the average grayscale value of the film is 16.2257",
+    "target": "Through deliberate control of solution composition, coating speeds, and thermal treatments, this perovskite cell was devised, leading to a PCE of 14.392%, a fill factor of 74.955%, a Voc of 1.0127 V, and a Jsc of 18.961 mA/cm². The perovskite (Cs0.1FA0.9Pb1I2.8Br0.2) precursor solution was prepared with a concentration of 1.6 mol/L in a mixed solvent of DMF and DMSO. The precursor solution was spin-coated onto the substrate surface at 1000 rpm for 10 s, then accelerated to 5000 rpm and maintained at this speed for 30 s. To promote better film morphology, 120 µL of antisolvent was added at last 10 s in the latter spin-coating step. Afterwards, the perovskite film was annealed at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 98.8%, and the average grayscale value of the film is 10.6284",
+    "pair_source": "concentration",
+    "sample_id_1": "6801",
+    "sample_id_2": "7566",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Remarkably, it achieved an impressive PCE of 9.0112% with a high VOC of 0.001738 V, JSC of 20.931 mA/cm², and FF of 24777.0%. The perovskite solution (1.6 mol/L) was prepared according to chemical formula of Cs0.1FA0.9Pb1I2.8Br0.2. Then the filtered perovskite precursor was spin-coated on substrate at 1000 rpm for 10 s and 5000 rpm for 30 s. After 10 s into the second stage, 120 µL chlorobenzene antisolvent was dropped on top of the spinning substrates (about 1 cm distance). Under well-defined conditions (110 °C, 45 min), the annealing step completed the perovskite layer formation process. Image analysis shows that the spin-coating coverage reaches 98.3%, and the average grayscale value of the film is 16.2257",
+    "target": "The champion device showed a PCE of 14.518%, with JSC of 19.088 mA/cm², FF of 78.73%, and VOC of 0.96609 V. The Cs0.1FA0.9Pb1I2.8Br0.2 perovskite film was prepared with a concentration of 1.6 mol/L. The perovskite film was deposited by spin-coating onto the substrate using two-step spin-coating process, first at 1000 rpm for 10 s and then at 5000 rpm for 30 s. 120 µL CB was dropped 10 s before the end of the procedure. The film was immediately annealed at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 99.7%, and the average grayscale value of the film is 7.4567",
+    "pair_source": "concentration",
+    "sample_id_1": "6801",
+    "sample_id_2": "7582",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The device shows the highest PCE of 9.0112% with a VOC of 0.001738 V, a JSC of 20.931 mA/cm², and an FF of 24777.0%. The perovskite ink, prepared from Cs0.1FA0.9Pb1I2.8Br0.2 at 1.6 mol/L, formed the base layer for subsequent fabrication steps. The perovskite solution was deposited on substrate by two consecutive spin-coating steps of 1000 rpm for 10 s and 5000 rpm for 30 s, respectively. At the last 10 s of the second step, 120 µL anisole was dropped as antisolvent. The wet perovskite films were then transferred onto hot plate and annealed at 110 °C for 45 min. Image analysis shows that the spin-coating coverage reaches 98.3%, and the average grayscale value of the film is 16.2257",
+    "target": "The PSCs achieved a champion power conversion efficiency (PCE) of 14.392%, with VOC of 1.0127 V, FF of 74.955%, and JSC of 18.961 mA/cm². The perovskite precursor solution with a molar concentration of 1.6 mol/L was prepared according to the formula of Cs0.1FA0.9Pb1I2.8Br0.2. A careful spin regime was adopted: an initial slow spin at 1000 rpm (10 s) to distribute the solution, followed by 5000 rpm (30 s) for crystallization control. The film was quickly washed with 120 µL toluene at 10 s during spin-coating. Then the films were annealed at 110 °C for 15 min to form the perovskite layer. Image analysis shows that the spin-coating coverage reaches 98.8%, and the average grayscale value of the film is 10.6284",
+    "pair_source": "concentration",
+    "sample_id_1": "6801",
+    "sample_id_2": "9999",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  },
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "The PCE of the device was increased to 9.0112% with an FF of 24777.0%, VOC of 0.001738 V and JSC of 20.931 mA/cm². The perovskite precursor solution (1.6 mol/L) was prepared in a solvent mixture of DMF and DMSO according to the formula of Cs0.1FA0.9Pb1I2.8Br0.2. For the fabrication of perovskite films, the perovskite solutions were spin-coated onto the substrates at 1000 rpm for 10 s and 5000 rpm for 30 s. At the last 10 s of the second step, 120 µL anisole was dropped as antisolvent. The substrates were sequentially heated at 110 °C for 45 min for perovskite crystal formation. Image analysis shows that the spin-coating coverage reaches 98.3%, and the average grayscale value of the film is 16.2257",
+    "target": "This study emerges from parameter-centric experimentation, producing a perovskite solar cell that was meticulously prepared, with a PCE of 14.392%, FF of 74.955%, Voc of 1.0127 V, and Jsc of 18.961 mA/cm². The perovskite solution (1.6 mol/L) was made according to the composition of Cs0.1FA0.9Pb1I2.8Br0.2 in a mixed solvent of DMF/DMSO. The perovskite solutions were spin-coated onto the substrate at 1000 rpm for 10 s and 5000 rpm for 30 s. In the last 10 s of the second step, the anti-solvent (120 µL of chlorobenzene) was dropped in the center at a constant rate Heat-treatment was implemented with the substrates for 15 min at 110 °C. Image analysis shows that the spin-coating coverage reaches 98.8%, and the average grayscale value of the film is 10.6284",
+    "pair_source": "concentration",
+    "sample_id_1": "6801",
+    "sample_id_2": "9998",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  }
+]

@@ -119,14 +119,14 @@ def item_format_check(data: dict) -> Optional[dict | bool]:
 
 
 def parse_output_content(text):
-    # 提取 <output> 标签内的内容
+    # Extract content inside <output> tags
     match = re.search(r"<output>(.*?)</output>", text, re.DOTALL)
     if not match:
         return []
 
     content = match.group(1).strip()
 
-    # 分割成段落（按两个换行符分段）
+    # Split into paragraphs (by double newlines)
     sections = [section.strip() for section in content.split("\n\n") if section.strip()]
 
     result = []
@@ -136,7 +136,7 @@ def parse_output_content(text):
         if not lines:
             continue
 
-        # 如果是 "### mechanism chain"，处理机制描述
+        # If "### mechanism chain", process mechanism descriptions
         if lines[0].startswith("###"):
             mechanism_title = lines[0].replace("###", "").strip()
             mechanism_points = []
@@ -145,14 +145,14 @@ def parse_output_content(text):
                 if line:
                     mechanism_points.append(line)
 
-            # 添加到上一个 entry 中
+            # Add to the last entry
             if result:
                 result[-1][mechanism_title] = mechanism_points
-                # 如果是以 ## 开头的标题，说明是一个新段落
+                # If starts with ##, indicates a new paragraph
         elif lines[0].startswith("##"):
             entry = {"Title": lines[0].replace("##", "").strip()}
 
-            # 解析后续的字段
+            # Parse subsequent fields
             for line in lines[1:]:
                 field_match = re.match(r"-\s+\*\*(.+?)\*\*:\s+(.+)", line)
                 if field_match:
@@ -460,7 +460,7 @@ def read_json(file_path: str) -> Union[list | dict]:
             data = json.load(f)
         return data
     except Exception as e:
-        print(f"Error occured when reading json:{e}")
+        print(f"Error occurred when reading json: {e}")
         return None
 
 
@@ -553,9 +553,9 @@ def convert_json_file_to_md(json_file_path: str, md_file_path: str) -> None:
         with open(md_file_path, "w", encoding="utf-8") as f:
             f.write(markdown_content)
 
-        print(f"Markdown file has been saved in : {md_file_path}")
+        print(f"Markdown file has been saved to: {md_file_path}")
     except Exception as e:
-        print(f"Error occured when converting json file into markdown file: {e}")
+        print(f"Error occurred when converting json file into markdown file: {e}")
 
 
 def save_json(data: Any, file_path: str, indent: int = 4) -> None:

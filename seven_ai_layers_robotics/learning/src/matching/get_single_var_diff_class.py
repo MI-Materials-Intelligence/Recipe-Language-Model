@@ -95,7 +95,7 @@ COLUMN_RELATION = [
         "Spin Coating Speed SAM",
         "Single Coating",
     ],
-    # TODO: 考虑单涂
+    # TODO: Consider single coating
 ]
 
 
@@ -396,7 +396,7 @@ def get_middle_ten(sorted_list: List[int]) -> List[int]:
 def save_data(data: dict, save_root: str):
     count = 0
     for joint_diff_columns, content in data.items():
-        # 如果是 Windows，也对目录名做安全化（可选）
+   
         if os.name == 'nt':
             joint_diff_columns = sanitize_filename_for_windows(joint_diff_columns)
 
@@ -404,7 +404,7 @@ def save_data(data: dict, save_root: str):
         os.makedirs(joint_diff_columns_save_root, exist_ok=True)
 
         for diff_class, data_info in content.items():
-            # 🔑 关键：仅在 Windows 上清理文件名
+  
             filename = f"{diff_class}.json"
             if os.name == 'nt':
                 filename = sanitize_filename_for_windows(filename)
@@ -433,23 +433,3 @@ def get_single_var_diff_class(formula_data_root, fp_data_root):
     save_data(fp_result, fp_save_root)
 
 
-def main():
-    formula_file_path = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_formula_dedup_remove_abnormal/overall_tasks.json"
-    formula_save_root = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_formula_dedup_remove_abnormal/tasks"
-    formula_data_list = read_json(formula_file_path)
-
-    formula_result = process_data(formula_data_list)
-
-    save_data(formula_result, formula_save_root)
-
-    fp_file_path = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_fp_dedup_remove_abnormal/overall_tasks.json"
-    fp_save_root = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_fp_dedup_remove_abnormal/tasks"
-    fp_data_list = read_json(fp_file_path)
-
-    fp_result = process_data(fp_data_list)
-
-    save_data(fp_result, fp_save_root)
-
-
-if __name__ == "__main__":
-    main()

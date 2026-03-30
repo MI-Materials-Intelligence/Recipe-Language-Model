@@ -26,7 +26,7 @@ if str(generating_src) not in sys.path:
     sys.path.insert(0, str(generating_src))
 
 # Import configuration from app.config
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 
 # ============================================================================

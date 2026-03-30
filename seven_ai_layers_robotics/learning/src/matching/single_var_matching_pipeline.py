@@ -9,22 +9,22 @@ from ..cleaning.remove_abnormal import remove_abnormal
 
 def run_cleaning(process_root: str, src_file_name: str = ""):
     """
-    数据清洗阶段：去除异常样本并进行去重处理
+    Data Cleaning Stage: Remove abnormal samples and perform deduplication
 
     Args:
-        process_root (str): 处理目录路径
-        src_file_name (str): 源文件名
+        process_root (str): Processing directory path
+        src_file_name (str): Source file name
 
     Returns:
-        dict: 清洗后生成的文件路径信息
+        dict: File path information generated after cleaning
     """
-    # Step 1: 去除异常样本
+    # Step 1: Remove abnormal samples
     src_file = osp.join(process_root, src_file_name)
     output_file = osp.join(process_root, "re_formula_remove_abnormal.csv")
     remove_abnormal(src_file, output_file)
     print("Remove abnormal finished")
 
-    # Step 2: 去重处理
+    # Step 2: Deduplication processing
     formula_dedup_path = osp.join(process_root, "re_formula_dedup.csv")
     fp_dedup_path = osp.join(process_root, "re_fp_dedup.csv")
     no_dedup_path = osp.join(process_root, "re_no_dedup.csv")
@@ -40,14 +40,14 @@ def run_cleaning(process_root: str, src_file_name: str = ""):
 
 def run_matching(process_root: str, cleaning_result: dict = None):
     """
-    匹配与分类阶段：生成单变量匹配对并进行差异分类
+    Matching and Classification Stage: Generate single variable matching pairs and perform difference classification
 
     Args:
-        process_root (str): 处理目录路径
-        cleaning_result (dict, optional): 清洗阶段的结果，包含 dedup 文件路径
-                                       如果为 None，则使用默认路径
+        process_root (str): Processing directory path
+        cleaning_result (dict, optional): Results from cleaning stage, containing dedup file paths
+                                       If None, uses default paths
     """
-    # 如果未提供清洗结果，使用默认路径
+    # If cleaning result not provided, use default paths
     if cleaning_result is None:
         formula_dedup_path = osp.join(process_root, "re_formula_dedup.csv")
         fp_dedup_path = osp.join(process_root, "re_fp_dedup.csv")
@@ -55,7 +55,7 @@ def run_matching(process_root: str, cleaning_result: dict = None):
         formula_dedup_path = cleaning_result["formula_dedup_path"]
         fp_dedup_path = cleaning_result["fp_dedup_path"]
 
-    # Step 3: 生成单变量匹配对
+    # Step 3: Generate single variable matching pairs
     formula_output_dir = osp.join(process_root, "formula", "date")
     fp_output_dir = osp.join(process_root, "fp", "date")
     generate_single_var(
@@ -63,11 +63,11 @@ def run_matching(process_root: str, cleaning_result: dict = None):
     )
     print("Generate single var finished")
 
-    # Step 4: 合并结果
+    # Step 4: Merge results
     merge_results(osp.join(process_root, "formula"), osp.join(process_root, "fp"))
     print("Merge results finished")
 
-    # Step 5: 获取差异分类
+    # Step 5: Get difference classification
     get_single_var_diff_class(
         osp.join(process_root, "formula"), osp.join(process_root, "fp")
     )
@@ -76,26 +76,23 @@ def run_matching(process_root: str, cleaning_result: dict = None):
 
 def run(process_root: str, src_file_name: str = ""):
     """
-    完整流程：依次执行清洗和匹配两个阶段
+    Complete Workflow: Execute cleaning and matching stages sequentially
 
     Args:
-        process_root (str): 处理目录路径
-        src_file_name (str): 源文件名
+        process_root (str): Processing directory path
+        src_file_name (str): Source file name
     """
-    # 阶段 1: 数据清洗
+    # Stage 1: Data Cleaning
     print("=" * 50)
-    print("阶段 1: 数据清洗")
+    print("Stage 1: Data Cleaning")
     print("=" * 50)
     cleaning_result = run_cleaning(process_root, src_file_name)
 
-    # 阶段 2: 匹配与分类
+    # Stage 2: Matching and Classification
     print("\n" + "=" * 50)
-    print("阶段 2: 匹配与分类")
+    print("Stage 2: Matching and Classification")
     print("=" * 50)
     run_matching(process_root, cleaning_result)
 
 
-if __name__ == "__main__":
-    work_dir = "D:\\pycharmpro\\1027manus\\OpenManus\\app\\tool\\WIT\\learning\\robotic_learning\\single_var_matching"
-    src_file_name = "50764.xlsx"
-    run(work_dir, src_file_name)
+

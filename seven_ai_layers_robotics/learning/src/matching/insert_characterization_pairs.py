@@ -9,9 +9,18 @@ from mysql.connector import Error
 from pathlib import Path
 
 # =========================
-# Import configuration from app.config
+# Import configuration from config
 # =========================
-from app.config import config
+import sys
+from pathlib import Path
+
+# Add project root to Python path to find config module
+current_file = Path(__file__).resolve()
+project_root = current_file.parent.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+from config import config
 
 # ==========================
 # MySQL Configuration
@@ -27,10 +36,10 @@ MYSQL_CONFIG = {
 
 TABLE_NAME = "experiments_characterization_pairs"
 
-# 工作目录（默认为当前脚本所在路径的父目录）
+# Working directory (default to parent directory of current script)
 WORK_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# JSON 文件输入目录（在 data 目录下）
+# JSON file input directory (under data directory)
 DATA_DIR = os.path.join(WORK_DIR,"..", "data")
 
 FILES = [
@@ -41,17 +50,17 @@ FILES = [
 ]
 
 # ==============================
-# JSON 读取（array / 多对象拼接）
+# JSON reading (array / multi-object concatenation)
 # ==============================
 def load_json_records(path: str) -> List[Dict]:
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
         content = f.read().strip()
 
-    # Case 1: 标准 JSON array
+    # Case 1: Standard JSON array
     if content.startswith("["):
         return json.loads(content)
 
-    # Case 2: 多个 {} 拼接
+    # Case 2: Multiple {} concatenation
     records = []
     buf = ""
     depth = 0
@@ -72,13 +81,13 @@ def load_json_records(path: str) -> List[Dict]:
 
 
 # ==============================
-# Pair hash（去重核心）
+# Pair hash (deduplication core)
 # ==============================
 def compute_pair_hash(record: dict) -> str:
     """
-    基于：
-    sample_id_1 + sample_id_2 + pair_source + 调控因子（类型 + 内容）
-    生成唯一 hash
+    Based on:
+    sample_id_1 + sample_id_2 + pair_source + control factor (type + content)
+    Generate unique hash
     """
 
     if "Additive" in record:
@@ -94,7 +103,7 @@ def compute_pair_hash(record: dict) -> str:
         factor_type = "Process"
         factor_value = record.get("Process")
     else:
-        raise ValueError("❌ 未找到调控因子字段")
+        raise ValueError("❌ Control factor field not found")
 
     payload = {
         "sample_id_1": record.get("sample_id_1"),
@@ -114,7 +123,7 @@ def compute_pair_hash(record: dict) -> str:
 
 
 # ==============================
-# 增量插入（IGNORE + hash）
+# Incremental insertion (IGNORE + hash)
 # ==============================
 def insert_records_incremental(
     conn,
@@ -182,7 +191,7 @@ def insert_records_incremental(
 
 
 # ==============================
-# 主逻辑
+# Main logic
 # ==============================
 def main() -> None:
     conn = None
@@ -208,7 +217,7 @@ def main() -> None:
 
 
 # ==============================
-# Pipeline / Agent 入口
+# Pipeline / Agent entry point
 # ==============================
 def run(
     *,

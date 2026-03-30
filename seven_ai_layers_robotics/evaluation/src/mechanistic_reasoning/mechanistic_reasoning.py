@@ -13,7 +13,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[3]))
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 # ========== Get LLM configuration from app.config ==========
 LLM_KEY = config.evaluation_llm.default_llm_key

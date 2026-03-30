@@ -1,7 +1,7 @@
 import json
 import hashlib
 import mysql.connector
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 # Load database configuration from app.config
 MYSQL_CONFIG = {

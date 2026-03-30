@@ -9,7 +9,7 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
-# 确保多进程环境下能找到正确的包路径
+# Ensure correct package path can be found in multi-process environment
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)  # Learning/src
 grandparent_dir = os.path.dirname(parent_dir)  # Learning
@@ -359,7 +359,7 @@ def get_data(exp_data_path):
     df = pd.read_csv(exp_data_path, encoding="gbk")
     df["date"] = pd.to_datetime(df["date"], format="%Y%m%d", errors="coerce")
 
-    # 只对字符串类型的列使用 fillna("")，避免类型不兼容警告
+
     # object_cols = df.select_dtypes(include=["object"]).columns
     # df[object_cols] = df[object_cols].fillna("")
     df.fillna("", inplace=True)
@@ -550,15 +550,3 @@ def generate_single_var(
     fp_process(fp_data_path, fp_output_dir)
 
 
-def main():
-    fp_data_path = "/data/sunyao/Workspace/Projects/Reasoning/data/src/latest_50764/fp_dedup_remove_abnormal.csv"
-    formula_data_path = "/data/sunyao/Workspace/Projects/Reasoning/data/src/latest_50764/formula_dedup_remove_abnormal.csv"
-    fp_output_dir = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_fp_dedup_remove_abnormal/date"
-    formula_output_dir = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_formula_dedup_remove_abnormal/date"
-
-    formula_process(formula_data_path, formula_output_dir)
-    fp_process(fp_data_path, fp_output_dir)
-
-
-if __name__ == "__main__":
-    main()

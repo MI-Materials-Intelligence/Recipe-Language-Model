@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-表征数据自动化处理流水线
-支持：PL SAM、Image Process、Additive XRD、Passivator XRD 数据提取 -> JSON 生成 -> 数据库插入
+Characterization Data Automated Processing Pipeline
+Supports: PL SAM, Image Process, Additive XRD, Passivator XRD data extraction -> JSON generation -> Database insertion
 
-使用方式:
-    1. 直接运行：python this_script.py
-    2. 外部调用：from this_script import CharacterizationDataPipeline; pipeline = CharacterizationDataPipeline(); pipeline.run_all()
+Usage:
+    1. Run directly: python this_script.py
+    2. Import externally: from this_script import CharacterizationDataPipeline; pipeline = CharacterizationDataPipeline(); pipeline.run_all()
 """
 
 import os
@@ -17,10 +17,10 @@ import sys
 import os
 
 # ==============================
-# 导入配置
+# Import configuration
 # ==============================
-# 从 app.config 加载数据库配置
-from app.config import config
+# Load database configuration from app.config
+from seven_ai_layers_robotics.config import config
 
 DB_CONFIG = {
     'host': config.learning_database.host,
@@ -32,21 +32,21 @@ DB_CONFIG = {
 }
 
 # ==============================
-# 内置配置
+# Built-in configuration
 # ==============================
 
-# 工作目录 (默认为当前脚本所在路径)
+# Working directory (default to current script path)
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 数据输出目录
+# Data output directory
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
 # ==============================
-# 导入各个表征数据处理模块
+# Import characterization data processing modules
 # ==============================
 
 try:
-    # 使用绝对导入而非相对导入，避免多进程环境下的路径问题
+    # Use absolute imports instead of relative imports to avoid path issues in multi-process environments
     from .matching.pl_sam import run_pl_sam
     from .matching.image_process import run_image_process
     from .matching.additive_xrd import run_additive_xrd
@@ -60,7 +60,7 @@ try:
     INSERT_PAIRS_AVAILABLE = True
 
 except ImportError as e:
-    print(f"⚠️ 警告：无法导入表征数据处理模块。错误：{e}")
+    print(f"⚠️ WARNING: Unable to import characterization data processing modules. Error: {e}")
     PL_SAM_AVAILABLE = False
     IMAGE_PROCESS_AVAILABLE = False
     ADDITIVE_XRD_AVAILABLE = False
@@ -73,25 +73,25 @@ except ImportError as e:
 # ==============================
 
 class CharacterizationDataPipeline:
-    """表征数据自动化处理流水线"""
+    """Characterization Data Automated Processing Pipeline"""
 
     def __init__(self,
                  db_config: Optional[Dict[str, Any]] = None,
                  work_dir: Optional[str] = None):
         """
-        初始化流水线
-        :param db_config: 数据库配置 (可选，不传则使用内置配置)
-        :param work_dir: 工作目录 (可选，不传则使用内置配置)
+        Initialize pipeline
+        :param db_config: Database configuration (optional, uses built-in config if not provided)
+        :param work_dir: Working directory (optional, uses built-in config if not provided)
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.work_dir = work_dir if work_dir else WORK_DIR
         self.data_dir = DATA_DIR
 
-        # 确保目录存在
+        # Ensure directories exist
         os.makedirs(self.work_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
 
-        # 模块可用性状态
+        # Module availability status
         self.module_status = {
             'pl_sam': PL_SAM_AVAILABLE,
             'image_process': IMAGE_PROCESS_AVAILABLE,
@@ -101,131 +101,131 @@ class CharacterizationDataPipeline:
         }
 
     def check_module_status(self) -> Dict[str, bool]:
-        """检查各模块的可用性状态"""
+        """Check availability status of each module"""
         return self.module_status.copy()
 
     def run_pl_sam_pipeline(self, verbose: bool = True) -> bool:
-        """执行 PL SAM 数据提取流程"""
+        """Execute PL SAM data extraction pipeline"""
         if not PL_SAM_AVAILABLE:
-            print("❌ PL SAM 模块不可用")
+            print("❌ PL SAM module not available")
             return False
 
         try:
             if verbose:
                 print("\n" + "="*60)
-                print("🔬 开始处理 PL SAM 数据...")
+                print("🔬 Starting PL SAM data processing...")
                 print("="*60)
 
             run_pl_sam(verbose=verbose)
 
             if verbose:
-                print("✅ PL SAM 数据处理完成\n")
+                print("✅ PL SAM data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f"❌ PL SAM 处理失败：{e}")
+            print(f"❌ PL SAM processing failed: {e}")
             return False
 
     def run_image_process_pipeline(self, verbose: bool = True) -> bool:
-        """执行 Image Process 数据提取流程"""
+        """Execute Image Process data extraction pipeline"""
         if not IMAGE_PROCESS_AVAILABLE:
-            print("❌ Image Process 模块不可用")
+            print("❌ Image Process module not available")
             return False
 
         try:
             if verbose:
                 print("\n" + "="*60)
-                print("🖼️ 开始处理 Image Process 数据...")
+                print("🖼️ Starting Image Process data processing...")
                 print("="*60)
 
             run_image_process(verbose=verbose)
 
             if verbose:
-                print("✅ Image Process 数据处理完成\n")
+                print("✅ Image Process data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f"❌ Image Process 处理失败：{e}")
+            print(f"❌ Image Process processing failed: {e}")
             return False
 
     def run_additive_xrd_pipeline(self, verbose: bool = True) -> bool:
-        """执行 Additive XRD 数据提取流程"""
+        """Execute Additive XRD data extraction pipeline"""
         if not ADDITIVE_XRD_AVAILABLE:
-            print("❌ Additive XRD 模块不可用")
+            print("❌ Additive XRD module not available")
             return False
 
         try:
             if verbose:
                 print("\n" + "="*60)
-                print("🧪 开始处理 Additive XRD 数据...")
+                print("🧪 Starting Additive XRD data processing...")
                 print("="*60)
 
             run_additive_xrd(verbose=verbose)
 
             if verbose:
-                print("✅ Additive XRD 数据处理完成\n")
+                print("✅ Additive XRD data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f"❌ Additive XRD 处理失败：{e}")
+            print(f"❌ Additive XRD processing failed: {e}")
             return False
 
     def run_passivator_xrd_pipeline(self, verbose: bool = True) -> bool:
-        """执行 Passivator XRD 数据提取流程"""
+        """Execute Passivator XRD data extraction pipeline"""
         if not PASSIVATOR_XRD_AVAILABLE:
-            print("❌ Passivator XRD 模块不可用")
+            print("❌ Passivator XRD module not available")
             return False
 
         try:
             if verbose:
                 print("\n" + "="*60)
-                print("🛡️ 开始处理 Passivator XRD 数据...")
+                print("🛡️ Starting Passivator XRD data processing...")
                 print("="*60)
 
             run_passivator_xrd(verbose=verbose)
 
             if verbose:
-                print("✅ Passivator XRD 数据处理完成\n")
+                print("✅ Passivator XRD data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f"❌ Passivator XRD 处理失败：{e}")
+            print(f"❌ Passivator XRD processing failed: {e}")
             return False
 
     def run_database_insertion(self, verbose: bool = True) -> bool:
-        """执行数据库插入流程"""
+        """Execute database insertion pipeline"""
         if not INSERT_PAIRS_AVAILABLE:
-            print("❌ 数据库插入模块不可用")
+            print("❌ Database insertion module not available")
             return False
 
         try:
             if verbose:
                 print("\n" + "="*60)
-                print("💾 开始将表征数据对插入数据库...")
+                print("💾 Starting characterization data pair insertion to database...")
                 print("="*60)
 
             insert_pairs(verbose=verbose)
 
             if verbose:
-                print("✅ 数据库插入完成\n")
+                print("✅ Database insertion completed\n")
 
             return True
 
         except Exception as e:
-            print(f"❌ 数据库插入失败：{e}")
+            print(f"❌ Database insertion failed: {e}")
             return False
 
     def run_full_process(self) -> bool:
         """
-        执行完整流程：所有表征数据处理 + 数据库插入
-        :return: 是否成功
+        Execute complete workflow: all characterization data processing + database insertion
+        :return: Success status
         """
         try:
-            # 执行所有表征数据处理流程和数据库插入
+            # Execute all characterization data processing workflows and database insertion
             results = self.run_all(
                 include_pl_sam=True,
                 include_image_process=True,
@@ -235,16 +235,16 @@ class CharacterizationDataPipeline:
                 verbose=True
             )
 
-            # 检查是否所有步骤都成功
+            # Check if all steps succeeded
             if all(results.values()):
-                print("\n🎉 全流程执行完毕！")
+                print("\n🎉 Full workflow completed successfully!")
                 return True
             else:
-                print("\n⚠️ 部分任务失败，请检查日志。")
+                print("\n⚠️ Some tasks failed, please check logs.")
                 return False
 
         except Exception as e:
-            print(f"🛑 流程中断：{e}")
+            print(f"🛑 Workflow interrupted: {e}")
             return False
 
     def run_all(self,
@@ -255,26 +255,26 @@ class CharacterizationDataPipeline:
                 include_db_insertion: bool = True,
                 verbose: bool = True) -> Dict[str, bool]:
         """
-        执行完整的数据处理和入库流程
-        :param include_pl_sam: 是否包含 PL SAM 处理
-        :param include_image_process: 是否包含 Image Process 处理
-        :param include_additive_xrd: 是否包含 Additive XRD 处理
-        :param include_passivator_xrd: 是否包含 Passivator XRD 处理
-        :param include_db_insertion: 是否包含数据库插入
-        :param verbose: 是否打印详细日志
-        :return: 各步骤执行结果字典
+        Execute complete data processing and database insertion workflow
+        :param include_pl_sam: Whether to include PL SAM processing
+        :param include_image_process: Whether to include Image Process processing
+        :param include_additive_xrd: Whether to include Additive XRD processing
+        :param include_passivator_xrd: Whether to include Passivator XRD processing
+        :param include_db_insertion: Whether to include database insertion
+        :param verbose: Whether to print detailed logs
+        :return: Dictionary of step execution results
         """
         if verbose:
             print("\n" + "="*80)
-            print("🚀 表征数据自动化处理流水线启动")
+            print("🚀 Characterization Data Automated Processing Pipeline Starting")
             print("="*80)
-            print(f"📁 工作目录：{self.work_dir}")
-            print(f"🗄️  数据库：{self.db_config['host']}:{self.db_config['port']}/{self.db_config['database']}")
+            print(f"📁 Working Directory: {self.work_dir}")
+            print(f"🗄️  Database: {self.db_config['host']}:{self.db_config['port']}/{self.db_config['database']}")
             print("="*80)
 
         results = {}
 
-        # 执行各个表征数据处理流程
+        # Execute each characterization data processing workflow
         if include_pl_sam:
             results['pl_sam'] = self.run_pl_sam_pipeline(verbose=verbose)
 
@@ -287,27 +287,27 @@ class CharacterizationDataPipeline:
         if include_passivator_xrd:
             results['passivator_xrd'] = self.run_passivator_xrd_pipeline(verbose=verbose)
 
-        # 执行数据库插入
+        # Execute database insertion
         if include_db_insertion:
             results['database_insertion'] = self.run_database_insertion(verbose=verbose)
 
-        # 汇总结果
+        # Summary results
         if verbose:
             print("\n" + "="*80)
-            print("📊 执行结果汇总")
+            print("📊 Execution Results Summary")
             print("="*80)
 
             for step, success in results.items():
-                status = "✅ 成功" if success else "❌ 失败"
+                status = "✅ Success" if success else "❌ Failed"
                 print(f"{status} - {step}")
 
             all_success = all(results.values())
             print("="*80)
 
             if all_success:
-                print("🎉 所有任务完成！")
+                print("🎉 All tasks completed!")
             else:
-                print("⚠️ 部分任务失败，请检查日志。")
+                print("⚠️ Some tasks failed, please check logs.")
             print("="*80 + "\n")
 
         return results
@@ -316,23 +316,23 @@ class CharacterizationDataPipeline:
 
 
 # ==============================
-# 主入口 (脚本直接运行)
+# Main entry point (script direct execution)
 # ==============================
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("🤖 表征数据自动化处理流水线")
+    print("🤖 Characterization Data Automated Processing Pipeline")
     print("=" * 80)
-    print(f"📁 工作目录：{WORK_DIR}")
-    print(f"🗄️  数据库：{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+    print(f"📁 Working Directory: {WORK_DIR}")
+    print(f"🗄️  Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
     print("=" * 80)
 
-    # 初始化并执行
+    # Initialize and execute
     pipeline = CharacterizationDataPipeline()
     success = pipeline.run_full_process()
 
     if not success:
-        print("\n❌ 流程执行失败，请检查日志。")
+        print("\n❌ Workflow execution failed, please check logs.")
         sys.exit(1)
     else:
-        print("\n✅ 所有任务完成！")
+        print("\n✅ All tasks completed!")

@@ -21,7 +21,7 @@ import joblib
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[4]))
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 
 

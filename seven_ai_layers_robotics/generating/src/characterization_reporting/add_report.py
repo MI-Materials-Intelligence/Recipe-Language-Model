@@ -55,7 +55,7 @@ if str(generate_root) not in sys.path:
 # Import configuration loader (using Generating/src/config_loader.py)
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-from app.config import config
+from seven_ai_layers_robotics.config import config
 
 # ========= Load configuration from app.config =========
 MYSQL_CONFIG = {

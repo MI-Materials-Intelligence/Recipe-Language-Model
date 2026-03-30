@@ -19,10 +19,9 @@ import pandas as pd
 import pymysql
 import requests
 from openai import OpenAI
-
-from app.config import config
-from app.tool.seven_layers.Reasoning.src.prompts import ReportPrompts
-from app.tool.seven_layers.Reasoning.src.totext_db import get_random_row_from_db, row_to_text
+from seven_ai_layers_robotics.config import config
+from seven_ai_layers_robotics.reasoning.src.prompts import ReportPrompts
+from seven_ai_layers_robotics.reasoning.src.totext_db import get_random_row_from_db, row_to_text
 
 class PerovskiteReportGenerator:
     """Perovskite solar cell report generator using large language models.
@@ -196,40 +195,40 @@ class PerovskiteReportGenerator:
         )
         if think_matches:
             reasoning_content = _strip_tags("".join(think_matches))
-            # 删除所有完整 think 区段，避免干扰 answer 提取
+            # Remove all complete think sections to avoid interference with answer extraction
             remaining = re.sub(r"<think>.*?</think>", "", remaining, flags=re.DOTALL | re.IGNORECASE)
         else:
-            # fallback A: 只有 </think>
+            # fallback A: only </think>
             m_close = re.search(r"</think>", remaining, flags=re.IGNORECASE)
             if m_close:
                 reasoning_content = _strip_tags(remaining[:m_close.start()])
                 remaining = remaining[m_close.end():]
             else:
-                # fallback B: 只有 <think>
+                # fallback B: only <think>
                 m_open = re.search(r"<think>", remaining, flags=re.IGNORECASE)
                 if m_open:
                     reasoning_content = _strip_tags(remaining[m_open.end():])
                     remaining = remaining[:m_open.start()]
 
         # =========================
-        # 2) 提取 ANSWER（优先标准闭合标签）
+        # 2) Extract ANSWER (prefer standard closing tag)
         # =========================
         answer_matches = re.findall(r"<answer>(.*?)</answer>", remaining, flags=re.DOTALL | re.IGNORECASE)
         if answer_matches:
             answer_content = _strip_tags("".join(answer_matches))
         else:
-            # fallback A: 只有 </answer>
+            # fallback A: only </answer>
             m_close = re.search(r"</answer>", remaining, flags=re.IGNORECASE)
             if m_close:
                 answer_content = _strip_tags(remaining[:m_close.start()])
             else:
-                # fallback B: 只有 <answer>
+                # fallback B: only <answer>
                 m_open = re.search(r"<answer>", remaining, flags=re.IGNORECASE)
                 if m_open:
                     answer_content = _strip_tags(remaining[m_open.end():])
 
         # =========================
-        # 3) 兜底逻辑：如果只提到了 think，但 answer 为空，且剩余文本还有内容，则把剩余当 answer
+        # 3) Fallback logic: if think is present but answer is empty, and remaining text has content, use remaining as answer
         # =========================
         if reasoning_content and not answer_content:
             leftover = _strip_tags(remaining)
@@ -271,11 +270,13 @@ class PerovskiteReportGenerator:
         return data["choices"][0]["message"]["content"]
 
     def run_with_extract(self, system_prompt: str, user_prompt: str) -> Tuple[str, str, str]:
-
-        """
-        调模型 + 解析<think>/<answer>标签
-        如果本地模型失败（如请求异常、超时、返回格式错误），自动 fallback 到 DashScope API。
-        返回: (raw, reasoning, answer)
+        """Call model + parse <think>/<answer> tags.
+        
+        If local model fails (e.g., request exception, timeout, format error), 
+        automatically fallback to DashScope API.
+        
+        Returns:
+            (raw, reasoning, answer)
         """
         try:
             raw = self.call_model(system_prompt, user_prompt)
@@ -298,12 +299,13 @@ class PerovskiteReportGenerator:
                 return "", "", ""
 
     def api_get_answer_and_thinking(self,system_prompt: str, user_prompt: str) -> Tuple[str, str]:
-        """
-        使用 DashScope OpenAI 兼容 API 调用带思考能力的模型
-        返回: (answer_content, reasoning_content)
+        """Use DashScope OpenAI-compatible API to call model with thinking capability.
+        
+        Returns:
+            (answer_content, reasoning_content)
 
-        - 优先使用流式的 delta.reasoning_content 作为思考过程
-        - 如果没有该字段，则再从最终 content 里用 <think></think> 尝试拆分
+        - Prioritize streaming delta.reasoning_content as thinking process
+        - If not available, parse from final content using <think></think>
         """
         messages = [
             {"role": "system", "content": system_prompt},

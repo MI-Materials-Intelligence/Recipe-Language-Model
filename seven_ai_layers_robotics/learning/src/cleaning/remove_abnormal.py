@@ -40,7 +40,7 @@ def parse_formula_column(df: pd.DataFrame, column_name: str = "Formula PVK") -> 
 
 def load_data_with_encoding_fallback(file_path):
     """
-    Load data file with multiple encoding attempts to avoid UnicodeDecodeError.
+    Load data file with multiple format and encoding attempts to avoid errors.
     
     Args:
         file_path (str): Path to the data file
@@ -48,16 +48,34 @@ def load_data_with_encoding_fallback(file_path):
     Returns:
         pd.DataFrame: Loaded dataframe
     """
-    encodings = ["utf-8", "utf-8-sig", "latin-1"]
-    last_error = None
+    import os
     
-    for encoding in encodings:
+    # Check file extension to determine format
+    file_ext = os.path.splitext(file_path)[1].lower()
+    
+    if file_ext in ['.xlsx', '.xls']:
+        # Excel file - use openpyxl engine explicitly
         try:
-            return pd.read_excel(file_path)
-        except UnicodeDecodeError as e:
-            last_error = e
+            return pd.read_excel(file_path, engine='openpyxl')
+        except Exception as e:
+            print(f"Error reading Excel file: {e}")
+            raise
+    else:
+        # CSV file - try multiple encodings
+        encodings = ["utf-8", "utf-8-sig", "latin-1"]
+        last_error = None
+        
+        for encoding in encodings:
+            try:
+                return pd.read_csv(file_path, encoding=encoding)
+            except UnicodeDecodeError as e:
+                last_error = e
+        
+        if last_error:
+            raise last_error
     
-    raise last_error
+    # Fallback (should not reach here)
+    raise ValueError(f"Unsupported file format: {file_ext}")
 
 
 def create_validation_mask_by_sample_no(df):
@@ -173,48 +191,3 @@ def remove_abnormal(input_path: str, output_path: str):
     print(f"\n💾 Filtered data saved to: {output_path}")
 
 
-def main():
-    """Main function to process and filter the dataset."""
-    # === 1. Load data ===
-    input_path = r"/data/sunyao/Workspace/Projects/Reasoning/data/src/latest_50764/50764-qiyuan.xlsx"
-    df = load_data_with_encoding_fallback(input_path)
-    
-    # Store original row count
-    original_rows = len(df)
-    
-    # === 2. Create validation masks based on No ranges ===
-    validation_mask, range_masks = create_validation_mask_by_sample_no(df)
-    
-    # === 3. Apply filtering ===
-    df_filtered = df[validation_mask].copy()
-    filtered_rows = len(df_filtered)
-    removed_rows = original_rows - filtered_rows
-    
-    # === 4. Calculate statistics for each range ===
-    range_stats = {}
-    for range_name, mask in range_masks.items():
-        range_stats[range_name] = mask.sum()
-    
-    # === 5. Print statistics ===
-    print("✅ Filtering Statistics:")
-    print(f"📊 Original dataset rows: {original_rows}")
-    print(f"✅ Valid samples after filtering: {filtered_rows}")
-    print(f"❌ Removed samples: {removed_rows}")
-    print("\n📈 Samples by No range:")
-    
-    for range_name, count in range_stats.items():
-        # Format range name for better readability
-        clean_range_name = range_name.replace('range_', 'No ').replace('_', '-')
-        print(f"   {clean_range_name}: {count} samples")
-
-    # === 6. Parse chemical formula column and add element columns ===
-    df_filtered = parse_formula_column(df_filtered, column_name="Formula PVK")
-    
-    # === 7. Save results ===
-    output_path = '/data/sunyao/Workspace/Projects/Reasoning/data/src/latest_50764/re_formula_remove_abnormal.csv'
-    df_filtered.to_csv(output_path, index=False)
-    print(f"\n💾 Filtered data saved to: {output_path}")
-
-
-if __name__ == "__main__":
-    main()

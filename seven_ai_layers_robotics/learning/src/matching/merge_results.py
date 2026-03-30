@@ -195,18 +195,3 @@ def merge_results(formula_root: str, fp_root: str):
     merge_json_files(fp_json_files, fp_root)
 
 
-def main():
-    formula_root = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_formula_dedup_remove_abnormal"
-    fp_root = "/data/sunyao/Workspace/Projects/Reasoning/data/latest_50764/20251127_nwin_full_fp_dedup_remove_abnormal"
-
-    formula_src_root = osp.join(formula_root, "date")
-    formula_json_files = get_all_json_files(formula_src_root)
-    merge_json_files(formula_json_files, formula_root)
-
-    fp_src_root = osp.join(fp_root, "date")
-    fp_json_files = get_all_json_files(fp_src_root)
-    merge_json_files(fp_json_files, fp_root)
-
-
-if __name__ == "__main__":
-    main()
