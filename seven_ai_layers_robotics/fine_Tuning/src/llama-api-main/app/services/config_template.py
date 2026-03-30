@@ -1,0 +1,45 @@
+SFT_TRAIN_CONFIG_TEMPLATE = {
+    ### model
+    "model_name_or_path": None,
+    ### method
+    "stage": "sft",
+    "do_train": True,
+    "finetuning_type": "lora",
+    "lora_target": "all",
+    "lora_rank": 8,
+    "deepspeed": "examples/deepspeed/ds_z3_config.json",
+    ### dataset
+    "dataset": None,
+    "template": "deepseek3",
+    "cutoff_len": 4096,
+    "max_samples": 10000000000,
+    "overwrite_cache": True,
+    "preprocessing_num_workers": 128,
+    ### output
+    "output_dir": None,
+    "logging_steps": 1000,
+    "save_steps": 200,
+    "plot_loss": True,
+    "overwrite_output_dir": True,
+    ### train
+    "per_device_train_batch_size": 4,
+    "gradient_accumulation_steps": 8,
+    "learning_rate": 2.0e-5,
+    "num_train_epochs": 8.0,
+    "lr_scheduler_type": "cosine",
+    "warmup_ratio": 0.1,
+    "bf16": True,
+    "ddp_timeout": 180000000,
+    ### eval
+    "val_size": 0.1,
+    "per_device_eval_batch_size": 4,
+    "eval_strategy": "steps",
+    "eval_steps": 200,
+}
+
+INFERENCE_CONFIG_TEMPLATE = {
+    "model_name_or_path": None,
+    "adapter_name_or_path": None,
+    "template": "deepseek3",
+    "finetuning_type": "lora",
+}
