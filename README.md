@@ -27,12 +27,9 @@ Therefore, the integration of the RLM with robotic boxes enables an AI and robot
 
 ## 2. Model Summary
 
-### Seven AI Layers Architecture for RLM Training
+### Fine-tuning of the RLM with robotics
 
-- We develop a seven AI layers architecture for a domain-specific RLM from structured formulas and parameters of recipes.
-
-- With closed AI–robotics loop for recipes learning and refinement, the RLM advances from numerical recipe modelling to semantic and mechanism-grounded reasoning.
-
+To train this domain-specific RLM, the workflow starts from encoded formulas and parameters as recipe inputs, proceeds through seven AI layers with the language agent, executes synthesis and fabrication within eleven interconnected robotic boxes and produces in situ characterisation and device performance assessment as mechanistic outputs. As a result, the fine-tuned RLM incorporates the encoded recipes, robotics, and characterised results to form a closed recommendation–synthesis–fabrication–characterisation–mechanism loop for exploring the large space of the recipes and their underlying mechanisms. The language agent then encoded these machine-readable recipes into structured formulas and parameters sequences, which were translated into tokens for subsequent fine-tuning of the RLM and execution by the robotic boxes.
 
 ---
 
