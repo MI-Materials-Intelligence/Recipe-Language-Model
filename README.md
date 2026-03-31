@@ -49,7 +49,7 @@ In the RecipeQA layer, the recipe reports are further converted into semanticall
 
 ### [Fine-Tuning](seven_ai_layers_robotics/fine_tuning/README.md)
 
-In the fine-tuning layer, The base model (Qwen3-32B) together with the RecipeQA corpora are taken as the input of this layer. Through key atomic skills of low-rank adaptation (LoRA), the model is efficiently adapted to domain-specific recipe knowledge and transformed into a domain-specific RLM as output. 
+In the fine-tuning layer, the base model (Qwen3-32B) together with the RecipeQA corpora are taken as the input of this layer. Through key atomic skills of low-rank adaptation (LoRA), the model is efficiently adapted to domain-specific recipe knowledge and transformed into a domain-specific RLM as output. 
 
 ### [Reasoning](seven_ai_layers_robotics/reasoning/README.md)
 
