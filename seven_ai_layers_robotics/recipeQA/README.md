@@ -8,7 +8,7 @@ Key Atomic skills:
 - Report to QA: convert recipe reports into semantically structured RecipeQA
 - Distillation: knowledge distillation for RecipeQA completion
 
-## Layer Structure
+## Layer Structure with Atomic Skills
 
 ```
 RecipeQA/
