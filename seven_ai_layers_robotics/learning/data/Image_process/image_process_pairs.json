@@ -1,0 +1,15 @@
+[
+  {
+    "question": "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?",
+    "control": "Systematic parameter adjustments underlie the fabrication of a perovskite cell that was constituted, capturing how controlled conditions influence a PCE of 9.0112%, FF of 24777.0%, Voc of 0.001738 V, and Jsc of 20.931 mA/cm². The core perovskite solution, composed of Cs0.1FA0.9Pb1I2.8Br0.2 at 1.6 mol/L, served as the foundational matrix for the solar cell. The prepared precursor solution was spin-coated at 1000 rpm for 10 s and 5000 rpm for 30 s onto the substrate. In the last 10 s of the second step, the anti-solvent (120 µL of chlorobenzene) was dropped in the center at a constant rate The substrates were sequentially heated at 110 °C for 45 min for perovskite crystal formation. Image analysis shows that the spin-coating coverage reaches 98.3%, and the average grayscale value of the film is 16.2257",
+    "target": "This study emerges from parameter-centric experimentation, producing a perovskite solar cell that was prepared, with a PCE of 14.392%, FF of 74.955%, Voc of 1.0127 V, and Jsc of 18.961 mA/cm². Then, perovskite precursor solution (1.6 mol/L) was prepared at the stoichiometric ratio of Cs0.1FA0.9Pb1I2.8Br0.2. The perovskite solution was spin coated on the substrates at 1000 rpm for 10 s and at 5000 rpm for 30 s, respectively. During the second spin coating step, 120 µL of CB was deposited onto the perovskite film 10 s before the program ended. The sample underwent a controlled anneal at 110 °C for 15 min, optimizing the film’s morphological and crystalline properties. Image analysis shows that the spin-coating coverage reaches 98.8%, and the average grayscale value of the film is 10.6284",
+    "pair_source": "concentration",
+    "sample_id_1": "6801",
+    "sample_id_2": "9999",
+    "sample_id_1_date": "20241024",
+    "sample_id_2_date": "20241024",
+    "Process": [
+      "Annealed Time PVK"
+    ]
+  }
+]

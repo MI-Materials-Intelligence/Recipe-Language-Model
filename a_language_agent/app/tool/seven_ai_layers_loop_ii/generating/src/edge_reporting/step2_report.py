@@ -1,0 +1,305 @@
+# -*- coding: utf-8 -*-
+"""
+DB → DataFrame → Automatic Experimental Description → Word(docx) + Write to single_report (deduplication, status codes 0/1/2)
+Supports batch generation for multiple tables
+"""
+
+import os
+import io
+import sys
+import random
+import pandas as pd
+from pathlib import Path
+from datetime import datetime
+import pymysql
+from sqlalchemy import create_engine
+from docx import Document
+
+# =========================
+# Database Configuration
+# =========================
+# Load configuration from app.config
+from app.config import config
+
+MYSQL_CONFIG = {
+    'host': config.generating_database.host,
+    'port': config.generating_database.port,
+    'user': config.generating_database.user,
+    'password': config.generating_database.password,
+    'database': config.generating_database.database,
+    'charset': config.generating_database.charset,
+}
+DB_URI = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}:{MYSQL_CONFIG['port']}/{MYSQL_CONFIG['database']}?charset=utf8mb4"
+engine = create_engine(DB_URI)
+
+DB_CONFIG = MYSQL_CONFIG
+
+# =========================
+# Template Imports (keep original)
+# =========================
+from templates_new_revised import (
+    get_intro_segment,
+    perovskite_formula_segments,
+    sam_formula_segments_single,
+    sam_formula_segments_dual,
+    sam_formula_segments_triple,
+    sam_formula_spin_segments_single,
+    sam_formula_spin_segments_dual,
+    sam_formula_spin_segments_triple,
+    sam_spin_anneal_segments,
+    additive_formula_segments_single,
+    additive_formula_segments_dual,
+    additive_formula_segments_triple,
+    passivation_material_segments_single,
+    passivation_material_segments_dual,
+    passivation_material_segments_triple,
+    process_segments,
+    antisolvent_segments,
+    anneal_segments,
+    passivation_spin_segments,
+    passivation_drop_segments,
+    passivation_anneal_segments,
+    image_analysis_segments,
+    pl_analysis_segments,
+    xrd_analysis_segments_12,
+    xrd_analysis_segments_stress,
+)
+
+# =========================
+# Utility Functions
+# =========================
+def choose_random(lst):
+    return random.choice(lst)
+
+def format_number_int_like(x, ndigits=2):
+    if pd.isna(x):
+        return ""
+    try:
+        x = float(x)
+    except Exception:
+        return str(x)
+    if abs(x - round(x)) < 10 ** -ndigits:
+        return str(int(round(x)))
+    return f"{x:.{ndigits}f}".rstrip("0").rstrip(".")
+
+def format_multiple_materials(materials, label):
+    parts = []
+    for f, c in materials:
+        if pd.isna(f) and pd.isna(c):
+            continue
+        c = "" if pd.isna(c) else str(c)
+        if c and not any(ch.isalpha() for ch in c):
+            c += " mg/mL"
+        parts.append(f"{f} ({c})" if c else f"{f}")
+    return f"The {label} included " + ", ".join(parts) + "." if parts else ""
+
+def read_table(table):
+    df = pd.read_sql(f"SELECT * FROM `{table}`;", con=engine)
+    df.columns = [str(c).strip() for c in df.columns]
+    return df
+
+# =========================
+# Core Paragraph Generation Functions
+# =========================
+def safe_float(x, ndigits=None):
+    try:
+        x = float(x)
+        return round(x, ndigits) if ndigits is not None else x
+    except Exception:
+        return None
+
+def generate_paragraph(row, xrd_mode=None):
+    pce = safe_float(row.get('PCE'), 4)
+    ff  = safe_float(row.get('FF'), 4)
+    voc = safe_float(row.get('Voc'), 4)
+    jsc = safe_float(row.get('Jsc'), 3)
+
+    if any(v is None for v in [pce, ff, voc, jsc]):
+        return ""
+
+    intro = get_intro_segment(pce=pce, ff=ff, voc=voc, jsc=jsc)
+
+    perovskite = choose_random(perovskite_formula_segments).format(
+        formula_pvk=row['Formula PVK'], concentration_pvk=row['Concentration PVK']
+    )
+
+    process = choose_random(process_segments).format(
+        spin1_speed=row['Spin Coating Speed PVK 1'],
+        spin1_time=row['Spin Coating Time PVK 1'],
+        spin2_speed=row['Spin Coating Speed PVK 2'],
+        spin2_time=row['Spin Coating Time PVK 2']
+    )
+
+    antisolvent = choose_random(antisolvent_segments).format(
+        antisolvent_volume=row['Antisolvent Volume'],
+        antisolvent_timing=row['Antisolvent Dropping Timing']
+    )
+
+    anneal = choose_random(anneal_segments).format(
+        anneal_temp=row['Annealed Temperature PVK'],
+        anneal_time=row['Annealed Time PVK']
+    )
+
+    parts = [intro, perovskite, process, antisolvent, anneal]
+
+    def has_any(keys):
+        return any(k in row and pd.notna(row[k]) and str(row[k]).strip() for k in keys)
+
+    if has_any(["area_px2", "gray_mean"]):
+        for tpl in image_analysis_segments:
+            parts.append(tpl.format(area_px2=row.get("area_px2",""), gray_mean=row.get("gray_mean","")))
+
+    if has_any(["peak_time", "decay_slope"]):
+        for tpl in pl_analysis_segments:
+            parts.append(tpl.format(
+                peak_time=row.get("peak_time",""),
+                decay_slope=row.get("decay_slope","")
+            ))
+
+    if xrd_mode == "additives" and has_any(["xrd_intensity_12.6"]):
+        for tpl in xrd_analysis_segments_12:
+            parts.append(tpl.format(
+                xrd_intensity_12=f"{float(row['xrd_intensity_12.6']):.2f}",
+                xrd_fhwm_12=f"{float(row['xrd_fhwm_12.6']):.2f}"
+            ))
+
+    if xrd_mode == "passivators" and has_any(["xrd_intensity_4"]):
+        for tpl in xrd_analysis_segments_stress:
+            parts.append(tpl.format(
+                xrd_intensity_4=f"{float(row['xrd_intensity_4']):.2f}",
+                xrd_Stress=f"{float(row['xrd_Stress']):.2f}"
+            ))
+
+    return " ".join(p for p in parts if p)
+
+# =========================
+# single_report Write Function (deduplication + status codes)
+# =========================
+def insert_single_report_records(table_name: str, record_ids: list, status_code: int, location: str):
+    if not record_ids:
+        return
+
+    conn = pymysql.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+
+    uploadtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    sql = """
+    INSERT IGNORE INTO `single_report` (`type`, `id`, `status`, `uploadtime`, `location`)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    data = [(table_name, rid, status_code, uploadtime, location) for rid in record_ids]
+    cursor.executemany(sql, data)
+    inserted_count = cursor.rowcount
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    if inserted_count > 0:
+        status_map = {0: "skipped", 1: "generated", 2: "failed"}
+        print(f"📊 Added {inserted_count} records to single_report (status={status_map[status_code]})")
+
+# =========================
+# Ensure single_report has unique index
+# =========================
+def ensure_single_report_unique_index():
+    conn = pymysql.connect(**DB_CONFIG)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT COUNT(1) FROM information_schema.statistics
+        WHERE table_schema = %s
+          AND table_name = 'single_report'
+          AND index_name = 'uniq_type_id';
+    """, (DB_CONFIG['database'],))
+    exists = cursor.fetchone()[0] > 0
+    if not exists:
+        cursor.execute("ALTER TABLE `single_report` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
+        print("✅ Added unique index (type, id) to single_report")
+    cursor.close()
+    conn.close()
+
+# =========================
+# DataFrame → Word + Record Status
+# =========================
+def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source_table=None):
+    doc = Document()
+    df = df.copy()
+    df.columns = [str(c).strip() for c in df.columns]
+
+    generated_ids = []   # status=1
+    skipped_ids = []     # status=0
+    failed_ids = []      # status=2
+
+    if not index_col or index_col not in df.columns:
+        index_col = None
+
+    for i, row in df.iterrows():
+        if index_col:
+            raw_id = row.get(index_col)
+        else:
+            raw_id = i + 1
+
+        try:
+            if pd.isna(raw_id):
+                record_id = i + 1
+            elif isinstance(raw_id, float) and raw_id.is_integer():
+                record_id = int(raw_id)
+            else:
+                record_id = raw_id
+        except Exception:
+            record_id = str(raw_id)
+
+        try:
+            text = generate_paragraph(row, xrd_mode=xrd_mode)
+            if not text or not text.strip():
+                skipped_ids.append(record_id)
+            else:
+                idx_show = record_id
+                doc.add_paragraph(f"{idx_show}. {text}")
+                doc.add_paragraph("")
+                generated_ids.append(record_id)
+        except Exception as e:
+            print(f"⚠️ Generation failed (ID={record_id}): {e}")
+            failed_ids.append(record_id)
+
+    # Save document (ensure directory exists)
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    doc.save(output_path)
+    total = len(generated_ids) + len(skipped_ids) + len(failed_ids)
+    print(f"✅ Completed {source_table}: total {total} | generated {len(generated_ids)} | skipped {len(skipped_ids)} | failed {len(failed_ids)}")
+
+    # Write to single_report (insert only new records)
+    if source_table:
+        insert_single_report_records(source_table, generated_ids, 1, output_path)
+        insert_single_report_records(source_table, skipped_ids, 0, output_path)
+        insert_single_report_records(source_table, failed_ids, 2, output_path)
+
+# =========================
+# Batch Task Configuration
+# =========================
+TASKS = [
+    {"table": "xrd_additives",   "output": "reports/xrd_additives.docx",   "xrd_mode": "additives", "index_col": "index"},
+    {"table": "xrd_passivators", "output": "reports/xrd_passivators.docx", "xrd_mode": "passivators", "index_col": "index"},
+    {"table": "image_process",   "output": "reports/image_process.docx",   "xrd_mode": None, "index_col": "index"},
+    {"table": "pl_sam",          "output": "reports/pl_sam.docx",          "xrd_mode": None, "index_col": "index"},
+    {"table": "data50764_select", "output": "reports/data50764_select.docx", "xrd_mode": None, "index_col": "No"},
+]
+
+# =========================
+# Main
+# =========================
+if __name__ == "__main__":
+    # Ensure single_report table structure is correct
+    ensure_single_report_unique_index()
+
+    for task in TASKS:
+        print(f"\n📄 Processing table: {task['table']}")
+        df = read_table(task["table"])
+        abs_output = os.path.abspath(task["output"])
+        generate_docx_from_df(
+            df=df,
+            output_path=abs_output,
+            xrd_mode=task["xrd_mode"],
+            index_col=task.get("index_col"),
+            source_table=task["table"]
+        )
+    print("\n🎉 All tasks completed!")
