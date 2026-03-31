@@ -47,7 +47,7 @@ In the generating layer, the tokenised recipes are comprised into the recipe rep
 
 In the RecipeQA layer, the recipe reports are further converted into semantically structured question–answer pairs (RecipeQA). The primary objective of this layer is to construct high-quality, domain-specific training corpora through key atomic skills of Report to QA (convert recipe reports into semantically structured RecipeQA) and Distillation (knowledge distillation for RecipeQA).
 
-### [Fine-tuning](seven_ai_layers_robotics/fine_tuning/README.md)
+### [Fine-Tuning](seven_ai_layers_robotics/fine_tuning/README.md)
 
 In the fine-tuning layer, The base model (Qwen3-32B) together with the RecipeQA corpora are taken as the input of this layer. Through key atomic skills of low-rank adaptation (LoRA), the model is efficiently adapted to domain-specific recipe knowledge and transformed into a domain-specific RLM as output. 
 
