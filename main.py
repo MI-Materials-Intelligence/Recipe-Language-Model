@@ -19,14 +19,14 @@ if __name__ == "__main__":
     # pipeline1 = RoboticDataPipeline()
     # pipeline1.run_full_process(table_name="data3000")
 
-    pipeline2 = EdgeReportPipeline()
-    pipeline2.run_full_process("data3000")
+    # pipeline2 = EdgeReportPipeline()
+    # pipeline2.run_full_process("data3000")
 
     # pipeline3 = CharacterizationDataPipeline()
 #     # pipeline3.run_full_process()
-#     pipeline = VariableReportPipeline()
-#     success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
-#     print("VariableReportPipeline", success)
+    pipeline = VariableReportPipeline()
+    success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
+    print("VariableReportPipeline", success)
 # # 
 #     # Run characterisation report generation 
 #     pipeline2 = CharacterisationReportPipeline()
