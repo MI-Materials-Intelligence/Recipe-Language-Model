@@ -2,13 +2,7 @@
 
 ## Overview
 
-The Reasoning Layer is the inference and scientific generation layer within the seven-layer Materials Intelligence architecture. It is responsible for using the fine-tuned domain-specific RLM to generate mechanistic interpretations, performance explanations, and recipe optimization suggestions from experimental records.
-
-The core objective of this layer is not merely to generate scientific text, but to transform experimental formulations, process parameters, and device metrics into scientifically meaningful reasoning outputs. These outputs include mechanism-aware analysis, structure–activity relationship interpretation, and recommendation-oriented explanations for recipe improvement.
-
-From a data flow perspective, this layer takes structured experimental records or database samples as input, converts them into model-readable prompts, and produces structured scientific outputs such as abstracts, result discussion, mechanistic explanations, conclusions, and optimized recipe suggestions.
-
-These reasoning results serve as an important bridge between trained model capability and practical scientific decision-making, and also provide candidate knowledge and reasoning evidence for the downstream Evaluation Layer and Optimization Layer.
+In the reasoning layer, the fine-tuned domain-specific RLM to generate mechanistic interpretations, performance explanations, and recipe optimization suggestions from experimental records. These reasoning results serve as an important bridge between trained model capability and practical scientific decision-making, and also provide candidate knowledge and reasoning evidence for the downstream Evaluation Layer and Optimization Layer.
 
 ## Layer Structure
 
