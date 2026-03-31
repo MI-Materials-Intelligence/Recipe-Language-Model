@@ -19,8 +19,17 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Load configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-# Load from app.config
-MYSQL_CONFIG = {
+# Load DeepSeek configuration from config
+DEEPSEEK_CONFIG = {
+    'api_key': config.deepseek.api_key,
+    'base_url': config.deepseek.base_url,
+    'model': config.deepseek.model,
+    'temperature': config.deepseek.temperature,
+    'timeout': config.deepseek.timeout,
+}
+
+# Database configuration
+DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
     'user': config.generating_database.user,
@@ -28,27 +37,16 @@ MYSQL_CONFIG = {
     'database': config.generating_database.database,
     'charset': config.generating_database.charset,
 }
-# Use Qwen model configuration (default)
-LLM_CONFIG = {
-    'api_key': config.generating_llm.dashscope_api_key,
-    'base_url': config.generating_llm.base_url,
-    'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
-}
 
-DEEPSEEK_API_KEY = LLM_CONFIG.get("api_key", "")
-# Note: The base_url in config may not include /chat/completions, need to append
-API_URL_BASE = LLM_CONFIG.get("base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1  ")
+# DeepSeek API configuration
+DEEPSEEK_API_KEY = DEEPSEEK_CONFIG.get("api_key", "")
+API_URL_BASE = DEEPSEEK_CONFIG.get("base_url", "https://api.deepseek.com/v1/chat/completions")
 # Ensure API_URL includes the complete /chat/completions path
 if not API_URL_BASE.endswith("/chat/completions"):
     API_URL = API_URL_BASE.rstrip("/") + "/chat/completions"
 else:
     API_URL = API_URL_BASE
-MODEL_NAME = LLM_CONFIG.get("model", "qwen-plus")
-
-# Database configuration
-DB_CONFIG = MYSQL_CONFIG
+MODEL_NAME = DEEPSEEK_CONFIG.get("model", "deepseek-reasoner")
 
 # JSON output root directory (subdirectories by type)
 # Automatically get current script directory and concatenate relative path to Generating/data/edge
@@ -77,7 +75,7 @@ You will receive a full experimental description. Your task is to generate a **s
 ============================================================
 STRICT INTERNAL REASONING RULES (DO NOT OUTPUT THESE SEPARATELY)
 ============================================================
-Before writing the final paragraph, you must internally perform the following reasoning steps.
+Before writing the final paragraph, you must internally perform the following reasoning steps.  
 These steps MUST NOT appear in the output, but the final paragraph MUST REFLECT them.
 
 1. **Perovskite Layer Analysis (MANDATORY):**
@@ -153,9 +151,8 @@ You MUST output **one single, continuous, deeply reasoned scientific paragraph i
 
 Now analyze the following experimental description and answer with ONE paragraph:
 
-[Experimental Description]
+[Experimental Description]  
 {experiment}
-
 """
 
 # ================== Utility Functions ==================
@@ -282,10 +279,13 @@ def process_single_record(report_index, record_type, record_id, docx_path):
 
     paragraphs = read_docx_paragraphs(docx_path_fixed)
     exp_text = find_experiment_by_id(paragraphs, record_id)
+    print(f"Experiment text for {record_id}:\n{exp_text}\n")
 
     # 4. Call DeepSeek
     mechanism_full = call_deepseek_api(exp_text)
+    print(f"Mechanism for {record_id}:\n{mechanism_full}\n")
     summary = extract_summary_from_mechanism(mechanism_full)
+    print(f"Summary for {record_id}:\n{summary}\n")
 
     # 5. Save JSON
     os.makedirs(json_dir, exist_ok=True)

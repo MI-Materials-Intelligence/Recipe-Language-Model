@@ -516,7 +516,7 @@ def fp_process(fp_data_path, output_dir):
         only_formula=only_formula,
     )
 
-    with Pool(processes=30) as pool:
+    with Pool(processes=5) as pool:
         pool.map(process_func, range(len(dates)))
 
 
@@ -539,7 +539,7 @@ def formula_process(formula_data_path, output_dir):
         only_formula=only_formula,
     )
 
-    with Pool(processes=30) as pool:
+    with Pool(processes=5) as pool:
         pool.map(process_func, range(len(dates)))
 
 

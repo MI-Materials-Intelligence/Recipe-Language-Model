@@ -11,13 +11,13 @@ This module provides:
 # Re-export main components for easy import
 from .src.characterisation_reporting_main import CharacterisationReportPipeline
 
-from .src.edge_reporting_main import EdgeReportPipeline
+from .src.edge_reporting_main import GeneratingEdgeReportPipeline
 from .src.variable_reporting_main import VariableReportPipeline
 
 __all__ = [
     # Main Pipeline Classes
 
-    "EdgeReportPipeline",
+    "GeneratingEdgeReportPipeline",
     "CharacterisationReportPipeline",
     # Data Extractor
     "VariableReportPipeline",

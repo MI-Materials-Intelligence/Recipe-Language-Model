@@ -10,19 +10,26 @@ import tomllib
 def load_recipeqa_config():
     """Load RecipeQA configuration from config.toml"""
     try:
-        # Project root: current file is in .../RecipeQA/src/, need to go back to OpenManus/
-        # Path levels: src -> RecipeQA -> RLM -> tool -> app -> OpenManus (5 levels)
-        project_root = Path(__file__).resolve().parent.parent.parent.parent.parent.parent
-        config_path = project_root / "config" / "config.toml"
-
-        if not config_path.exists():
-            print(f"[WARN] Config file not found: {config_path}, using default values")
-            return {}
-
-        with config_path.open("rb") as f:
-            config = tomllib.load(f)
-
-        return config.get("recipeqa", {})
+        # Project root: current file is in .../RecipeQA/src/
+        # Path levels: src -> RecipeQA -> RLM -> tool -> app -> OpenManus (5 levels up to workspace root)
+        project_root = Path(__file__).resolve().parent.parent  # RecipeQA
+        
+        # Try multiple possible config locations
+        possible_paths = [
+            project_root.parent.parent / "config.toml",  # Workspace root
+            project_root.parent.parent / "config" / "config.toml",  # Workspace/config/
+            project_root / "config.toml",  # RecipeQA/
+        ]
+        
+        for config_path in possible_paths:
+            if config_path.exists():
+                print(f"[INFO] Loaded config from: {config_path}")
+                with config_path.open("rb") as f:
+                    config = tomllib.load(f)
+                return config
+        
+        print(f"[WARN] No config file found, using default values")
+        return {}
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
         return {}
@@ -67,47 +74,27 @@ class CorpusGenerator:
 
         self.data_dir = osp.join(self.workspace_root, "data")
 
-        # Load database configuration from config file
-        RECIPEQA_CONFIG = load_recipeqa_config()
-
-        # Try to load from recipeqa configuration
-        recipeqa_db = RECIPEQA_CONFIG.get("database", {})
-        if recipeqa_db:
-            self.db_config = recipeqa_db
-        else:
-            # Use main database configuration
-            try:
-                project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
-                config_path = project_root / "config.toml"
-                # print(f"[INFO] Config path111: {config_path}")
-                if not config_path.exists():
-                    # Try alternative path
-                    project_root = Path(__file__).resolve().parent.parent.parent.parent.parent.parent
-                    config_path = project_root / "config" / "config.toml"
-                
-                if config_path.exists():
-                    with config_path.open("rb") as f:
-                        config = tomllib.load(f)
-                    # First try recipeqa.database, then fallback to main database
-                    recipeqa_db = config.get("recipeqa", {}).get("database", {})
-                    if recipeqa_db:
-                        self.db_config = recipeqa_db
-                    else:
-                        self.db_config = config.get("database", {})
-            except Exception as e:
-                print(f"[WARN] Failed to load config: {e}")
-                pass
-
-        # If still no configuration, use remote database default values
-        if not hasattr(self, 'db_config') or not self.db_config:
+        # Load configuration ONCE using centralized loader
+        full_config = load_recipeqa_config()
+        
+        # Extract database config with priority: recipeqa.database > database > default
+        self.db_config = (
+            full_config.get("recipeqa", {}).get("database", {}) or
+            full_config.get("database", {})
+        )
+        
+        # If still no configuration, use default values
+        if not self.db_config:
             self.db_config = {
-                'host': '223.76.236.170',
-                'port': 13330,
+                'host': '',
+                'port': 3306,
                 'user': 'root',
-                'password': 'zkxjh800',
-                'database': 'exp_data',
+                'password': '',
+                'database': '',
                 'charset': 'utf8mb4'
             }
+        
+        print(f"[INFO] Database config loaded: {self.db_config.get('host', 'localhost')}:{self.db_config.get('port', 3306)}/{self.db_config.get('database', 'N/A')}")
 
     async def generate_optimized_async(self, config: Optional[Dict[str, Any]] = None) -> str:
         """

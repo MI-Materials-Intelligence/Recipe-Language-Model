@@ -297,11 +297,11 @@ def get_tasks_from_db(
 
         # Use loaded config or default values
         db_config = recipeqa_db if recipeqa_db else {
-            "host": "223.76.236.170",
+            "host": "",
             "port": 13330,
             "user": "root",
-            "password": "zkxjh800",
-            "database": "exp_data",
+            "password": "",
+            "database": "",
             "charset": "utf8mb4"
         }
 

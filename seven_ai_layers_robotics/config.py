@@ -29,7 +29,7 @@ class DatabaseSettings(BaseModel):  # ✅ NEW
     port: int = Field(3306, description="DB port")
     user: str = Field("root", description="DB user")
     password: str = Field("", description="DB password")
-    database: str = Field("exp_data", description="DB name")
+    database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
 
 # class EvaluatorSettings(BaseModel):  # ✅ NEW
@@ -46,7 +46,7 @@ class ReasoningDatabaseSettings(BaseModel):  # ✅ NEW
     port: int = Field(3306, description="DB port")
     user: str = Field("root", description="DB user")
     password: str = Field("", description="DB password")
-    database: str = Field("exp_data", description="DB name")
+    database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
     table: str = Field("daily_experiment", description="DB table")
 
@@ -57,7 +57,7 @@ class ReasoningOutputDatabaseSettings(BaseModel):  # ✅ NEW
     port: int = Field(3306, description="DB port")
     user: str = Field("root", description="DB user")
     password: str = Field("", description="DB password")
-    database: str = Field("exp_data", description="DB name")
+    database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
     table: str = Field("MIRecipe", description="DB table")
 
@@ -83,7 +83,7 @@ class GeneratingDatabaseSettings(BaseModel):  # ✅ NEW
     port: int = Field(3306, description="DB port")
     user: str = Field("root", description="DB user")
     password: str = Field("", description="DB password")
-    database: str = Field("exp_data", description="DB name")
+    database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
 
 
@@ -93,7 +93,7 @@ class GeneratingOutputDatabaseSettings(BaseModel):  # ✅ NEW
     port: int = Field(3306, description="DB port")
     user: str = Field("root", description="DB user")
     password: str = Field("", description="DB password")
-    database: str = Field("exp_data", description="DB name")
+    database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
 
 
@@ -438,6 +438,15 @@ class RecipeQALLMSettings(BaseModel):  # ✅ NEW
     timeout: int = Field(60, description="Request timeout in seconds")
 
 
+class DeepSeekSettings(BaseModel):  # ✅ NEW
+    """Configuration for DeepSeek LLM"""
+    api_key: str = Field("", description="DeepSeek API key")
+    base_url: str = Field("https://api.deepseek.com/v1/chat/completions", description="DeepSeek API base URL")
+    model: str = Field("deepseek-reasoner", description="DeepSeek model name")
+    temperature: float = Field(0.3, description="Sampling temperature")
+    timeout: int = Field(120, description="Request timeout in seconds")
+
+
 class AppConfig(BaseModel):
     llm: Dict[str, LLMSettings]
     sandbox: Optional[SandboxSettings] = Field(
@@ -472,6 +481,7 @@ class AppConfig(BaseModel):
     evaluation_predictor: Optional[EvaluationPredictorSettings] = Field(None, description="Evaluation Predictor")  # ✅ NEW
     evaluation: Optional[EvaluationSettings] = Field(None, description="Evaluation Module Settings")  # ✅ NEW
     recipeqa_llm: Optional[RecipeQALLMSettings] = Field(None, description="RecipeQA LLM")  # ✅ NEW
+    deepseek: Optional[DeepSeekSettings] = Field(None, description="DeepSeek LLM")  # ✅ NEW
     class Config:
         arbitrary_types_allowed = True
 
@@ -524,7 +534,7 @@ class Config:
             port=_env_int("DB_PORT", int(db_cfg.get("port", 3306))),
             user=_env("DB_USER", db_cfg.get("user", "root")),
             password=_env("DB_PASSWORD", db_cfg.get("password", "")),
-            database=_env("DB_NAME", db_cfg.get("database", "exp_data")),
+            database=_env("DB_NAME", db_cfg.get("database", "")),
             charset=_env("DB_CHARSET", db_cfg.get("charset", "utf8mb4")),
         )
 
@@ -547,7 +557,7 @@ class Config:
             port=reasoning_db_cfg.get("port", 3306),
             user=reasoning_db_cfg.get("user", "root"),
             password=reasoning_db_cfg.get("password", ""),
-            database=reasoning_db_cfg.get("database", "exp_data"),
+            database=reasoning_db_cfg.get("database", ""),
             charset=reasoning_db_cfg.get("charset", "utf8mb4"),
             table=reasoning_db_cfg.get("table", "daily_experiment"),
         )
@@ -557,7 +567,7 @@ class Config:
             port=reasoning_output_db_cfg.get("port", reasoning_db_cfg.get("port", 3306)),
             user=reasoning_output_db_cfg.get("user", reasoning_db_cfg.get("user", "root")),
             password=reasoning_output_db_cfg.get("password", reasoning_db_cfg.get("password", "")),
-            database=reasoning_output_db_cfg.get("database", reasoning_db_cfg.get("database", "exp_data")),
+            database=reasoning_output_db_cfg.get("database", reasoning_db_cfg.get("database", "")),
             charset=reasoning_output_db_cfg.get("charset", "utf8mb4"),
             table=reasoning_output_db_cfg.get("table", "MIRecipe"),
         )
@@ -586,7 +596,7 @@ class Config:
             port=generating_db_cfg.get("port", 3306),
             user=generating_db_cfg.get("user", "root"),
             password=generating_db_cfg.get("password", ""),
-            database=generating_db_cfg.get("database", "exp_data"),
+            database=generating_db_cfg.get("database", ""),
             charset=generating_db_cfg.get("charset", "utf8mb4"),
         )
 
@@ -595,7 +605,7 @@ class Config:
             port=generating_output_db_cfg.get("port", generating_db_cfg.get("port", 3306)),
             user=generating_output_db_cfg.get("user", generating_db_cfg.get("user", "root")),
             password=generating_output_db_cfg.get("password", generating_db_cfg.get("password", "")),
-            database=generating_output_db_cfg.get("database", generating_db_cfg.get("database", "exp_data")),
+            database=generating_output_db_cfg.get("database", generating_db_cfg.get("database", "")),
             charset=generating_output_db_cfg.get("charset", "utf8mb4"),
         )
 
@@ -619,7 +629,7 @@ class Config:
             port=learning_db_cfg.get("port", 3306),
             user=learning_db_cfg.get("user", "root"),
             password=learning_db_cfg.get("password", ""),
-            database=learning_db_cfg.get("database", "exp_data"),
+            database=learning_db_cfg.get("database", ""),
             charset=learning_db_cfg.get("charset", "utf8mb4"),
         )
 
@@ -638,6 +648,8 @@ class Config:
         
         # Load RecipeQA module LLM configuration
         recipeqa_llm_cfg = raw_config.get("recipeqa_llm", {}) or {}
+        # Load DeepSeek configuration
+        deepseek_cfg = raw_config.get("deepseek", {}) or {}
 
         evaluation_llm_settings = EvaluationLLMSettings(
             deepseek_api_key=evaluation_llm_cfg.get("deepseek_api_key", ""),
@@ -710,6 +722,14 @@ class Config:
             dashscope_model=recipeqa_llm_cfg.get("dashscope_model", "qwen-plus"),
             temperature=recipeqa_llm_cfg.get("temperature", 0.4),
             timeout=recipeqa_llm_cfg.get("timeout", 60),
+        )
+
+        deepseek_settings = DeepSeekSettings(
+            api_key=deepseek_cfg.get("api_key", ""),
+            base_url=deepseek_cfg.get("base_url", "https://api.deepseek.com/v1/chat/completions"),
+            model=deepseek_cfg.get("model", "deepseek-reasoner"),
+            temperature=deepseek_cfg.get("temperature", 0.3),
+            timeout=deepseek_cfg.get("timeout", 120),
         )
 
         generating_generation_settings = GeneratingGenerationSettings(
@@ -814,6 +834,7 @@ class Config:
             "evaluation_predictor": evaluation_predictor_settings,  # ✅ NEW
             "evaluation": evaluation_settings,  # ✅ NEW
             "recipeqa_llm": recipeqa_llm_settings,  # ✅ NEW
+            "deepseek": deepseek_settings,  # ✅ NEW
             "llm": {
                 "default": default_settings,
                 **{
@@ -928,6 +949,10 @@ class Config:
     @property
     def recipeqa_llm(self) -> RecipeQALLMSettings:  # ✅ NEW
         return self._config.recipeqa_llm
+
+    @property
+    def deepseek(self) -> DeepSeekSettings:  # ✅ NEW
+        return self._config.deepseek
 
     def get_evaluation_data_path(self, relative_path: str) -> Path:
         """Get the full path for evaluation data files

@@ -28,10 +28,10 @@ def load_recipeqa_config():
         }
 
         # Debug print to verify API key is loaded
-        if llm_config.get("api_key"):
-            print(f"[INFO] RecipeQA LLM config loaded: api_key={llm_config['api_key'][:10]}...***")
-        else:
-            print("[WARN] RecipeQA LLM api_key is empty!")
+        # if llm_config.get("api_key"):
+            # print(f"[INFO] RecipeQA LLM config loaded: api_key={llm_config['api_key'][:10]}...***")
+        # else:
+            # print("[WARN] RecipeQA LLM api_key is empty!")
 
         return llm_config
     except Exception as e:
@@ -634,22 +634,48 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
 
 
 # ===== Inference =====
-async def process_item(item: Dict[str, Any], save_root: str) -> None:
+async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None) -> None:
     sid1_raw = (item.get("meta_info", {}).get("Sample_ID_1", "") or "").split(",")[0].strip()
     sid2_raw = (item.get("meta_info", {}).get("Sample_ID_2", "") or "").split(",")[0].strip()
     fn = f"{safe_filename(sid1_raw) or 'X'}_{safe_filename(sid2_raw) or 'Y'}.json"
     save_path = osp.join(save_root, fn)
 
     os.makedirs(save_root, exist_ok=True)
+    
+    # ✅ Skip if output file already exists
+    if osp.exists(save_path):
+        print(f"[SKIP] Output already exists: {osp.abspath(save_path)}")
+        return
+
+    # ✅ Load expert_data at runtime from md files (saves 90% JSON space)
+    material_names = item.get("primary_materials", [])
+    material_type = item.get("material_type")  # 'sam' / 'additive' / 'passivator' / None
+    
+    if md_map is not None and material_names:
+        # Build reference_analysis from md files dynamically
+        pieces = []
+        for name in material_names:
+            key = normalize_material_key(name)
+            candidate_keys = [(material_type, key), (None, key)] if material_type else [(None, key)]
+            md_path = None
+            for ck in candidate_keys:
+                if ck in md_map:
+                    md_path = md_map[ck]
+                    break
+            if md_path:
+                try:
+                    pieces.append(f"### {name}\n{read_text_file(md_path)}")
+                except Exception as e:
+                    print(f"[WARN] fail to read md '{md_path}': {e}")
+        reference_analysis = "\n\n".join(pieces) if pieces else "No background knowledge available."
+    else:
+        reference_analysis = "No background knowledge available."
+    
+    primary_materials_str = ", ".join(material_names) if material_names else "None"
 
     async with semaphore:
         for attempt in range(1, MAX_RETRIES + 1):
             try:
-                reference_analysis = (item.get("expert_data") or {}).get("summary_text") \
-                                     or json.dumps(item.get("expert_data", {}), ensure_ascii=False)
-                primary_materials_list = item.get("primary_materials") or (item.get("expert_data") or {}).get("material_names") or []
-                primary_materials_str = ", ".join(primary_materials_list) if primary_materials_list else "None"
-
                 sys_prompt = SYS_PROMPT.format(
                     primary_materials=primary_materials_str
                 )
@@ -723,10 +749,16 @@ async def process_item(item: Dict[str, Any], save_root: str) -> None:
                         print(f"[FATAL] cannot save stub: {e2!r} | path={osp.abspath(save_path)}")
                     return
 
-async def request_llm(data: List[Dict[str, Any]], save_root: str):
+async def request_llm(data: List[Dict[str, Any]], save_root: str, expert_data_root: str = None):
     print(f"[PATH] dist: {osp.abspath(save_root)}")
     os.makedirs(save_root, exist_ok=True)
-    tasks = [process_item(item, save_root) for item in data]
+    
+    # ✅ Build md knowledge map for runtime retrieval
+    md_map = {}
+    if expert_data_root and osp.isdir(expert_data_root):
+        md_map = build_md_knowledge_map(expert_data_root)
+    
+    tasks = [process_item(item, save_root, md_map) for item in data]
     results = await asyncio.gather(*tasks, return_exceptions=True)
     for i, r in enumerate(results):
         if isinstance(r, Exception):
@@ -753,7 +785,7 @@ def get_dataset(data_root: str) -> List[Dict[str, Any]]:
 def get_tasks_from_db(
     expert_data_root: str,
     save_path: str,
-    num_thres: int = 100,
+    num_thres: int = 1,
     db_config: Optional[Dict[str, Any]] = None
 ):
     def _pure_id(s: str) -> str:
@@ -823,11 +855,11 @@ def get_tasks_from_db(
     # If still no config, use remote database default values
     if db_config is None:
         db_config = {
-            "host": "223.76.236.170",
+            "host": "",
             "port": 13330,
             "user": "root",
-            "password": "zkxjh800",
-            "database": "exp_data",
+            "password": "",
+            "database": "",
             "charset": "utf8mb4"
         }
 
@@ -926,9 +958,10 @@ def get_tasks_from_db(
                 "control_device_fabrication": rec["control_device_fabrication"],
                 "target_device_fabrication": rec["target_device_fabrication"],
                 "category_folder": folder_name,
-                "match_file": f"{base_name}.json",  # Simulate original filename
-                "expert_data": expert_data,
+                "match_file": f"{base_name}.json",
                 "primary_materials": material_names,
+                "material_type": mat_type,  # ✅ For runtime md retrieval
+                # ❌ Removed: expert_data (saves ~90% space)
             })
 
         # Optional: Sample by category (original logic samples per JSON file, now can sample by category or globally)
@@ -956,11 +989,11 @@ def main():
         print(f"[WARN] Failed to load config from seven_ai_layers_robotics.config: {e}")
         # Use default remote database config
         DB_CONFIG = {
-            'host': '223.76.236.170',
+            'host': '0',
             'port': 13330,
             'user': 'root',
-            'password': 'zkxjh800',
-            'database': 'exp_data',
+            'password': '',
+            'database': '',
             'charset': 'utf8mb4'
         }
         print(f"[INFO] Using default DB config: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
@@ -979,12 +1012,13 @@ def main():
         get_tasks_from_db(
             expert_data_root=MECHANISM_DIR,
             save_path=task_save_path,
-            num_thres=100
+            num_thres=1
         )
 
     tasks = read_json_file(task_save_path)
     print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
-    asyncio.run(request_llm(tasks, dist_save_root))
+    # ✅ Pass expert_data_root for runtime md loading
+    asyncio.run(request_llm(tasks, dist_save_root, MECHANISM_DIR))
 
     dist_files = read_files_by_extension(dist_save_root, extensions=[".json"])
     print(f"[INFO] dist files: {len(dist_files)}")
