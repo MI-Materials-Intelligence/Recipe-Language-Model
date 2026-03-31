@@ -22,25 +22,21 @@ Reasoning/
 
 ```json
 {
-  "No": 14852,
-  "Formula PVK": "Cs0.05MA0.16FA0.79PbI2.9Br0.1",
+  "No": 2435,
+  "Formula PVK": "Cs0.05MA0.1FA0.85PbI3.0",
   "Concentration PVK": 1.73,
-  "Formula Additive 1": "PEAI",
-  "Concentration Additive 1": 0.50,
-  "Formula SAM 1": "Me-4PACz",
-  "Concentration SAM 1": 0.33,
   "Spin Coating Speed PVK 1": 1000,
   "Spin Coating Time PVK 1": 10,
   "Spin Coating Speed PVK 2": 5000,
-  "Spin Coating Time PVK 2": 30,
-  "Antisolvent Dropping Timing": 6,
-  "Antisolvent Volume": 160,
+  "Spin Coating Time PVK 2": 40,
+  "Antisolvent Dropping Timing": 10,
+  "Antisolvent Volume": 200,
   "Annealed Temperature PVK": 110,
-  "Annealed Time PVK": 25,
-  "PCE": 17.4,
-  "FF": 74.3,
-  "Voc": 1.09,
-  "Jsc": 21.5
+  "Annealed Time PVK": 15,
+  "PCE": 15.821,
+  "FF": 77.678,
+  "Voc": 0.9823,
+  "Jsc": 20.734
 }
 ```
 
