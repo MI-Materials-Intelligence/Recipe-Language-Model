@@ -1,4 +1,0 @@
-adapter_name_or_path: "."
-finetuning_type: lora
-model_name_or_path: /data/opt/LLM_Base_Model/Qwen3-32B/
-template: qwen3
