@@ -1,0 +1,3 @@
+{
+    "text": "The code has been updated to handle file uploads more efficiently by saving the uploaded files directly to a specified directory using shutil.copyfileobj. The prepare_training function has also been modified to copy the saved file paths instead of reading the file contents into memory. This change improves performance and reduces memory usage when dealing with large files."
+}

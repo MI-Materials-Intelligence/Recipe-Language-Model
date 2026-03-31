@@ -1,0 +1,5 @@
+CONDA_ENV: "llamafactory2"
+LLAMA_FACTORY_ROOT: "/data/sunyao/Workspace/Projects/llama"
+BASE_MODEL_ROOT: "/data/opt/LLM_Base_Model/DeepSeek-R1-Distill-Qwen-32B/"
+TRAIN_META_INFO_ROOT: "/data/sunyao/Workspace/Projects/LLaMA-API/train_meta_info"
+LORA_OUTPUT_ROOT: "/data/sunyao/Workspace/Models/LLM_lora_SFT/saves"

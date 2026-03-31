@@ -1,0 +1,98 @@
+import os.path as osp
+
+from .generating_single_var import generate_single_var
+from .get_single_var_diff_class import get_single_var_diff_class
+from .merge_results import merge_results
+from ..cleaning.preprocess import preprocess
+from ..cleaning.remove_abnormal import remove_abnormal
+
+
+def run_cleaning(process_root: str, src_file_name: str = ""):
+    """
+    Data Cleaning Stage: Remove abnormal samples and perform deduplication
+
+    Args:
+        process_root (str): Processing directory path
+        src_file_name (str): Source file name
+
+    Returns:
+        dict: File path information generated after cleaning
+    """
+    # Step 1: Remove abnormal samples
+    src_file = osp.join(process_root, src_file_name)
+    output_file = osp.join(process_root, "re_formula_remove_abnormal.csv")
+    remove_abnormal(src_file, output_file)
+    print("Remove abnormal finished")
+
+    # Step 2: Deduplication processing
+    formula_dedup_path = osp.join(process_root, "re_formula_dedup.csv")
+    fp_dedup_path = osp.join(process_root, "re_fp_dedup.csv")
+    no_dedup_path = osp.join(process_root, "re_no_dedup.csv")
+    preprocess(output_file, formula_dedup_path, fp_dedup_path, no_dedup_path)
+    print("Preprocess finished")
+
+    return {
+        "formula_dedup_path": formula_dedup_path,
+        "fp_dedup_path": fp_dedup_path,
+        "no_dedup_path": no_dedup_path
+    }
+
+
+def run_matching(process_root: str, cleaning_result: dict = None):
+    """
+    Matching and Classification Stage: Generate single variable matching pairs and perform difference classification
+
+    Args:
+        process_root (str): Processing directory path
+        cleaning_result (dict, optional): Results from cleaning stage, containing dedup file paths
+                                       If None, uses default paths
+    """
+    # If cleaning result not provided, use default paths
+    if cleaning_result is None:
+        formula_dedup_path = osp.join(process_root, "re_formula_dedup.csv")
+        fp_dedup_path = osp.join(process_root, "re_fp_dedup.csv")
+    else:
+        formula_dedup_path = cleaning_result["formula_dedup_path"]
+        fp_dedup_path = cleaning_result["fp_dedup_path"]
+
+    # Step 3: Generate single variable matching pairs
+    formula_output_dir = osp.join(process_root, "formula", "date")
+    fp_output_dir = osp.join(process_root, "fp", "date")
+    generate_single_var(
+        fp_dedup_path, formula_dedup_path, fp_output_dir, formula_output_dir
+    )
+    print("Generate single var finished")
+
+    # Step 4: Merge results
+    merge_results(osp.join(process_root, "formula"), osp.join(process_root, "fp"))
+    print("Merge results finished")
+
+    # Step 5: Get difference classification
+    get_single_var_diff_class(
+        osp.join(process_root, "formula"), osp.join(process_root, "fp")
+    )
+    print("Get single var diff class finished")
+
+
+def run(process_root: str, src_file_name: str = ""):
+    """
+    Complete Workflow: Execute cleaning and matching stages sequentially
+
+    Args:
+        process_root (str): Processing directory path
+        src_file_name (str): Source file name
+    """
+    # Stage 1: Data Cleaning
+    print("=" * 50)
+    print("Stage 1: Data Cleaning")
+    print("=" * 50)
+    cleaning_result = run_cleaning(process_root, src_file_name)
+
+    # Stage 2: Matching and Classification
+    print("\n" + "=" * 50)
+    print("Stage 2: Matching and Classification")
+    print("=" * 50)
+    run_matching(process_root, cleaning_result)
+
+
+
