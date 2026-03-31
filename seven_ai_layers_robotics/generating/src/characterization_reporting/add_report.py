@@ -335,7 +335,7 @@ def get_answer_and_thinking(
     ]
 
     completion = client.chat.completions.create(
-        model="qwen3-max-preview",  # Change to your own model
+        model="qwen-plus",  # Change to your own modelqwen3-max-preview
         messages=messages,
         extra_body={"enable_thinking": True},
         stream=True,
@@ -384,7 +384,7 @@ def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
     ]
 
     completion = client.chat.completions.create(
-        model="qwen3-max-preview",  # Can also change to another model
+        model="qwen-plus",  # Change to your own modelqwen3-max-preview
         messages=messages,
         extra_body={"enable_thinking": True},
         stream=True,
