@@ -2,13 +2,7 @@
 
 ## Overview
 
-The Generating Layer is the text generation layer within the seven-layer Materials Intelligence architecture. It is responsible for transforming the structured experimental data produced by the Learning Layer into standardized natural language reports and training-ready textual samples.The core objective of this layer is not merely to generate experimental reports, but to organize experimental compositions, process parameters, device performance, and characterization or mechanistic information into a unified textual format. These outputs are designed to support downstream tasks. From a data flow perspective, this layer takes as input the cleaned data, matched experimental pairs, and extracted features from the Learning Layer, and generates three types of textual outputs under different task scenarios:
-
-- Characterization reports based on matched data with characterization information  
-- Edge reports based on individual experimental samples  
-- Variable reports based on single-variable controlled experimental pairs  
-
-These generated outputs serve as essential textual foundations for the subsequent RecipeQA Layer and Fine-tuning Layer.
+In the generating layer, the tokenised recipes are comprised into the recipe report with fabrication details, mechanistic descriptions, an optimisation summary, and supporting information. Through atomic skills of edge reporting (generation from single experimental data), single-variable reporting (generation from matched data with single variable), and characterization reporting (generation from matched data with in situ characterization), these processed data are converted into robotic recipe reports.
 
 Key Atomic skills:
 - **Characterization Reporing**: Characterization report generation from matched data with in situ characterization.
