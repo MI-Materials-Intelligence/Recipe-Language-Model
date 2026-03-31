@@ -12,7 +12,7 @@ from seven_ai_layers_robotics.generating import (
 )
 from seven_ai_layers_robotics.recipeQA import CorpusGenerator
 import asyncio
-# from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
+from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
 
 # from seven_ai_layers_robotics.evaluation import MIRecipeEvaluator
 if __name__ == "__main__":
@@ -24,9 +24,9 @@ if __name__ == "__main__":
 
     # pipeline3 = CharacterizationDataPipeline()
 #     # pipeline3.run_full_process()
-    pipeline = VariableReportPipeline()
-    success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
-    print("VariableReportPipeline", success)
+    # pipeline = VariableReportPipeline()
+    # success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
+    # print("VariableReportPipeline", success)
 # # 
 #     # Run characterisation report generation 
 #     pipeline2 = CharacterisationReportPipeline()
@@ -46,9 +46,9 @@ if __name__ == "__main__":
     # result = asyncio.run(generator.generate_all_async())
 
 
-    # generator = PerovskiteReportGenerator.from_config()
-    # print("✓ Successfully loaded configuration from config.toml")
-    # print("\nStarting report generation...")
-    # generator.run_once(total_runs=3, max_workers=3)
+    generator = PerovskiteReportGenerator.from_config()
+    print("✓ Successfully loaded configuration from config.toml")
+    print("\nStarting report generation...")
+    generator.run_once(total_runs=1, max_workers=1)
     # evaluator = MIRecipeEvaluator()
     # evaluator.run()
