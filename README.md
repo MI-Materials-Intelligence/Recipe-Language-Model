@@ -21,7 +21,7 @@ Materials innovation have been undergoing rapid development with the vast combin
 
 Here, we present a domain-specific recipe language model (RLM) developed for an emerging scientific tool of robotic boxes (perovskite solar cell research as a demonstration). For iterative fine-tuning of the RLM, seven artificial intelligence (AI) layers, including learning, generating, RecipeQA, fine-tuning, reasoning, evaluation, and optimisation, have been designed with a language agent. During the loops of seven AI layers, both numerical and semantic recipes were continuously learned and optimised for the RLM. Guided by this RLM, eleven robotic boxes executed the controllable synthesis, fabrication and characterisation of 50,764 samples. Simultaneously, more than 578 million tokens were generated and augmented to improve the ability to recommend a recipe and mechanistic reasoning, reaching a level comparable to that of an experienced researcher. 
 
-Therefore, the integration of the RLM with robotic boxes enables an AI and robotics discovery process in which specialised language modelling and modularised robotic hardware continuously improve one another, suggesting an evolution of physical AI for materials research.
+Therefore, the integration of the RLM with robotic boxes enables an AI and robotics discovery process in which specialised language modelling and modularised robotic hardware continuously improve one another, suggesting an evolution of physical AI for the Materials Intelligence.
 
 ---
 
