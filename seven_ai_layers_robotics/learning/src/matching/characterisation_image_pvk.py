@@ -1,5 +1,5 @@
 from __future__ import annotations
-def run_pl_sam(
+def run_characterisation_image_pvk(
     *,
     seed: int | None = None,
     verbose: bool = True,
@@ -15,7 +15,7 @@ def run_pl_sam(
         Print start / end logs.
     """
     if verbose:
-        print("▶ Running PL SAM pipeline...")
+        print("▶ Running Image Process pipeline...")
 
     if seed is not None:
         import random
@@ -48,7 +48,6 @@ def export_table_to_csv_exclude_id(table_name, output_csv, mysql_config):
     Export MySQL table to CSV, excluding 'id' column, and safely handle output path.
     """
     # Safely create output directory (only when path is not empty)
-
     output_dir = os.path.dirname(output_csv)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
@@ -112,63 +111,88 @@ MYSQL_CONFIG = {
 }
 
 # Replace with your actual table name
-TABLE_NAME = "pl_sam"  # ← e.g., the table you imported before
-OUTPUT_CSV = "PL_sam_db.csv"
+TABLE_NAME = "characterisation_image_pvk"  # ← e.g., the table you imported before
+OUTPUT_CSV = "characterisation_image_pvk_db.csv"
 
 
-
+# export_table_to_csv_exclude_id(TABLE_NAME, OUTPUT_CSV, MYSQL_CONFIG)
 
 # Subsequent processing scripts can directly use:
 INPUT_CSV = OUTPUT_CSV
-          # <-- your csv total table
-OUTPUT_JSON = "PL_sam/PL_sam_pairs.json"
-INDEX_COL = "index"                         # <-- your stable row id column
+# =========================
+# CONFIG (edit here)
+# =========================
+OUTPUT_JSON = "characterisation_image_pvk/characterisation_image_pvk_pairs.json"
+INDEX_COL = "index"                           # <-- your stable row id column
 DATE_COL = "date"                        # <-- date column name (optional)
 
 QUESTION = (
-    "SAM is added to perovskite precursor to prepare thin films, and in-situ PL spectra are collected during annealing. "
-    "How do the nucleation time and PL decay slope change, thereby affecting PCE, Voc, Jsc, and FF?"
+    "During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or "
+    "process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based "
+    "defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?"
 )
 
-# Pair definition space:
-# We include Additive columns as "must be the same" (locking condition),
-# but only allow SAM columns to be the 'differing_column'.
+# --- Pair definition space ---
+# We lock ALL formula + material concentration columns, and only allow "PROCESS_COLS" to be the differing column.
 FORMULA_COLS_ALL = [
     "Formula PVK",
     "Formula SAM 1", "Formula SAM 2", "Formula SAM 3",
     "Formula Additive 1", "Formula Additive 2", "Formula Additive 3",
+    "Formula Passivator 1", "Formula Passivator 2", "Formula Passivator 3",
 ]
-CONC_COLS_ALL = [
+MATERIAL_CONC_COLS_ALL = [
     "Concentration PVK",
     "Concentration SAM 1", "Concentration SAM 2", "Concentration SAM 3",
     "Concentration Additive 1", "Concentration Additive 2", "Concentration Additive 3",
+    "Concentration Passivator 1", "Concentration Passivator 2", "Concentration Passivator 3",
 ]
 
-# In formula-mode, these columns must match but will not be counted as "the differing column"
-FORMULA_DIFF_IGNORE = [
-    "Formula PVK",
-    "Formula Additive 1", "Formula Additive 2", "Formula Additive 3",
+# Process columns: the ONLY columns we allow to differ (missing cols will be ignored automatically)
+PROCESS_COLS = [
+    # perovskite spin/antisolvent/anneal
+    "Spin Coating Speed PVK 1",
+    "Spin Coating Time PVK 1",
+    "Spin Coating Speed PVK 2",
+    "Spin Coating Time PVK 2",
+    "Antisolvent Dropping Timing",
+    "Antisolvent Volume",
+    "Annealed Temperature PVK",
+    "Annealed Time PVK",
+    # (optional) passivator process, if your table contains these
+    "Spin Coating Speed Passivator",
+    "Spin Coating Time Passivator",
+    "Passivator Dropping Timing",
+    "Passivator Volume",
+    "Annealed Temperature Passivator",
+    "Annealed Time Passivator",
 ]
 
-# In concentration-mode, these columns must match but will not be counted as "the differing column"
-CONC_DIFF_IGNORE = [
-    "Concentration PVK",
-    "Concentration Additive 1", "Concentration Additive 2", "Concentration Additive 3",
-]
+# Build the "concentration space" = material concentrations + process columns
+CONC_COLS_ALL = MATERIAL_CONC_COLS_ALL + PROCESS_COLS
 
-# Metrics used by filtering rule (from your sam_pairs_evaluation.py)
-PEAK_TIME_COL = "peak_time"
-DECAY_SLOPE_COL = "decay_slope"
+# We do NOT need formula-mode pairs for Process (disable by ignoring all formula columns)
+FORMULA_DIFF_IGNORE = list(FORMULA_COLS_ALL)
+
+# In concentration-mode, material concentration columns must match but are not allowed to be "the differing column"
+CONC_DIFF_IGNORE = list(MATERIAL_CONC_COLS_ALL)
+
+# --- Filtering rule metrics (from your process_pairs_evaluation.py) ---
+AREA_COL = "area_px2"
+GRAY_COL = "gray_mean"
 PCE_COL = "PCE"
-METRIC_COLS = [PEAK_TIME_COL, DECAY_SLOPE_COL, PCE_COL]
+METRIC_COLS = [AREA_COL, GRAY_COL, PCE_COL]
 
+
+# Extra filter: keep only if target PCE >= this threshold
+TARGET_PCE_MIN = 10.0
 # Random seed for template sampling
 SEED = 42
 
-# Pair sources to export: choose any subset of {"formula", "concentration"}
-PAIR_SOURCES = {"formula", "concentration"}
+# Pair sources to export: for Process we only use "concentration"
+# Change to {"formula", "concentration"} if you want both modes
+PAIR_SOURCES = {"concentration"}
 
-# If >0, randomly downsample the filtered pairs per source
+# If >0, randomly downsample filtered pairs (per source)
 MAX_PAIRS_PER_SOURCE = 0
 
 # Write intermediate debug CSV files next to OUTPUT_JSON
@@ -248,15 +272,21 @@ def count_pairs_differing_in_one_column(
     target_col: str,
     row_index_col: str = "_row_index",
 ) -> Tuple[int, List[Dict[str, Any]]]:
+    """
+    Find all pairs where ONLY target_col differs and all other cols in cols_all are identical.
+    Returns (n_pairs, records).
+    """
     other_cols = [c for c in cols_all if c != target_col]
     if not other_cols:
         return 0, []
 
+    # group by identical other_cols
     keys = df_in[other_cols].apply(lambda r: tuple(r.values.tolist()), axis=1)
     grouped = df_in.groupby(keys, dropna=False)
 
     records: List[Dict[str, Any]] = []
     for _, gdf in grouped:
+        # Need at least 2 distinct values in target_col
         if gdf[target_col].nunique(dropna=False) <= 1:
             continue
 
@@ -273,7 +303,13 @@ def count_pairs_differing_in_one_column(
                         if r1 == r2:
                             continue
                         rr1, rr2 = (r1, r2) if str(r1) < str(r2) else (r2, r1)
-                        records.append({"differing_column": target_col, "row1_index": rr1, "row2_index": rr2})
+                        records.append(
+                            {
+                                "differing_column": target_col,
+                                "row1_index": rr1,
+                                "row2_index": rr2,
+                            }
+                        )
 
     if not records:
         return 0, []
@@ -289,6 +325,12 @@ def build_pairs(
     formula_diff_ignore: List[str],
     conc_diff_ignore: List[str],
 ) -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, Any]]:
+    """
+    Returns:
+      pairs_formula_df (likely empty for Process),
+      pairs_conc_df (Process pairs live here),
+      summary dict
+    """
     df = df_main.copy()
 
     fcols = [c for c in formula_cols_all if c in df.columns]
@@ -301,7 +343,7 @@ def build_pairs(
     for c in fcols + ccols:
         df[c] = normalize_series(df[c])
 
-    # ---- formula pairs: only 1 allowed formula col differs (SAM only) ----
+    # ---- formula pairs (disabled for Process by ignoring all formula cols) ----
     formula_diff_cols = [c for c in fcols if c not in set(formula_diff_ignore)]
     formula_records_all: List[Dict[str, Any]] = []
     formula_breakdown: List[Dict[str, Any]] = []
@@ -311,7 +353,7 @@ def build_pairs(
         formula_records_all.extend(recs)
     pairs_formula_df = pd.DataFrame(formula_records_all)
 
-    # ---- concentration pairs: formulas + other conc must match; only 1 allowed conc col differs (SAM conc only) ----
+    # ---- concentration pairs: formulas + concentrations must match, except 1 differing conc col (process col) ----
     conc_diff_cols = [c for c in ccols if c not in set(conc_diff_ignore)]
     cols_for_space = fcols + ccols
 
@@ -336,27 +378,27 @@ def build_pairs(
 
 
 # -------------------------
-# 3) Pair filtering rule (SAM / PL)
+# 3) Pair filtering rule (Process / image metrics)
 # -------------------------
-def rule_pl_case(row1: pd.Series, row2: pd.Series, pk_col: str, sl_col: str, pce_col: str) -> Optional[str]:
+def rule_image_case(row1: pd.Series, row2: pd.Series, area_col: str, gray_col: str, pce_col: str) -> Optional[str]:
     """
-    Rule aligned with sam_pairs_evaluation.py:
+    Rule aligned with process_pairs_evaluation.py:
       Case row1:
-        (pk1 > pk2) AND (sl1 > sl2) AND (pce1 < pce2)
+        (area1 < area2) AND (gray1 > gray2) AND (pce1 < pce2)
       Case row2:
-        (pk2 > pk1) AND (sl2 > sl1) AND (pce2 < pce1)
+        (area2 < area1) AND (gray2 > gray1) AND (pce2 < pce1)
 
     Return "row1"/"row2" indicating which row satisfies the condition.
     """
-    pk1, sl1, p1 = row1[pk_col], row1[sl_col], row1[pce_col]
-    pk2, sl2, p2 = row2[pk_col], row2[sl_col], row2[pce_col]
+    a1, g1, p1 = row1[area_col], row1[gray_col], row1[pce_col]
+    a2, g2, p2 = row2[area_col], row2[gray_col], row2[pce_col]
 
-    if any(pd.isna(v) for v in (pk1, pk2, sl1, sl2, p1, p2)):
+    if any(pd.isna(v) for v in (a1, a2, g1, g2, p1, p2)):
         return None
 
-    if (pk1 > pk2) and (sl1 > sl2) and (p1 < p2):
+    if (a1 < a2) and (g1 > g2) and (p1 < p2):
         return "row1"
-    if (pk2 > pk1) and (sl2 > sl1) and (p2 < p1):
+    if (a2 < a1) and (g2 > g1) and (p2 < p1):
         return "row2"
     return None
 
@@ -366,10 +408,13 @@ def evaluate_pairs(
     df_main: pd.DataFrame,
     index_col: str,
     metric_cols: List[str],
-    pk_col: str,
-    sl_col: str,
+    area_col: str,
+    gray_col: str,
     pce_col: str,
 ) -> pd.DataFrame:
+    """
+    Adds condition_case and filters to only condition_case != None.
+    """
     if pairs_df is None or pairs_df.empty:
         return pairs_df.copy()
 
@@ -393,7 +438,7 @@ def evaluate_pairs(
             continue
         s1 = metrics_df.loc[r1]
         s2 = metrics_df.loc[r2]
-        case_list.append(rule_pl_case(s1, s2, pk_col=pk_col, sl_col=sl_col, pce_col=pce_col))
+        case_list.append(rule_image_case(s1, s2, area_col=area_col, gray_col=gray_col, pce_col=pce_col))
 
     res["condition_case"] = case_list
     res = res[res["condition_case"].notna()].reset_index(drop=True)
@@ -499,11 +544,13 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
     _ = random.choice(T["instruction_templates"])  # keep randomness consistent
 
     image_analysis_template = random.choice(T["image_analysis_segments"]) if T["image_analysis_segments"] else ""
+
+    # NOTE: For Process dataset, you likely don't want PL/XRD in the text; keep them available but unused by default.
     pl_analysis_template = random.choice(T["pl_analysis_segments"]) if T["pl_analysis_segments"] else ""
     xrd_analysis_12 = random.choice(T["xrd_analysis_segments_12"]) if T["xrd_analysis_segments_12"] else ""
     xrd_analysis_stress = random.choice(T["xrd_analysis_segments_stress"]) if T["xrd_analysis_segments_stress"] else ""
 
-    # SAM templates
+    # SAM templates (optional)
     sam_formula_template = ""
     if gv(row, "Formula SAM 1") != "N/A":
         if gv(row, "Formula SAM 2") == "N/A" and gv(row, "Formula SAM 3") == "N/A":
@@ -523,7 +570,7 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         else:
             additive_formula_template = random.choice(T["additive_formula_segments_triple"])
 
-    # Passivation templates (optional, if your table has them)
+    # Passivation templates (optional)
     passivation_material_template = ""
     passivation_spin_template = ""
     passivation_drop_template = ""
@@ -555,6 +602,7 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         "passivation_drop": passivation_drop_template,
         "passivation_anneal": passivation_anneal_template,
         "image_analysis": image_analysis_template,
+        # keep but not used by default:
         "pl_analysis": pl_analysis_template,
         "xrd_analysis_12": xrd_analysis_12,
         "xrd_analysis_stress": xrd_analysis_stress,
@@ -661,171 +709,86 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
                 )
             )
 
-    # RGB (optional)
-    rgb_keys = ["area_px2", "gray_mean"]
-    if all(k in row.index for k in rgb_keys) and all(gv(row, k) != "N/A" for k in rgb_keys):
-        if templates.get("image_analysis"):
+    # Image metrics segment (optional, if your table has them)
+    if (AREA_COL in row.index) and (GRAY_COL in row.index):
+        if gv(row, AREA_COL) != "N/A" and gv(row, GRAY_COL) != "N/A":
             parts.append(
                 templates["image_analysis"].format(
-                    coverage=gv(row, "area_px2"),
-                    grayscale_value=gv(row, "gray_mean"),
+                    coverage=gv(row, AREA_COL),
+                    grayscale_value=gv(row, GRAY_COL),
                 )
             )
 
-    # PL (optional)
-    pl_keys = ["peak_time", "decay_slope"]
-    if all(k in row.index for k in pl_keys) and all(gv(row, k) != "N/A" for k in pl_keys):
-        if templates.get("pl_analysis"):
-            parts.append(
-                templates["pl_analysis"].format(
-                    peak_time=gv(row, "peak_time"),
-                    decay_slope=gv(row, "decay_slope"),
-                )
-            )
-
-    # XRD 12.6° (optional)
-    if templates.get("xrd_analysis_12"):
-        if gv(row, "xrd_intensity_12.6") != "N/A" and gv(row, "xrd_fhwm_12.6") != "N/A":
-            parts.append(
-                templates["xrd_analysis_12"].format(
-                    xrd_intensity_12=gv(row, "xrd_intensity_12.6"),
-                    xrd_fhwm_12=gv(row, "xrd_fhwm_12.6"),
-                )
-            )
-
-    # XRD stress (optional)
-    if templates.get("xrd_analysis_stress"):
-        if gv(row, "xrd_Stress") != "N/A":
-            parts.append(
-                templates["xrd_analysis_stress"].format(
-                    xrd_intensity_4=gv(row, "xrd_intensity_4"),
-                    xrd_Stress=gv(row, "xrd_Stress"),
-                )
-            )
-
-    return " ".join([p for p in parts if p and str(p).strip()])
+    return " ".join([p for p in parts if p])
 
 
 def row_to_text(row: pd.Series, T: Dict[str, Any]) -> str:
-    return generate_output_text(row, build_templates_for_row(row, T))
+    templates = build_templates_for_row(row, T)
+    return generate_output_text(row, templates)
 
 
-# -------------------------
-# 5) SAM list extraction
-# -------------------------
-def _normalize_material(x: Any) -> Optional[str]:
+
+def to_float(x: Any) -> float:
+    """Robust float conversion; returns NaN if conversion fails."""
+    try:
+        if pd.isna(x):
+            return float("nan")
+    except Exception:
+        pass
+    try:
+        s = str(x).strip()
+        if s.lower() in ("", "n/a", "na", "none", "nan"):
+            return float("nan")
+        return float(s)
+    except Exception:
+        return float("nan")
+
+def safe_colname(x: Any) -> str:
     if x is None:
-        return None
+        return ""
     s = str(x).strip()
     if s.lower() in ("", "n/a", "na", "none", "nan"):
-        return None
+        return ""
     return s
 
 
-def _collect_materials(row: pd.Series, cols: List[str]) -> List[str]:
-    out: List[str] = []
-    seen = set()
-    for c in cols:
-        if c not in row.index:
-            continue
-        name = _normalize_material(row[c])
-        if name and name not in seen:
-            seen.add(name)
-            out.append(name)
-    return out
-
-
-def ordered_union(a: List[str], b: List[str]) -> List[str]:
-    seen, out = set(), []
-    for lst in (a, b):
-        for x in lst:
-            if x not in seen:
-                seen.add(x)
-                out.append(x)
-    return out
-
-
 # -------------------------
-# 6) Build JSON records (SAM)
+# 5) End-to-end main
 # -------------------------
-def pairs_to_records(
-    pairs_df: pd.DataFrame,
-    df_indexed: pd.DataFrame,
-    T: Dict[str, Any],
-    question_text: str,
-    pair_source: str,
-) -> List[Dict[str, Any]]:
-    records: List[Dict[str, Any]] = []
-    for _, pr in pairs_df.iterrows():
-        r1 = str(pr["row1_index"])
-        r2 = str(pr["row2_index"])
-        if (r1 not in df_indexed.index) or (r2 not in df_indexed.index):
-            continue
-
-        # control = the row that satisfies the condition_case (as in your evaluation scripts)
-        case = pr.get("condition_case", None)
-        if case == "row2":
-            ctrl_idx, tgt_idx = r2, r1
-        else:
-            ctrl_idx, tgt_idx = r1, r2
-
-        row_ctrl = df_indexed.loc[ctrl_idx]
-        row_tgt = df_indexed.loc[tgt_idx]
-
-        control_text = row_to_text(row_ctrl, T)
-        target_text = row_to_text(row_tgt, T)
-
-        ctrl_sam = _collect_materials(row_ctrl, ["Formula SAM 1", "Formula SAM 2", "Formula SAM 3"])
-        tgt_sam = _collect_materials(row_tgt, ["Formula SAM 1", "Formula SAM 2", "Formula SAM 3"])
-
-        rec = {
-            "question": question_text,
-            "control": control_text,
-            "target": target_text,
-            "pair_source": pair_source,
-            "sample_id_1": str(ctrl_idx),
-            "sample_id_2": str(tgt_idx),
-            "sample_id_1_date": normalize_date(row_ctrl.get(DATE_COL, "")),
-            "sample_id_2_date": normalize_date(row_tgt.get(DATE_COL, "")),
-            "SAM": ordered_union(ctrl_sam, tgt_sam),
-        }
-        records.append(rec)
-    return records
+def maybe_downsample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
+    if n <= 0 or df is None or df.empty or len(df) <= n:
+        return df
+    return df.sample(n=n, random_state=seed).reset_index(drop=True)
 
 
-# -------------------------
-# 7) Run
-# -------------------------
 def main() -> None:
     random.seed(SEED)
     np.random.seed(SEED)
 
+    # in_path = Path(INPUT_CSV)
+    # out_path = Path(OUTPUT_JSON)
+    # out_path.parent.mkdir(parents=True, exist_ok=True)
     script_dir = Path(__file__).parent.resolve()
     # 所有输出都到 data 目录（与 src 平级）
     output_dir = script_dir.parent.parent / "data"
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_csv = output_dir / "PL_sam_db.csv"
+    output_csv = output_dir / OUTPUT_CSV
 
     # JSON 输出也到 data 目录
-    json_output_dir = output_dir / "PL_sam"
+    json_output_dir = output_dir / "characterisation_image_pvk"
     json_output_dir.mkdir(parents=True, exist_ok=True)
-    output_json = json_output_dir / "PL_sam_pairs.json"
+    output_json = json_output_dir / "characterisation_image_pvk_pairs.json"
 
     export_table_to_csv_exclude_id(TABLE_NAME, output_csv, MYSQL_CONFIG)
 
+    # ---- read main table ----
+    df_main = read_csv_auto(output_csv)
+    df_main = strip_columns(df_main)
+    df_main = ensure_index_col(df_main, INDEX_COL)
 
-    # random.seed(SEED)
-    # np.random.seed(SEED)
-    # input_csv = Path(INPUT_CSV)
-    # output_json = Path(OUTPUT_JSON)
-    # output_json.parent.mkdir(parents=True, exist_ok=True)
-
-    df = read_csv_auto(output_csv)
-    df = strip_columns(df)
-    df = ensure_index_col(df, INDEX_COL)
-
-    pairs_formula, pairs_conc, summary = build_pairs(
-        df_main=df,
+    # ---- mine pairs ----
+    pairs_formula_df, pairs_conc_df, summary = build_pairs(
+        df_main=df_main,
         index_col=INDEX_COL,
         formula_cols_all=FORMULA_COLS_ALL,
         conc_cols_all=CONC_COLS_ALL,
@@ -833,57 +796,115 @@ def main() -> None:
         conc_diff_ignore=CONC_DIFF_IGNORE,
     )
 
-    pairs_formula_f = evaluate_pairs(
-        pairs_df=pairs_formula,
-        df_main=df,
-        index_col=INDEX_COL,
-        metric_cols=METRIC_COLS,
-        pk_col=PEAK_TIME_COL,
-        sl_col=DECAY_SLOPE_COL,
-        pce_col=PCE_COL,
-    )
-    pairs_conc_f = evaluate_pairs(
-        pairs_df=pairs_conc,
-        df_main=df,
-        index_col=INDEX_COL,
-        metric_cols=METRIC_COLS,
-        pk_col=PEAK_TIME_COL,
-        sl_col=DECAY_SLOPE_COL,
-        pce_col=PCE_COL,
-    )
+    # ---- filter by rule ----
+    filtered_formula = pd.DataFrame()
+    filtered_conc = pd.DataFrame()
+    if "formula" in PAIR_SOURCES and not pairs_formula_df.empty:
+        filtered_formula = evaluate_pairs(
+            pairs_df=pairs_formula_df,
+            df_main=df_main,
+            index_col=INDEX_COL,
+            metric_cols=METRIC_COLS,
+            area_col=AREA_COL,
+            gray_col=GRAY_COL,
+            pce_col=PCE_COL,
+        )
+    if "concentration" in PAIR_SOURCES and not pairs_conc_df.empty:
+        filtered_conc = evaluate_pairs(
+            pairs_df=pairs_conc_df,
+            df_main=df_main,
+            index_col=INDEX_COL,
+            metric_cols=METRIC_COLS,
+            area_col=AREA_COL,
+            gray_col=GRAY_COL,
+            pce_col=PCE_COL,
+        )
 
-    def _sample(d: pd.DataFrame) -> pd.DataFrame:
-        if MAX_PAIRS_PER_SOURCE and MAX_PAIRS_PER_SOURCE > 0 and len(d) > MAX_PAIRS_PER_SOURCE:
-            return d.sample(n=MAX_PAIRS_PER_SOURCE, random_state=SEED).reset_index(drop=True)
-        return d
+    # ---- optional downsample ----
+    filtered_formula = maybe_downsample(filtered_formula, MAX_PAIRS_PER_SOURCE, SEED) if not filtered_formula.empty else filtered_formula
+    filtered_conc = maybe_downsample(filtered_conc, MAX_PAIRS_PER_SOURCE, SEED) if not filtered_conc.empty else filtered_conc
 
-    pairs_formula_f = _sample(pairs_formula_f)
-    pairs_conc_f = _sample(pairs_conc_f)
-
-    T = import_templates_lib()
-    df_indexed = df.drop_duplicates(subset=[INDEX_COL], keep="first").fillna("N/A").set_index(INDEX_COL)
-
-    records: List[Dict[str, Any]] = []
-    if "formula" in PAIR_SOURCES:
-        records.extend(pairs_to_records(pairs_formula_f, df_indexed, T, QUESTION, "formula"))
-    if "concentration" in PAIR_SOURCES:
-        records.extend(pairs_to_records(pairs_conc_f, df_indexed, T, QUESTION, "concentration"))
-
-    with open(output_json, "w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False, indent=2)
-
+    # ---- debug CSVs ----
     if WRITE_DEBUG_CSV:
-        stem = output_json.with_suffix("")
-        pairs_formula.to_csv(stem.as_posix() + "_pairs_formula_raw.csv", index=False, encoding="utf-8-sig")
-        pairs_conc.to_csv(stem.as_posix() + "_pairs_conc_raw.csv", index=False, encoding="utf-8-sig")
-        pairs_formula_f.to_csv(stem.as_posix() + "_pairs_formula_filtered.csv", index=False, encoding="utf-8-sig")
-        pairs_conc_f.to_csv(stem.as_posix() + "_pairs_conc_filtered.csv", index=False, encoding="utf-8-sig")
+        out_path = output_json
+        debug_dir = output_dir / (output_dir.stem + "_debug")
+        debug_dir.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(summary["formula_breakdown"]).to_csv(debug_dir / "breakdown_formula.csv", index=False, encoding="utf-8-sig")
+        pd.DataFrame(summary["concentration_breakdown"]).to_csv(debug_dir / "breakdown_concentration.csv", index=False, encoding="utf-8-sig")
+        pairs_formula_df.to_csv(debug_dir / "pairs_formula_all.csv", index=False, encoding="utf-8-sig")
+        pairs_conc_df.to_csv(debug_dir / "pairs_concentration_all.csv", index=False, encoding="utf-8-sig")
+        if not filtered_formula.empty:
+            filtered_formula.to_csv(debug_dir / "pairs_formula_filtered.csv", index=False, encoding="utf-8-sig")
+        if not filtered_conc.empty:
+            filtered_conc.to_csv(debug_dir / "pairs_concentration_filtered.csv", index=False, encoding="utf-8-sig")
+
+    # ---- build JSON records ----
+    T = import_templates_lib()
+    data_idx = df_main.drop_duplicates(subset=[INDEX_COL], keep="first").fillna("N/A").set_index(INDEX_COL)
+
+    all_records: List[Dict[str, Any]] = []
+
+    def emit_from_pairs(src_name: str, pairs_df: pd.DataFrame) -> None:
+        if pairs_df is None or pairs_df.empty:
+            return
+
+        for _, pr in pairs_df.iterrows():
+            r1 = str(pr["row1_index"])
+            r2 = str(pr["row2_index"])
+
+            if r1 not in data_idx.index or r2 not in data_idx.index:
+                continue
+
+            # decide which row becomes "control" based on condition_case
+            case = pr.get("condition_case", None)
+            if case == "row2":
+                ctrl_idx, tgt_idx = r2, r1
+            else:
+                ctrl_idx, tgt_idx = r1, r2
+
+            row_control = data_idx.loc[ctrl_idx]
+            row_target = data_idx.loc[tgt_idx]
+
+
+            # Extra filter: target PCE must be >= TARGET_PCE_MIN
+            target_pce = to_float(row_target.get(PCE_COL, float("nan")))
+            if not (target_pce >= TARGET_PCE_MIN):
+                continue
+            control_text = row_to_text(row_control, T)
+            target_text = row_to_text(row_target, T)
+
+            # Process list from differing_column
+            proc_name = safe_colname(pr.get("differing_column", ""))
+            process_list = [proc_name] if proc_name else []
+
+            record = {
+                "question": QUESTION,
+                "control": control_text,
+                "target": target_text,
+                "pair_source": src_name,
+                "sample_id_1": str(ctrl_idx),
+                "sample_id_2": str(tgt_idx),
+                "sample_id_1_date": normalize_date(row_control.get(DATE_COL, "")),
+                "sample_id_2_date": normalize_date(row_target.get(DATE_COL, "")),
+                "Process": process_list,
+            }
+            all_records.append(record)
+
+    if "formula" in PAIR_SOURCES and not filtered_formula.empty:
+        emit_from_pairs("formula", filtered_formula)
+    if "concentration" in PAIR_SOURCES and not filtered_conc.empty:
+        emit_from_pairs("concentration", filtered_conc)
+
+    # ---- write JSON ----
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(all_records, f, ensure_ascii=False, indent=2)
+
+    # ---- summary ----
 
     print("✅ Done.")
-    # print("Summary:", summary)
-    print("Output JSON:", output_json)
-    print("Records:", len(records))
+    print("Output JSON:", OUTPUT_JSON)
+    print("Records:", summary["n_rows_main"])
 
-
+    pass
 if __name__ == "__main__":
-    run_pl_sam()
+    run_characterisation_image_pvk()

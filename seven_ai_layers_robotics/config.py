@@ -48,7 +48,7 @@ class ReasoningDatabaseSettings(BaseModel):  # ✅ NEW
     password: str = Field("", description="DB password")
     database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
-    table: str = Field("daily_experiment", description="DB table")
+    table: str = Field("experiments_data_daily", description="DB table")
 
 
 class ReasoningOutputDatabaseSettings(BaseModel):  # ✅ NEW
@@ -59,7 +59,7 @@ class ReasoningOutputDatabaseSettings(BaseModel):  # ✅ NEW
     password: str = Field("", description="DB password")
     database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
-    table: str = Field("MIRecipe", description="DB table")
+    table: str = Field("report_optimised", description="DB table")
 
 
 class ReasoningLLMSettings(BaseModel):  # ✅ NEW
@@ -559,7 +559,7 @@ class Config:
             password=reasoning_db_cfg.get("password", ""),
             database=reasoning_db_cfg.get("database", ""),
             charset=reasoning_db_cfg.get("charset", "utf8mb4"),
-            table=reasoning_db_cfg.get("table", "daily_experiment"),
+            table=reasoning_db_cfg.get("table", "experiments_data_daily"),
         )
 
         reasoning_output_database_settings = ReasoningOutputDatabaseSettings(
@@ -569,7 +569,7 @@ class Config:
             password=reasoning_output_db_cfg.get("password", reasoning_db_cfg.get("password", "")),
             database=reasoning_output_db_cfg.get("database", reasoning_db_cfg.get("database", "")),
             charset=reasoning_output_db_cfg.get("charset", "utf8mb4"),
-            table=reasoning_output_db_cfg.get("table", "MIRecipe"),
+            table=reasoning_output_db_cfg.get("table", "report_optimised"),
         )
 
         reasoning_llm_settings = ReasoningLLMSettings(

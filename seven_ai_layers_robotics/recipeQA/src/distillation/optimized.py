@@ -164,7 +164,7 @@ def read_json_file(file_path: str) -> Any:
 def rebuild_mechanism_from_db(
     output_root: str,
     db_config: dict,
-    table_name: str = "markdown_records"
+    table_name: str = "expert_mechanisms"
 ):
     """
     Rebuild mechanism folder structure from database.
@@ -833,7 +833,7 @@ def get_tasks_from_db(
             "md_files": used_files,
         }
 
-    # 2. Load match_pair data from database
+    # 2. Load  data from database
     import pymysql  # Or your MySQL driver
 
     # Auto-get db_config from app.config
@@ -875,7 +875,7 @@ def get_tasks_from_db(
                     sample_id_2,
                     control_device_fabrication,
                     target_device_fabrication
-                FROM match_pair
+                FROM no_characterisation_match
             """)
             rows = cursor.fetchall()
     finally:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Stage 2: Process records with status=1 in single_report one by one
+Stage 2: Process records with status=1 in  one by one
 - Extract the experimental description with id from the .docx file specified by location
 - Call DeepSeek to generate mechanism analysis
 - Save as {type}_{id}.json
@@ -58,11 +58,11 @@ REPORTS_DIR = os.path.join(JSON_ROOT_DIR, "reports")
 
 # .docx file mapping: type -> docx filename
 DOCX_FILES_MAP = {
-    "pl_sam": "pl_sam.docx",
-    "xrd_additives": "xrd_additives.docx",
-    "xrd_passivators": "xrd_passivators.docx",
-    "image_process": "image_process.docx",
-    "data50764_select": "data50764_select.docx"  # default/generic
+    "characterisation_pl_sam": "characterisation_pl_sam.docx",
+    "characterisation_xrd_additives": "characterisation_xrd_additives.docx",
+    "characterisation_xrd_passivators": "characterisation_xrd_passivators.docx",
+    "characterisation_image_pvk": "characterisation_image_pvk.docx",
+    "experiments_cleaned_data": "experiments_cleaned_data.docx"  # default/generic
 }
 
 MAX_WORKERS = 3  # DeepSeek may have rate limits, recommend ≤3
@@ -242,7 +242,7 @@ def build_json_obj(experiment_text, summary_text):
 def fetch_pending_records():
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    cursor.execute("SELECT `index`, `type`, `id`, `location` FROM `single_report` WHERE `status` = 1")
+    cursor.execute("SELECT `index`, `type`, `id`, `location` FROM `` WHERE `status` = 1")
     records = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -251,7 +251,7 @@ def fetch_pending_records():
 def mark_as_done(report_index):
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
-    cursor.execute("UPDATE `single_report` SET `status` = 2 WHERE `index` = %s", (report_index,))
+    cursor.execute("UPDATE `` SET `status` = 2 WHERE `index` = %s", (report_index,))
     conn.commit()
     cursor.close()
     conn.close()
@@ -271,7 +271,7 @@ def process_single_record(report_index, record_type, record_id, docx_path):
 
     # 3. Read .docx and extract corresponding paragraph
     # Determine which .docx file to use based on type
-    docx_filename = DOCX_FILES_MAP.get(record_type, "data50764_select.docx")
+    docx_filename = DOCX_FILES_MAP.get(record_type, "experiments_cleaned_data.docx")
     docx_path_fixed = os.path.join(REPORTS_DIR, docx_filename)
 
     if not os.path.exists(docx_path_fixed):
@@ -300,7 +300,7 @@ def process_single_record(report_index, record_type, record_id, docx_path):
 # ================== Main Process ==================
 
 def main():
-    print("🔍 Starting Stage 2: Processing records with status=1 in single_report...")
+    print("🔍 Starting Stage 2: Processing records with status=1 in ...")
     records = fetch_pending_records()
     if not records:
         print("📭 No pending records")

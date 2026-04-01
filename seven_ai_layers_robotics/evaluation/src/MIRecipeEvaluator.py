@@ -47,7 +47,7 @@ class MIRecipeEvaluator:
             "password": db.password,
             "database": db.database,
             "port": db.port,
-            "table": "MIRecipe"
+            "table": "report_optimised"
         }
         # self.api_url = svc.evaluation_api_url
         # self.timeout = svc.http_timeout_sec

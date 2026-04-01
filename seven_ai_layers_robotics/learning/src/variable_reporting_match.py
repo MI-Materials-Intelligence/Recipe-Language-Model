@@ -147,7 +147,7 @@ class RoboticDataPipeline:
 
     def _record_exists(self, cursor, sid1, sid2, reverse_diff_class, analysis_type) -> bool:
         query = """
-        SELECT 1 FROM match_pair
+        SELECT 1 FROM no_characterisation_match
         WHERE sample_id_1 = %s AND sample_id_2 = %s
           AND reverse_diff_class = %s AND analysis_type = %s
         LIMIT 1
@@ -157,7 +157,7 @@ class RoboticDataPipeline:
 
     def _insert_record(self, cursor, analysis_type, reverse_diff_class, sid1, sid2, ctrl_fab, tgt_fab, file_path, meta_info):
         query = """
-        INSERT INTO match_pair
+        INSERT INTO no_characterisation_match
         (analysis_type, reverse_diff_class, sample_id_1, sample_id_2,
          control_device_fabrication, target_device_fabrication, json_file_path, meta_info)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
@@ -460,7 +460,7 @@ if __name__ == "__main__":
 
     # Initialize and execute
     pipeline = RoboticDataPipeline()
-    success = pipeline.run_full_process(table_name="data3000")
+    success = pipeline.run_full_process(table_name="experiments_data")
 
     if not success:
         print("\n❌ Workflow execution failed, please check logs.")

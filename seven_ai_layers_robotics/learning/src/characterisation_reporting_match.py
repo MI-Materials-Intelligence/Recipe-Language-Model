@@ -47,22 +47,22 @@ DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
 try:
     # Use absolute imports instead of relative imports to avoid path issues in multi-process environments
-    from .matching.pl_sam import run_pl_sam
-    from .matching.image_process import run_image_process
+    from .matching.characterisation_pl_sam import run_characterisation_pl_sam
+    from .matching.characterisation_image_pvk import run_characterisation_image_pvk
     from .matching.additive_xrd import run_additive_xrd
     from .matching.passivator_xrd import run_passivator_xrd
     from .matching.insert_characterization_pairs import run as insert_pairs
 
-    PL_SAM_AVAILABLE = True
-    IMAGE_PROCESS_AVAILABLE = True
+    characterisation_pl_sam_AVAILABLE = True
+    characterisation_image_pvk_AVAILABLE = True
     ADDITIVE_XRD_AVAILABLE = True
     PASSIVATOR_XRD_AVAILABLE = True
     INSERT_PAIRS_AVAILABLE = True
 
 except ImportError as e:
     print(f"⚠️ WARNING: Unable to import characterization data processing modules. Error: {e}")
-    PL_SAM_AVAILABLE = False
-    IMAGE_PROCESS_AVAILABLE = False
+    characterisation_pl_sam_AVAILABLE = False
+    characterisation_image_pvk_AVAILABLE = False
     ADDITIVE_XRD_AVAILABLE = False
     PASSIVATOR_XRD_AVAILABLE = False
     INSERT_PAIRS_AVAILABLE = False
@@ -93,8 +93,8 @@ class CharacterizationDataPipeline:
 
         # Module availability status
         self.module_status = {
-            'pl_sam': PL_SAM_AVAILABLE,
-            'image_process': IMAGE_PROCESS_AVAILABLE,
+            'characterisation_pl_sam': characterisation_pl_sam_AVAILABLE,
+            'characterisation_image_pvk': characterisation_image_pvk_AVAILABLE,
             'additive_xrd': ADDITIVE_XRD_AVAILABLE,
             'passivator_xrd': PASSIVATOR_XRD_AVAILABLE,
             'insert_pairs': INSERT_PAIRS_AVAILABLE,
@@ -104,9 +104,9 @@ class CharacterizationDataPipeline:
         """Check availability status of each module"""
         return self.module_status.copy()
 
-    def run_pl_sam_pipeline(self, verbose: bool = True) -> bool:
+    def run_characterisation_pl_sam_pipeline(self, verbose: bool = True) -> bool:
         """Execute PL SAM data extraction pipeline"""
-        if not PL_SAM_AVAILABLE:
+        if not characterisation_pl_sam_AVAILABLE:
             print("❌ PL SAM module not available")
             return False
 
@@ -116,7 +116,7 @@ class CharacterizationDataPipeline:
                 print("🔬 Starting PL SAM data processing...")
                 print("="*60)
 
-            run_pl_sam(verbose=verbose)
+            run_characterisation_pl_sam(verbose=verbose)
 
             if verbose:
                 print("✅ PL SAM data processing completed\n")
@@ -127,9 +127,9 @@ class CharacterizationDataPipeline:
             print(f"❌ PL SAM processing failed: {e}")
             return False
 
-    def run_image_process_pipeline(self, verbose: bool = True) -> bool:
+    def run_characterisation_image_pvk_pipeline(self, verbose: bool = True) -> bool:
         """Execute Image Process data extraction pipeline"""
-        if not IMAGE_PROCESS_AVAILABLE:
+        if not characterisation_image_pvk_AVAILABLE:
             print("❌ Image Process module not available")
             return False
 
@@ -139,7 +139,7 @@ class CharacterizationDataPipeline:
                 print("🖼️ Starting Image Process data processing...")
                 print("="*60)
 
-            run_image_process(verbose=verbose)
+            run_characterisation_image_pvk(verbose=verbose)
 
             if verbose:
                 print("✅ Image Process data processing completed\n")
@@ -227,8 +227,8 @@ class CharacterizationDataPipeline:
         try:
             # Execute all characterization data processing workflows and database insertion
             results = self.run_all(
-                include_pl_sam=True,
-                include_image_process=True,
+                include_characterisation_pl_sam=True,
+                include_characterisation_image_pvk=True,
                 include_additive_xrd=True,
                 include_passivator_xrd=True,
                 include_db_insertion=True,
@@ -248,16 +248,16 @@ class CharacterizationDataPipeline:
             return False
 
     def run_all(self,
-                include_pl_sam: bool = True,
-                include_image_process: bool = True,
+                include_characterisation_pl_sam: bool = True,
+                include_characterisation_image_pvk: bool = True,
                 include_additive_xrd: bool = True,
                 include_passivator_xrd: bool = True,
                 include_db_insertion: bool = True,
                 verbose: bool = True) -> Dict[str, bool]:
         """
         Execute complete data processing and database insertion workflow
-        :param include_pl_sam: Whether to include PL SAM processing
-        :param include_image_process: Whether to include Image Process processing
+        :param include_characterisation_pl_sam: Whether to include PL SAM processing
+        :param include_characterisation_image_pvk: Whether to include Image Process processing
         :param include_additive_xrd: Whether to include Additive XRD processing
         :param include_passivator_xrd: Whether to include Passivator XRD processing
         :param include_db_insertion: Whether to include database insertion
@@ -275,11 +275,11 @@ class CharacterizationDataPipeline:
         results = {}
 
         # Execute each characterization data processing workflow
-        if include_pl_sam:
-            results['pl_sam'] = self.run_pl_sam_pipeline(verbose=verbose)
+        if include_characterisation_pl_sam:
+            results['characterisation_pl_sam'] = self.run_characterisation_pl_sam_pipeline(verbose=verbose)
 
-        if include_image_process:
-            results['image_process'] = self.run_image_process_pipeline(verbose=verbose)
+        if include_characterisation_image_pvk:
+            results['characterisation_image_pvk'] = self.run_characterisation_image_pvk_pipeline(verbose=verbose)
 
         if include_additive_xrd:
             results['additive_xrd'] = self.run_additive_xrd_pipeline(verbose=verbose)

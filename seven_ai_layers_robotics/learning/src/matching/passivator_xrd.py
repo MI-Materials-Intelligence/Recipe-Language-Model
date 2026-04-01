@@ -111,15 +111,15 @@ MYSQL_CONFIG = {
 }
 
 # Replace with your actual table name
-TABLE_NAME = "xrd_passivators"  # ← e.g., the table you imported before
-OUTPUT_CSV = "XRD_passivators_db.csv"
+TABLE_NAME = "characterisation_xrd_passivators"  # ← e.g., the table you imported before
+OUTPUT_CSV = "characterisation_xrd_passivators_db.csv"
 
 
 # export_table_to_csv_exclude_id(TABLE_NAME, OUTPUT_CSV, MYSQL_CONFIG)
 
 # Subsequent processing scripts can directly use:
 INPUT_CSV = OUTPUT_CSV         # <-- your csv total table
-OUTPUT_JSON = "XRD_passivators/XRD_passivators_pairs.json"
+OUTPUT_JSON = "characterisation_xrd_passivators/characterisation_xrd_passivators_pairs.json"
 INDEX_COL = "index"                         # <-- your stable row id column
 DATE_COL = "date"                        # <-- date column name (optional)
 
@@ -813,7 +813,7 @@ def main() -> None:
     output_csv = output_dir / OUTPUT_CSV
 
     
-    json_output_dir = output_dir / "XRD_passivators"
+    json_output_dir = output_dir / "characterisation_xrd_passivators"
     json_output_dir.mkdir(parents=True, exist_ok=True)
     output_json = json_output_dir / "passivators_xrd_pairs.json"
 

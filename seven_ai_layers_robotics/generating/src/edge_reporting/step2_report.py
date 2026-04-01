@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-DB → DataFrame → Automatic Experimental Description → Word(docx) + Write to single_report (deduplication, status codes 0/1/2)
+DB → DataFrame → Automatic Experimental Description → Word(docx) + Write to report_edge (deduplication, status codes 0/1/2)
 Supports batch generation for multiple tables
 """
 
@@ -173,7 +173,7 @@ def generate_paragraph(row, xrd_mode=None):
     return " ".join(p for p in parts if p)
 
 # =========================
-# single_report Write Function (deduplication + status codes)
+#  Write Function (deduplication + status codes)
 # =========================
 def insert_single_report_records(table_name: str, record_ids: list, status_code: int, location: str):
     if not record_ids:
@@ -184,7 +184,7 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
 
     uploadtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     sql = """
-    INSERT IGNORE INTO `single_report` (`type`, `id`, `status`, `uploadtime`, `location`)
+    INSERT IGNORE INTO `` (`type`, `id`, `status`, `uploadtime`, `location`)
     VALUES (%s, %s, %s, %s, %s)
     """
     data = [(table_name, rid, status_code, uploadtime, location) for rid in record_ids]
@@ -196,10 +196,10 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
 
     if inserted_count > 0:
         status_map = {0: "skipped", 1: "generated", 2: "failed"}
-        print(f"📊 Added {inserted_count} records to single_report (status={status_map[status_code]})")
+        print(f"📊 Added {inserted_count} records to  (status={status_map[status_code]})")
 
 # =========================
-# Ensure single_report has unique index
+# Ensure  has unique index
 # =========================
 def ensure_single_report_unique_index():
     conn = pymysql.connect(**DB_CONFIG)
@@ -207,13 +207,13 @@ def ensure_single_report_unique_index():
     cursor.execute("""
         SELECT COUNT(1) FROM information_schema.statistics
         WHERE table_schema = %s
-          AND table_name = 'single_report'
+          AND table_name = ''
           AND index_name = 'uniq_type_id';
     """, (DB_CONFIG['database'],))
     exists = cursor.fetchone()[0] > 0
     if not exists:
-        cursor.execute("ALTER TABLE `single_report` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
-        print("✅ Added unique index (type, id) to single_report")
+        cursor.execute("ALTER TABLE `` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
+        print("✅ Added unique index (type, id) to ")
     cursor.close()
     conn.close()
 
@@ -277,11 +277,11 @@ def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source
 # Batch Task Configuration
 # =========================
 TASKS = [
-    {"table": "xrd_additives",   "output": "reports/xrd_additives.docx",   "xrd_mode": "additives", "index_col": "index"},
-    {"table": "xrd_passivators", "output": "reports/xrd_passivators.docx", "xrd_mode": "passivators", "index_col": "index"},
-    {"table": "image_process",   "output": "reports/image_process.docx",   "xrd_mode": None, "index_col": "index"},
-    {"table": "pl_sam",          "output": "reports/pl_sam.docx",          "xrd_mode": None, "index_col": "index"},
-    {"table": "data50764_select", "output": "reports/data50764_select.docx", "xrd_mode": None, "index_col": "No"},
+    {"table": "characterisation_xrd_additives",   "output": "reports/characterisation_xrd_additives.docx",   "xrd_mode": "additives", "index_col": "index"},
+    {"table": "characterisation_xrd_passivators", "output": "reports/characterisation_xrd_passivators.docx", "xrd_mode": "passivators", "index_col": "index"},
+    {"table": "characterisation_image_pvk",   "output": "reports/characterisation_image_pvk.docx",   "xrd_mode": None, "index_col": "index"},
+    {"table": "characterisation_pl_sam",          "output": "reports/characterisation_pl_sam.docx",          "xrd_mode": None, "index_col": "index"},
+    {"table": "experiments_cleaned_data", "output": "reports/experiments_cleaned_data.docx", "xrd_mode": None, "index_col": "No"},
 ]
 
 # =========================

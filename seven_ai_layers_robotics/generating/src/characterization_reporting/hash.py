@@ -51,7 +51,7 @@ def backfill_hash():
     cursor.execute("""
         SELECT id, sample_id_1, sample_id_2, pair_source,
                additive, passivator, sam, process
-        FROM experiments_characterization_pairs
+        FROM characterisation_match
         WHERE content_hash IS NULL
     """)
     rows = cursor.fetchall()
@@ -59,7 +59,7 @@ def backfill_hash():
     print(f"🔧 Number of records requiring hash backfill: {len(rows)}")
 
     update_sql = """
-        UPDATE experiments_characterization_pairs
+        UPDATE characterisation_match
         SET content_hash = %s
         WHERE id = %s
     """

@@ -110,7 +110,7 @@ class PerovskiteReportGenerator:
             'password': '',
             'database': 'exp_data',
             'port': 3306,
-            'table': 'daily_experiment',
+            'table': 'experiments_data_daily',
         }
         self.output_db_config = output_db_config or {
             'host': self.db_config['host'],
@@ -548,7 +548,7 @@ class PerovskiteReportGenerator:
 
         # SQL statement (field order must match values)
         sql = """
-        INSERT INTO `MIRecipe` (
+        INSERT INTO `report_optimised` (
             ID,
             status,
             control_recipe_value,

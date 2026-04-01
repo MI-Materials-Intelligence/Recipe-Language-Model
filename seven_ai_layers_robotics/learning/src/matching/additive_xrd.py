@@ -114,7 +114,7 @@ MYSQL_CONFIG = {
 # =========================
 
 # Replace with your actual table name
-TABLE_NAME = "xrd_additives"  # ← e.g., the table you imported before
+TABLE_NAME = "characterisation_xrd_additives"  # ← e.g., the table you imported before
 OUTPUT_CSV = "additives.csv"
 
 
@@ -122,7 +122,7 @@ OUTPUT_CSV = "additives.csv"
 
 
 INPUT_CSV = OUTPUT_CSV             # <-- your csv total table
-OUTPUT_JSON = "XRD_additives/XRD_additives_pairs.json"         # <-- output json
+OUTPUT_JSON = "characterisation_xrd_additives/characterisation_xrd_additives_pairs.json"         # <-- output json
 INDEX_COL = "index"                         # <-- your stable row id column
 DATE_COL = "date"                        # <-- date column name (optional)
 
@@ -785,7 +785,7 @@ def main() -> None:
     output_csv = output_dir / OUTPUT_CSV
 
 
-    json_output_dir = output_dir / "XRD_additives"
+    json_output_dir = output_dir / "characterisation_xrd_additives"
     json_output_dir.mkdir(parents=True, exist_ok=True)
     output_json = json_output_dir / "additive_xrd_pairs.json"
 

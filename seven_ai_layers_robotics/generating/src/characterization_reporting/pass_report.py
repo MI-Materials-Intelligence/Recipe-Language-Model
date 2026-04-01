@@ -343,7 +343,7 @@ client = OpenAI(
     base_url=llm_config["base_url"]
 )
 
-TABLE_NAME = "experiments_characterization_pairs"
+TABLE_NAME = "characterisation_match"
 
 # === Lock: for safe JSONL file writing ===
 sft_file_lock = threading.Lock()
@@ -366,14 +366,14 @@ def build_material_content_map_from_db(category: str | None = None):
     if category is not None:
         query = """
             SELECT material, content
-            FROM markdown_records
+            FROM expert_mechanisms
             WHERE content IS NOT NULL AND content != '' AND category = %s
         """
         cursor.execute(query, (category,))
     else:
         query = """
             SELECT material, content
-            FROM markdown_records
+            FROM expert_mechanisms
             WHERE content IS NOT NULL AND content != ''
         """
         cursor.execute(query)
@@ -524,7 +524,7 @@ Start your answer with the header row:
             "sample_id_1_date": item.get("sample_id_1_date"),
             "sample_id_2_date": item.get("sample_id_2_date"),
         }
-        filename = 'PL_sam.csv'
+        filename = 'characterisation_pl_sam.csv'
         report = {
             "source_file": filename,
             "meta": {"Sample_Information": sample_info},
@@ -570,7 +570,7 @@ def main() -> None:
     # Output to Generating/data directory
     generating_root = script_dir.parent.parent  # Characterisation_Reporting -> Generating
     data_root = generating_root / "data"
-    output_dir = data_root / "xrd_passivators"
+    output_dir = data_root / "characterisation_xrd_passivators"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     paths = {

@@ -322,7 +322,7 @@ def get_tasks_from_db(
                     sample_id_2,
                     control_device_fabrication,
                     target_device_fabrication
-                FROM match_pair
+                FROM no_characterisation_match
                 WHERE status = 0
             """)
             rows = cursor.fetchall()
@@ -488,7 +488,7 @@ def batch_update_status(db_config: dict, record_ids: List[int], status: int):
             batch = record_ids[i:i+1000]
             placeholders = ','.join(['%s'] * len(batch))
             cursor.execute(
-                f"UPDATE match_pair SET status = %s WHERE id IN ({placeholders})",
+                f"UPDATE no_characterisation_match SET status = %s WHERE id IN ({placeholders})",
                 [status] + batch
             )
         conn.commit()
@@ -517,7 +517,7 @@ def get_dataset(data_root: str) -> List[Dict[str, Any]]:
     return out
 
 # ===== Rebuild mechanism =====
-def rebuild_mechanism_from_db(output_root: str, db_config: dict, table_name: str = "markdown_records"):
+def rebuild_mechanism_from_db(output_root: str, db_config: dict, table_name: str = "expert_mechanisms"):
     os.makedirs(output_root, exist_ok=True)
     try:
         conn = mysql.connector.connect(**db_config)

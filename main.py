@@ -16,40 +16,40 @@ from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
 
 from seven_ai_layers_robotics.evaluation import MIRecipeEvaluator
 if __name__ == "__main__":
-#     pipeline1 = RoboticDataPipeline()
-#     pipeline1.run_full_process(table_name="data3000")
+    # pipeline1 = RoboticDataPipeline()
+    # pipeline1.run_full_process(table_name="experiments_data")
 
-#     pipeline2 = EdgeReportPipeline()
-#     pipeline2.run_full_process("data3000")
+    # pipeline2 = EdgeReportPipeline()
+    # pipeline2.run_full_process("experiments_data")
 
-    pipeline3 = CharacterizationDataPipeline()
-    pipeline3.run_full_process()
-#     pipeline = VariableReportPipeline()
-#     success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
-#     print("VariableReportPipeline", success)
+    # pipeline3 = CharacterizationDataPipeline()
+    # pipeline3.run_full_process()
+    # pipeline = VariableReportPipeline()
+    # success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
+    # print("VariableReportPipeline", success)
 
     # Run characterisation report generation 
-    pipeline2 = CharacterisationReportPipeline()
-    success = pipeline2.run(report_type='all', verbose=True)
-    print("CharacterisationReportPipeline", success)
+    # pipeline2 = CharacterisationReportPipeline()
+    # success = pipeline2.run(report_type='all', verbose=True)
+    # print("CharacterisationReportPipeline", success)
 
-#     # Run edge report generation pipeline
-#     pipeline3 = GeneratingEdgeReportPipeline()
-#     success = pipeline3.run(steps='all', verbose=True)
-#     print("EdgeReportPipeline", success)
+    # # Run edge report generation pipeline
+    # pipeline3 = GeneratingEdgeReportPipeline()
+    # success = pipeline3.run(steps='all', verbose=True)
+    # print("EdgeReportPipeline", success)
 
-#     # Use asyncio.run() to execute async function
+    # # Use asyncio.run() to execute async function
 
     
-#     # Asynchronously call generate_all_async() to generate all corpora
-#     generator = CorpusGenerator()
-#     result = asyncio.run(generator.generate_all_async())
+    # # Asynchronously call generate_all_async() to generate all corpora
+    # generator = CorpusGenerator()
+    # result = asyncio.run(generator.generate_all_async())
 
 
-#     generator = PerovskiteReportGenerator.from_config()
-#     print("✓ Successfully loaded configuration from config.toml")
-#     print("\nStarting report generation...")
-#     generator.run_once(total_runs=2, max_workers=2)
-#     evaluator = MIRecipeEvaluator()
-#     evaluator.run()
+    generator = PerovskiteReportGenerator.from_config()
+    print("✓ Successfully loaded configuration from config.toml")
+    print("\nStarting report generation...")
+    generator.run_once(total_runs=50, max_workers=10)
+    # evaluator = MIRecipeEvaluator()
+    # evaluator.run()
     print("✓ Report generation completed")

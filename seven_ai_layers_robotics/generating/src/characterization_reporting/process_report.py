@@ -77,7 +77,7 @@ client = OpenAI(
     api_key=llm_config["api_key"],
     base_url=llm_config["base_url"]
 )
-TABLE_NAME = "experiments_characterization_pairs"
+TABLE_NAME = "characterisation_match"
 
 
 
@@ -176,7 +176,7 @@ def ensure_parent_dir(path: str):
 
 def build_material_content_map_from_db(category: str | None = None):
     """
-    Read Markdown content from markdown_records table, optionally filter by category.
+    Read Markdown content from expert_mechanisms table, optionally filter by category.
 
     Args:
         category (str or None):
@@ -192,7 +192,7 @@ def build_material_content_map_from_db(category: str | None = None):
     if category is not None:
         query = """
             SELECT material, content
-            FROM markdown_records
+            FROM expert_mechanisms
             WHERE content IS NOT NULL
               AND content != ''
               AND category = %s
@@ -201,7 +201,7 @@ def build_material_content_map_from_db(category: str | None = None):
     else:
         query = """
             SELECT material, content
-            FROM markdown_records
+            FROM expert_mechanisms
             WHERE content IS NOT NULL
               AND content != ''
         """
@@ -220,9 +220,9 @@ def build_material_content_map_from_db(category: str | None = None):
 
     if not material_content_map:
         if category:
-            print(f"[WARN] No valid Markdown content found for category='{category}' in markdown_records table")
+            print(f"[WARN] No valid Markdown content found for category='{category}' in expert_mechanisms table")
         else:
-            print("[WARN] No markdown content read from markdown_records table")
+            print("[WARN] No markdown content read from expert_mechanisms table")
 
     return material_content_map
 
@@ -514,7 +514,7 @@ def update_status(pair_id: int, status: str):
 def main() -> None:
     # ===== Configuration area: Change to your own paths =====
     # Directory containing md files
-    # JSON_PATH = r"Image_process/pairs_merged_Image.json"
+
 
     # SFT output (complete JSON array + JSONL)
 
@@ -523,7 +523,7 @@ def main() -> None:
     # Output to Generating/data directory
     generating_root = script_dir.parent.parent  # Characterisation_Reporting -> Generating
     data_root = generating_root / "data"
-    output_dir = data_root / "image_process"
+    output_dir = data_root / "characterisation_image_pvk"
     OUTPUT_PATH = output_dir / "sft_pairs_with_think_answer.json"
     OUTPUT_JSONL_PATH = output_dir / "sft_pairs_with_think_answer.jsonl"
 

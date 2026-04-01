@@ -30,12 +30,12 @@ Learning/
     │   ├── additive_xrd.py             
     │   ├── generating_single_var.py    
     │   ├── get_single_var_diff_class.py 
-    │   ├── image_process.py            
+    │   ├── characterisation_image_pvk.py            
     │   ├── insert_characterization_pairs.py 
     │   ├── merge_results.py           
     │   ├── passivator_xrd.py          
     │   ├── perovskite_text_generator.py
-    │   ├── pl_sam.py                  
+    │   ├── characterisation_pl_sam.py                  
     │   └── single_var_matching_pipeline.py 
     ├── __init__.py
     ├── characterisation_reporting_match.py    # Characterization report matching

@@ -5,7 +5,7 @@ Supports: DB export -> Cleaning and deduplication -> Write-back to DB
 
 Usage:
     1. Run directly: python this_script.py
-    2. Import externally: from this_script import EdgeReportPipeline; pipeline = EdgeReportPipeline(); pipeline.run_full_process(src_table="data50764", target_table="data50764_select")
+    2. Import externally: from this_script import EdgeReportPipeline; pipeline = EdgeReportPipeline(); pipeline.run_full_process(src_table="experiments_data", target_table="experiments_cleaned_data")
 """
 
 import os
@@ -89,7 +89,7 @@ class EdgeReportPipeline:
 
         try:
             # Use EdgeReportExtractor for complete processing, all output to data directory
-            target_table = "data50764_select"
+            target_table = "experiments_cleaned_data"
             self.data_extractor.extract_and_process(src_table, target_table, self.data_dir)
 
             print("\n🎉 Full workflow completed successfully!")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
     # Initialize and execute
     pipeline = EdgeReportPipeline()
-    success = pipeline.run_full_process(src_table="data50764", target_table="data50764_select")
+    success = pipeline.run_full_process(src_table="experiments_data", target_table="experiments_cleaned_data")
 
     if not success:
         print("\n❌ Workflow execution failed, please check logs.")

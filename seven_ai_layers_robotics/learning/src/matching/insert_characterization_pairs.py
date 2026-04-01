@@ -34,7 +34,7 @@ MYSQL_CONFIG = {
     "charset": config.learning_database.charset,
 }
 
-TABLE_NAME = "experiments_characterization_pairs"
+TABLE_NAME = "characterisation_match"
 
 # Working directory (default to parent directory of current script)
 WORK_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,10 +43,10 @@ WORK_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(WORK_DIR,"..", "data")
 
 FILES = [
-    os.path.join(DATA_DIR, "PL_sam", "PL_sam_pairs.json"),
-    os.path.join(DATA_DIR, "Image_process", "image_process_pairs.json"),
-    os.path.join(DATA_DIR, "XRD_additives", "additive_xrd_pairs.json"),
-    os.path.join(DATA_DIR, "XRD_passivators", "passivators_xrd_pairs.json"),
+    os.path.join(DATA_DIR, "characterisation_pl_sam", "characterisation_pl_sam_pairs.json"),
+    os.path.join(DATA_DIR, "characterisation_image_pvk", "characterisation_image_pvk_pairs.json"),
+    os.path.join(DATA_DIR, "characterisation_xrd_additives", "additive_xrd_pairs.json"),
+    os.path.join(DATA_DIR, "characterisation_xrd_passivators", "passivators_xrd_pairs.json"),
 ]
 
 # ==============================

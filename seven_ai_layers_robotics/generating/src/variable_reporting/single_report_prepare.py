@@ -372,7 +372,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
                 cursor.execute("""
                     SELECT id, task_name, json_filename, meta_info, sample_id_1, sample_id_2,
                            control_device_fabrication, target_device_fabrication
-                    FROM match_pair WHERE status = 0
+                    FROM no_characterisation_match WHERE status = 0
                 """)
                 rows = cursor.fetchall()
         finally:
@@ -501,7 +501,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             for i in range(0, len(record_ids), 1000):
                 batch = record_ids[i:i+1000]
                 placeholders = ','.join(['%s'] * len(batch))
-                cursor.execute(f"UPDATE match_pair SET status = %s WHERE id IN ({placeholders})", [status] + batch)
+                cursor.execute(f"UPDATE no_characterisation_match SET status = %s WHERE id IN ({placeholders})", [status] + batch)
             conn.commit()
             print(f"[DB] Updated {len(record_ids)} records to status={status}")
         finally:
@@ -550,23 +550,23 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             cursor = conn.cursor(dictionary=True)
 
             # Check if table exists
-            print("[INFO] Checking if table 'markdown_records' exists...")
-            cursor.execute("SHOW TABLES LIKE 'markdown_records'")
+            print("[INFO] Checking if table 'expert_mechanisms' exists...")
+            cursor.execute("SHOW TABLES LIKE 'expert_mechanisms'")
             result = cursor.fetchone()
 
             if not result:
-                print(f"[WARN] Table 'markdown_records' not found in database")
+                print(f"[WARN] Table 'expert_mechanisms' not found in database")
                 print(f"[WARN] Skipping knowledge rebuild, will use existing files if any")
                 cursor.close()
                 conn.close()
                 return
 
             print("[INFO] Table found, fetching data...")
-            cursor.execute("SELECT category_2, material, content FROM `markdown_records`")
+            cursor.execute("SELECT category_2, material, content FROM `expert_mechanisms`")
             rows = cursor.fetchall()
 
             if not rows:
-                print(f"[WARN] No data in 'markdown_records' table")
+                print(f"[WARN] No data in 'expert_mechanisms' table")
                 cursor.close()
                 conn.close()
                 return
