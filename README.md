@@ -81,7 +81,7 @@ This allows users to:
 
 | Model  | Base Model | Type          | Download                                                     |
 | ------ | ---------- | ------------- | ------------------------------------------------------------ |
-| RLM-v1 | Qwen3-32B  | LoRA (merged) | 🤗 [Hugging Face](https://huggingface.co/MI-Materials-Intelligence/RLM) |
+| RLM-v1 | Qwen3-32B  | LoRA (merged) | 🤗 [Hugging Face](https://huggingface.co/MI-Materials-Intelligence/Recipe-Language-Model) |
 
 ---
 
@@ -99,7 +99,7 @@ If you find this work useful, please cite:
 @misc{miagent_2026,
   author={MI-Materials-Intelligence},
   year={2026},
-  howpublished={\url{https://github.com/MI-Materials-Intelligence/MIAgent}}
+  howpublished={\url{https://github.com/MI-Materials-Intelligence/Recipe-Language-Model}}
 }
 ```
 ---
