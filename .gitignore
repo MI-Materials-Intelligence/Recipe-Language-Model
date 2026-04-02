@@ -11,5 +11,5 @@ __pycache__/
 !**/data/.gitkeep
 
 # Learning/data 
-**/Learning/data/
-**/Learning/data/**
+**/learning/data/
+**/learning/data/**
