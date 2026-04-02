@@ -1,0 +1,389 @@
+{
+  "recipe_recommendation": {
+    "name": "Recipe Recommendation",
+    "total_score": 50,
+    "dimensions": [
+      {
+        "id": 1,
+        "name_zh": "",
+        "name_en": "Recipe integrity",
+        "max_score": 5,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "5",
+            "label": "",
+            "description": "• All essential formulas and parameters are fully specified (precursor composition and concentration, additives, SAM, passivator, spin-coating speeds/times, antisolvent volume & timing, annealing temperatures/times, etc.).• No missing formulas and parameters; the process is directly reproducible.• All numerical values are extractable and logically consistent (e.g., antisolvent dripping occurs during spin-coating, annealing follows deposition)."
+          },
+          {
+            "score_range": "4",
+            "label": "",
+            "description": "• Mostly complete, with only minor ambiguity or missing secondary parameters.• Experimental reproducibility is not significantly affected."
+          },
+          {
+            "score_range": "3",
+            "label": "",
+            "description": "• One or two key parameters missing (e.g., annealing time, dripping timing, spin-coating duration).• Human intervention or assumption is required to reproduce the experiment."
+          },
+          {
+            "score_range": "2",
+            "label": "",
+            "description": "• Multiple essential parameters missing.• Process sequence contains gaps or breaks (e.g., lacking spin-coating program, lacking precursor concentration)."
+          },
+          {
+            "score_range": "1",
+            "label": "",
+            "description": "• Most critical parameters are absent; only fragmented information is provided.• Experimental execution is effectively impossible."
+          },
+		  {
+            "score_range": "0",
+            "label": "",
+            "description": "• Nearly all parameters missing or logically invalid.• Severe structural contradictions (e.g., concentration values present while formula field is empty)."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name_zh": "",
+        "name_en": "Formula Rationality",
+        "max_score": 5,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "5",
+            "label": "",
+            "description": "• All concentrations fall within domain knowledge (e.g., 1.0–1.8 M precursor; additives 1–30 mg/mL; SAMs 0.1–1 mg/mL; passivation agents 0.1–5 mg/mL).• No anomalous or extreme values.• Values are chemically valid, soluble, and experimentally operable."
+          },
+          {
+            "score_range": "4",
+            "label": "",
+            "description": "• Most concentrations are reasonable; minor deviations occur but remain experimentally usable• No significant impact on film formation quality."
+          },
+          {
+            "score_range": "3",
+            "label": "",
+            "description": "• Multiple concentrations deviate from standard ranges (e.g., slightly high additive loading, SAM concentration slightly low).• Still experimentally executable but requires judgment."
+          },
+          {
+            "score_range": "2",
+            "label": "",
+            "description": "• Noticeable abnormal values (e.g., close to solubility limits or far below practical operating ranges).• Likely to compromise film quality or introduce instability."
+          },
+		  {
+            "score_range": "1",
+            "label": "",
+            "description": "• Concentrations significantly incorrect, such as 40 mg/mL PEAI or 0.001 mg/mL SAM — clearly unrealistic.• Film formation is expected to fail or become highly inconsistent."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• Concentrations fundamentally invalid (e.g., 10 mol/L, 500 mg/mL, or impossible units).• Missing key concentration values or values cannot be interpreted."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name_zh": "",
+        "name_en": "Parameter Rationality",
+        "max_score": 5,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "5",
+            "label": "",
+            "description": "• All parameters (spin-coating speed/time, antisolvent drip timing/volume, annealing temperature/time) fall within domain ranges.• Numerically sound, reproducible, and free of anomalies."
+          },
+          {
+            "score_range": "4",
+            "label": "",
+            "description": "• Most parameters are reasonable; minor deviations exist but remain experimentally feasible.• No significant impact on film formation or operability."
+          },
+          {
+            "score_range": "3",
+            "label": "",
+            "description": "• Several parameters mildly deviate from typical ranges (e.g., slightly high rpm or low annealing time).• Still experimentally executable but requires expert judgment."
+          },
+          {
+            "score_range": "2",
+            "label": "",
+            "description": "• Presence of clearly unreasonable values, such as:— 9000 rpm spin speed— 150–180 °C annealing— Dripping timing at 0–2 s• Likely to compromise film formation or exceed equipment limits."
+          },
+		  {
+            "score_range": "1",
+            "label": "",
+            "description": "• Most processing parameters are far outside valid scientific ranges.• Experimental execution is nearly impossible."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• Critical parameters missing or entirely invalid (wrong units, absent values, logical contradictions)."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name_zh": "",
+        "name_en": "Performance Rationality",
+        "max_score": 5,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "5",
+            "label": "",
+            "description": "• All performance values fall within scientifically realistic ranges.• The optimized device shows a clear and scientifically supported improvement over the control (e.g., ≥2% absolute PCE increase or ≥10% relative gain).• Improvements in Voc/FF are consistent with known mechanisms (defect reduction, better interfaces, reduced non-radiative recombination).• Represents a credible and meaningful optimization."
+          },
+          {
+            "score_range": "4",
+            "label": "",
+            "description": "• All values are reasonable and physically plausible.• Moderate improvement (~1–2% absolute PCE increase).• Trends follow expected scientific behavior; no anomalies."
+          },
+          {
+            "score_range": "3",
+            "label": "",
+            "description": "• Values fall within a plausible range but improvement is limited (<1% PCE gain).• Some parameters slightly high but still acceptable.• Optimization effect is marginal."
+          },
+          {
+            "score_range": "2",
+            "label": "",
+            "description": "• Signs of inflated or unrealistic metrics (e.g., PCE 27.2–28.5%, Voc > 1.22 V).• Minor recipe changes claim disproportionately large gains.• Scientific plausibility is questionable."
+          },
+		  {
+            "score_range": "1",
+            "label": "",
+            "description": "• Performance values clearly unrealistic (e.g., PCE >28.5%, Voc >1.25 V, FF >88%).• Claimed improvements contradict material physics."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• Optimized device performs worse than the control.• Values exceed physical limits (e.g., PCE >30% for single-junction PSCs)."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name_zh": "",
+        "name_en": "Recipe Recommendation",
+        "max_score": 30,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "27-30",
+            "label": "",
+            "description": "• Model predictions closely match experimental PCE/Voc/Jsc/FF values (error ≤ 3%).• No systematic bias; all four metrics follow the correct trend direction.• Represents high predictive reliability."
+          },
+          {
+            "score_range": "21-26",
+            "label": "",
+            "description": "• Predictions are reasonable with small deviations (error ≤ 6%).• Trend direction is correct across all metrics."
+          },
+          {
+            "score_range": "15-20",
+            "label": "",
+            "description": "• Moderate deviation but still acceptable (error ≤ 10%).• Predicted improvement direction matches real measurements, though magnitude is over/underestimated."
+          },
+          {
+            "score_range": "8-14",
+            "label": "",
+            "description": "• Significant deviation (error ≤ 15%).• At least one metric shows substantial error, though overall trend is not reversed."
+          },
+		  {
+            "score_range": "1-7",
+            "label": "",
+            "description": "• Large predictive errors (error > 15%).• Clear systematic bias (e.g., consistently overestimates Voc or PCE)."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• Trend direction incorrect (e.g., predicts improvement while real results decline).• Or multiple metrics are severely inconsistent with real measurements."
+          }
+        ]
+      }
+    ]
+  },
+  "mechanistic_reasoning": {
+    "name": "Mechanistic Reasoning",
+    "total_score": 50,
+    "dimensions": [
+      {
+        "id": 1,
+        "name_zh": "",
+        "name_en": "Domain knowledge",
+        "max_score": 10,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "9-10",
+            "label": "",
+            "description": "• All chemical names, structures, and ionic compositions are fully correct; no contradictions.• Complex species (e.g., PEA⁺, PACz derivatives) are accurately described; abbreviations and full names match."
+          },
+          {
+            "score_range": "7-8",
+            "label": "",
+            "description": "• Mostly correct with only minor ambiguities that do not affect mechanistic interpretation.• Terminology slightly imprecise but chemically sound."
+          },
+          {
+            "score_range": "4-6",
+            "label": "",
+            "description": "• One or two structural or naming mistakes (e.g., misidentifying substituents or mixing PEAI/PEACl), but the overall chemical framework remains intact.• Errors do not fundamentally compromise mechanism-level reasoning."
+          },
+          {
+            "score_range": "1-3",
+            "label": "",
+            "description": "• Significant errors in chemical naming or structural assignment (e.g., incorrect cation/anion pairing, misidentified backbone).• Chemical inaccuracies undermine the reliability of subsequent mechanistic analysis."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• Multiple major chemical errors; structures are inconsistent or fundamentally incorrect.• No valid mechanistic reasoning can be built upon the provided chemical descriptions."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name_zh": "",
+        "name_en": "Mechanism integrity",
+        "max_score": 10,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "9-10",
+            "label": "",
+            "description": "• Mechanistic explanation forms a complete and continuous chain linking formulation → structure → characterization → transport/recombination → performance.• No missing links; each step logically supports the next.• Presents a well-structured, textbook-level mechanism framework."
+          },
+          {
+            "score_range": "7-8",
+            "label": "",
+            "description": "• Mechanism framework is mostly complete; minor weakness in one segment, but the overall chain remains continuous and understandable.• Logical flow is preserved."
+          },
+          {
+            "score_range": "4-6",
+            "label": "",
+            "description": "• Several segments missing or underdeveloped.• Reader must infer missing steps to understand the mechanism.• Explanation is partially fragmented."
+          },
+          {
+            "score_range": "1-3",
+            "label": "",
+            "description": "• Mechanistic narrative is discontinuous or inconsistent.• Multiple key segments absent (e.g., structure not linked to performance).• Explanation fails to form a coherent mechanism chain."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• No recognizable mechanistic structure.• Statements are disconnected; cannot be interpreted as a mechanism."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name_zh": "",
+        "name_en": "Mechanism Interpretation",
+        "max_score": 10,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "9-10",
+            "label": "",
+            "description": "• Provides a clear, explicit, and scientifically correct explanation for how formulation changes influence Voc/Jsc/FF/PCE.• Mechanism mapping is accurate and well-grounded (e.g., defect reduction → lower non-radiative recombination → higher Voc).• No scientific contradictions; explanation aligns with PSC literature and known knowledge."
+          },
+          {
+            "score_range": "7-8",
+            "label": "",
+            "description": "• Interpretation is mostly correct and clearly stated.• Minor inaccuracies or oversimplifications exist but do not affect the main mechanistic direction.• Reasoning remains scientifically meaningful."
+          },
+          {
+            "score_range": "4-6",
+            "label": "",
+            "description": "• Mechanistic explanation is present but partially flawed.• Contains one or more incorrect assumptions (e.g., misinterpreting XRD or defect roles) yet overall narrative remains understandable."
+          },
+          {
+            "score_range": "1-3",
+            "label": "",
+            "description": "• Mechanism explanation is weak, unclear, or scientifically incorrect.• Contains directionally wrong claims (e.g., “more PbI₂ → Voc increases”).• Demonstrates misunderstanding of perovskite physics."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• No meaningful mechanism interpretation provided or the explanation is entirely fabricated/invalid.• Mechanism cannot be used for reasoning or evaluation."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "name_zh": "",
+        "name_en": "Mechanism comprehensiveness",
+        "max_score": 10,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "9-10",
+            "label": "",
+            "description": "• The mechanistic explanation covers multiple key dimensions, including structural evolution, defect physics, interfacial chemistry, energy-level alignment, and charge-transport pathways.• Mechanisms are supported by appropriate characterization data (Imaging/PL / XRD /GIXRD.).• Provides intrinsic, physics-based analysis, such as trap-state models, interfacial passivation pathways, SRH recombination suppression, or quasi-Fermi-level considerations.• The explanation is systematic, multi-layered, and comprehensive."
+          },
+          {
+            "score_range": "7-8",
+            "label": "",
+            "description": "• Explanation covers 2–3 mechanistic layers, showing reasonable breadth.• Characterization support is present but not deeply integrated.• Demonstrates good materials-science understanding, though lacking deeper intrinsic analysis."
+          },
+          {
+            "score_range": "4-6",
+            "label": "",
+            "description": "• Explanation is partial, addressing only 1–2 aspects (e.g., only crystallinity or only defect passivation).• Limited or missing characterization support.• Contains visible gaps, requiring infer missing mechanistic links."
+          },
+          {
+            "score_range": "1-3",
+            "label": "",
+            "description": "• Mechanism is highly superficial, relying on generic statements such as “better crystallization” or “fewer defects.”• Lacks structural, interfacial, energetic, or transport-related analysis.• No use of characterization data; lacks scientific depth."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• No mechanistic explanation is provided, or the explanation is entirely incorrect and unrelated to PSC physics."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name_zh": "",
+        "name_en": "Mechanistic Coherence",
+        "max_score": 10,
+        "focus": [
+        ],
+        "levels": [
+          {
+            "score_range": "9-10",
+            "label": "",
+            "description": "• The entire explanation is fully coherent, with no contradictions across recipe, structure, characterization, or device performance.• Logical flow is clear and unified; every mechanistic statement reinforces the central causal narrative.• Mechanistic reasoning exhibits rigorous internal consistency."
+          },
+          {
+            "score_range": "7-8",
+            "label": "",
+            "description": "• The explanation is largely coherent, with minor inconsistencies that do not affect the overall correctness.• Small gaps exist, but they do not disrupt the mechanistic logic."
+          },
+          {
+            "score_range": "4-6",
+            "label": "",
+            "description": "• Several weak links or mild contradictions appear, requiring mentally fill in missing connections.• Coherence is partial; the narrative direction is still understandable."
+          },
+          {
+            "score_range": "1-3",
+            "label": "",
+            "description": "• Multiple clear contradictions (e.g., performance improvements explained by mechanisms that theoretically worsen properties).• Mechanistic statements conflict with each other or with known PSC physics."
+          },
+          {
+            "score_range": "0",
+            "label": "",
+            "description": "• The explanation is self-contradictory throughout, making it impossible to reconstruct a coherent mechanistic narrative.• No unified logic can be identified."
+          }
+        ]
+      }
+    ]
+  }
+}

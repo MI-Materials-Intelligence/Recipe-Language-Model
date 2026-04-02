@@ -8,8 +8,12 @@ __pycache__/
 
 # data 
 **/data/*
+
+
 !**/data/.gitkeep
 
-# Learning/data 
-**/evaluation/data/
-**/evaluation/data/**
+
+!**/evaluation/data/
+
+
+!**/evaluation/data/**
