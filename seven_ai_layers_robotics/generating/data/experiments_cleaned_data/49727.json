@@ -1,0 +1,10 @@
+{
+  "1_Abstract": {},
+  "2_Introduction": "Drawing upon carefully optimized conditions, the perovskite device was fabricated, resulting in a PCE of 20.9565%, with a fill factor of 75.8683%, an open-circuit voltage of 1.094 V, and a short-circuit current density of 25.25 mA/cm². The perovskite (Cs0.05MA0.08FA0.87PbI3.0) solution was prepared with a concentration of 1.63 mol/L in mixed solvent of DMF and DMSO. For the perovskite film fabrication, the substrate was spun at 1000 rpm for 5 s, and then at 5500 rpm for 30 s. During the last 15 s of the second step, 150 µL of chlorobenzene (CB) was added as the antisolvent. The film was subsequently annealed at 110 °C for 15 min.",
+  "3_Result_Discussion": "The carefully engineered perovskite composition Cs0.05MA0.08FA0.87PbI3 employs a mixed A-site cation strategy, where the small Cs⁺ stabilizes the perovskite lattice and the dominant FA⁺ with minor MA⁺ optimizes the tolerance factor to enhance phase stability and suppress halide ion migration tendencies, while the high precursor concentration of 1.63 mol/L in DMF:DMSO solvent promotes the formation of a dense intermediate phase for robust film growth. The crystallization dynamics are precisely controlled by the two-step spin-coating process, where an initial 1000 rpm spread is followed by a high-speed 5500 rpm spin, with the timed introduction of 150 µL chlorobenzene antisolvent during the final 15 seconds inducing rapid and uniform nucleation; subsequent annealing at 110 °C for 15 minutes then drives controlled grain growth and solvent removal, collectively yielding a compact, pinhole-minimized morphology with suppressed bulk and grain boundary defect density. This optimized crystallization process, governing charge transport pathways and minimizing non-radiative recombination centers, directly underpins the high-performance device metrics, yielding an open-circuit voltage of 1.094 V, a short-circuit current density of 25.25 mA/cm², a fill factor of 75.8683%, and a power conversion efficiency of 20.9565%.",
+  "4_Conclusion": {},
+  "5_Supporting_Information": {
+    "substance": "",
+    "reference": ""
+  }
+}

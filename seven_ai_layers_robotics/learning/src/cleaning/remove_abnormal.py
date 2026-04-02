@@ -7,12 +7,12 @@ def parse_formula_column(df: pd.DataFrame, column_name: str = "Formula PVK") -> 
     Parses a chemical formula column in the format <Element><Value> (e.g., Cs0.08MA0.22...)
     and extracts the values of six specific elements (Cs, MA, FA, Pb, I, Br) into new columns.
     
-    Parameters:
-        df (pd.DataFrame): Input DataFrame containing the formula column.
-        column_name (str): Name of the column containing the formula strings.
+    Args:
+        df: Input DataFrame containing the formula column.
+        column_name: Name of the column containing the formula strings. Defaults to "Formula PVK".
     
     Returns:
-        pd.DataFrame: The original DataFrame with six new columns added for each element.
+        The original DataFrame with six new columns added for each element (Cs, MA, FA, Pb, I, Br).
     """
     # Define the target elements
     target_elements = ['Cs', 'MA', 'FA', 'Pb', 'I', 'Br']
@@ -38,15 +38,17 @@ def parse_formula_column(df: pd.DataFrame, column_name: str = "Formula PVK") -> 
     return result_df
 
 
-def load_data_with_encoding_fallback(file_path):
-    """
-    Load data file with multiple format and encoding attempts to avoid errors.
+def load_data_with_encoding_fallback(file_path: str) -> pd.DataFrame:
+    """Load data file with multiple format and encoding attempts to avoid errors.
     
     Args:
-        file_path (str): Path to the data file
+        file_path: Path to the data file (CSV or Excel).
         
     Returns:
-        pd.DataFrame: Loaded dataframe
+        Loaded DataFrame.
+        
+    Raises:
+        Exception: If file cannot be read with any supported format/encoding.
     """
     import os
     
@@ -78,15 +80,18 @@ def load_data_with_encoding_fallback(file_path):
     raise ValueError(f"Unsupported file format: {file_ext}")
 
 
-def create_validation_mask_by_sample_no(df):
-    """
-    Create validation masks for different sample No ranges based on specific criteria.
+def create_validation_mask_by_sample_no(
+    df: pd.DataFrame
+) -> tuple[pd.Series, dict]:
+    """Create validation masks for different sample No ranges based on specific criteria.
     
     Args:
-        df (pd.DataFrame): Input dataframe containing the data
+        df: Input DataFrame containing the data.
         
     Returns:
-        tuple: Tuple containing the validation mask and individual range masks
+        Tuple containing:
+            - validation_mask: Combined validation mask for all ranges
+            - range_masks: Dictionary of individual range masks
     """
     # Define validation criteria for different No ranges
     validation_criteria = [
@@ -145,13 +150,15 @@ def create_validation_mask_by_sample_no(df):
     
     return validation_mask, range_masks
 
-def remove_abnormal(input_path: str, output_path: str):
-    """
-    Remove abnormal samples from the dataset based on predefined criteria.
+def remove_abnormal(input_path: str, output_path: str) -> None:
+    """Remove abnormal samples from the dataset based on predefined criteria.
     
     Args:
-        input_path (str): Path to the input data file
-        output_path (str): Path to save the filtered data file
+        input_path: Path to the input data file.
+        output_path: Path to save the filtered data file.
+        
+    Returns:
+        None
     """
     df = load_data_with_encoding_fallback(input_path)
     

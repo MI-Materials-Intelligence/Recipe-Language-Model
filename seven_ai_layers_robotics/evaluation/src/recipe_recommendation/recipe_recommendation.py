@@ -22,6 +22,7 @@ from seven_ai_layers_robotics.config import config
 
 
 
+# Module-level constants (no execution logic)
 recipe_integrity_bp = Blueprint('recipe_integrity', __name__)
 formula_rationality_bp = Blueprint('formula_rationality', __name__)
 parameter_rationality_bp = Blueprint('parameter_rationality', __name__)
@@ -33,9 +34,36 @@ recipe_bp = Blueprint('recipe', __name__)
 # ignore the warning in X_new = df_FP_params[col_PCE].replace('', np.nan).fillna(0)
 pd.set_option("future.no_silent_downcasting", True)
 
-COMPOUND_MAPPING = json.load(open(config.get_evaluation_data_path('data/compound_mapping.json'), 'r', encoding='utf-8'))
+# Lazy-loaded global variables
+COMPOUND_MAPPING: dict = {}
+COMPOUND_MAPPING_INVERT: dict = {}
+
+
+def _load_compound_mapping() -> dict:
+    """Load compound mapping from configuration file.
+    
+    Returns:
+        Dictionary mapping compound abbreviations to full names.
+    """
+    with open(config.get_evaluation_data_path('data/compound_mapping.json'), 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _init_compound_mapping() -> None:
+    """Initialize compound mapping globals."""
+    global COMPOUND_MAPPING, COMPOUND_MAPPING_INVERT
+    COMPOUND_MAPPING = _load_compound_mapping()
+    COMPOUND_MAPPING_INVERT = get_compound_mapping_invert(COMPOUND_MAPPING)
 
 def get_compound_mapping_invert(compound_mapping: dict) -> dict:
+    """Create inverted mapping from compound full name to abbreviation.
+    
+    Args:
+        compound_mapping: Dictionary mapping compound abbreviations to full names.
+
+    Returns:
+        Inverted dictionary mapping compound full names (lowercase) to abbreviations.
+    """
     compound_mapping_invert = {}
     for k, v in compound_mapping.items():
         v_ = v.split(" (")[1][:-1].lower()
@@ -44,10 +72,15 @@ def get_compound_mapping_invert(compound_mapping: dict) -> dict:
     return compound_mapping_invert
 
 
-COMPOUND_MAPPING_INVERT = get_compound_mapping_invert(COMPOUND_MAPPING)
-
-
 def get_valid_number(string: str) -> str:
+    """Extract the first valid number from a string using regex.
+    
+    Args:
+        string: Input string potentially containing a number.
+
+    Returns:
+        Extracted number as string, or '0' if no number found.
+    """
     reg = re.compile(r'\d*\.\d+|\d+')
     matches = re.search(reg, string)
     if matches:
@@ -57,6 +90,14 @@ def get_valid_number(string: str) -> str:
 
 # zqy
 def get_formula_pvk(string: str) -> str:
+    """Extract perovskite formula from string using regex pattern.
+    
+    Args:
+        string: Input string containing perovskite formula.
+
+    Returns:
+        Extracted perovskite formula string.
+    """
     reg = re.compile(r'[A-Za-z]+\d\.{0,1}\d*')
     matches = re.findall(reg, string)
 
@@ -64,6 +105,14 @@ def get_formula_pvk(string: str) -> str:
     return formula_pvk
 
 def clean_formula(formula: str) -> str:
+    """Clean chemical formula by removing content in parentheses.
+    
+    Args:
+        formula: Raw chemical formula string.
+
+    Returns:
+        Cleaned formula with parenthetical content removed.
+    """
     if not isinstance(formula, str):
         return formula
 
@@ -80,7 +129,15 @@ def clean_formula(formula: str) -> str:
     return formula_cleaned
 
 
-def deal_response_formula(response: str) -> str:
+def process_response_formula(response: str) -> str:
+    """Process LLM response to extract and clean formula JSON.
+    
+    Args:
+        response: Raw LLM response string containing JSON.
+
+    Returns:
+        Cleaned JSON string with processed formula fields.
+    """
     json_start = response.rfind("{")
     json_end = response.rfind("}")
     json_content = response[json_start:json_end + 1]
@@ -134,10 +191,15 @@ PASSIVATOR_P_FIELDS = ["Spin Coating Speed Passivator", "Spin Coating Time Passi
 INVALID_STRINGS = ["none", "nan", "null", "n/a", "na", "0", "", "0.0"]
 INORGANIC = ["NiOx", "C60", "Ag", "BCP"]
 
-def get_fp_str(response: dict, control: dict) -> tuple[dict, dict]:
+def get_formula_parameters_as_strings(response: dict, control: dict) -> tuple[dict, dict]:
+    """Convert recipe parameters to uniform string format.
 
-    """
-    Convert all values in JSON format to uniform strings
+    Args:
+        response: Optimized recipe dictionary.
+        control: Control recipe dictionary.
+
+    Returns:
+        Tuple of (response, control) with all values converted to strings.
     """
 
     try:
@@ -146,7 +208,7 @@ def get_fp_str(response: dict, control: dict) -> tuple[dict, dict]:
         if isinstance(control, str):
             control = json.loads(control)
 
-        response = json.loads(deal_response_formula(json.dumps(response)))
+        response = json.loads(process_response_formula(json.dumps(response)))
 
         for key, value in response.items():
             response[key] = str(value)
@@ -161,7 +223,14 @@ def get_fp_str(response: dict, control: dict) -> tuple[dict, dict]:
         return {}, {}
 
 def get_valid_number_str(string: str) -> str:
-    """Extract valid digits"""
+    """Extract valid digits from string, handling invalid values.
+    
+    Args:
+        string: Input string potentially containing numeric value.
+
+    Returns:
+        Extracted number as string, or empty string if invalid.
+    """
     if not isinstance(string, str):
         return ""
 
@@ -180,10 +249,18 @@ def get_valid_number_str(string: str) -> str:
     return ""
 
 
-def get_param(data):
+def get_param(data: dict) -> tuple[dict, dict]:
+    """Extract and normalize optimized and control recipe parameters.
+    
+    Args:
+        data: Dictionary containing optimized_fp and control_fp fields.
 
-    optimize = data.get("optimized_FP", {}).copy()
-    control = data.get("control_FP", {}).copy()
+    Returns:
+        Tuple of (optimize, control) with normalized keys and complete fields.
+    """
+
+    optimize = data.get("optimized_fp", {}).copy()
+    control = data.get("control_fp", {}).copy()
 
     if optimize != {}:
         # Unify key name modification
@@ -226,7 +303,14 @@ def get_param(data):
     return optimize, control
 
 def get_difficulty(control: dict) -> float:
-    """Used to calculate the difficulty coefficient for different experimental stages"""
+    """Calculate difficulty coefficient based on experimental stage complexity.
+    
+    Args:
+        control: Control recipe dictionary.
+
+    Returns:
+        Difficulty coefficient (0.5, 0.7, or 1.0).
+    """
 
     ctrl = control.copy()
     for field in ["PCE", "Voc", "Jsc", "FF"]:
@@ -250,7 +334,14 @@ def get_difficulty(control: dict) -> float:
     return difficulty
 
 def has_performance(optimized: dict) -> bool:
-    """Used to determine whether experimental values are passed into the optimization formula"""
+    """Check if optimized recipe contains experimental performance values.
+    
+    Args:
+        optimized: Optimized recipe dictionary.
+
+    Returns:
+        True if PCE performance value exists, False otherwise.
+    """
 
     PCE = optimized.get("PCE", "")
     if PCE in INVALID_STRINGS:
@@ -261,7 +352,12 @@ def has_performance(optimized: dict) -> bool:
 
 # 1
 @recipe_integrity_bp.route('/RECIPE/recipe_integrity', methods=['POST'])
-def recipe_integrity():
+def recipe_integrity() -> tuple:
+    """Handle recipe integrity evaluation API request.
+    
+    Returns:
+        JSON response containing recipe integrity score.
+    """
     data = request.get_json(force=True)
     response, control = get_param(data)
 
@@ -270,16 +366,15 @@ def recipe_integrity():
     return jsonify(result)
 
 def calculate_recipe_integrity(response: dict, control: dict) -> dict:
-    '''
-        Calculate indicator 'recipe integrity' score in evaluation layer.
+    """Calculate recipe integrity indicator score based on completeness and consistency.
 
-        Args:
-            response: Optimized recipe.
-            control: Control recipe.
+    Args:
+        response: Optimized recipe dictionary.
+        control: Control recipe dictionary.
 
-        Returns:
-            Indicator 'recipe integrity' score.
-    '''
+    Returns:
+        Dictionary containing recipe integrity score and reason.
+    """
 
 
     """
@@ -332,14 +427,14 @@ def calculate_recipe_integrity(response: dict, control: dict) -> dict:
     try:
 
         response, control = get_param({
-            "control_FP": control,
-            "optimized_FP": response
+            "control_fp": control,
+            "optimized_fp": response
         })
 
-        response, control = get_fp_str(response, control)
+        response, control = get_formula_parameters_as_strings(response, control)
 
         if not (response and control):
-            reason = "No valid optimized_FP and control_FP were found."
+            reason = "No valid optimized_fp and control_fp were found."
             print(reason)
             result["reason"] = reason
             return result
@@ -453,7 +548,12 @@ def calculate_recipe_integrity(response: dict, control: dict) -> dict:
 
 # 2
 @formula_rationality_bp.route('/RECIPE/formula_rationality', methods=['POST'])
-def formula_rationality():
+def formula_rationality() -> tuple:
+    """Handle formula rationality evaluation API request.
+    
+    Returns:
+        JSON response containing formula rationality score.
+    """
     data = request.get_json(force=True)
     response, control = get_param(data)
 
@@ -462,16 +562,15 @@ def formula_rationality():
     return jsonify(result)
 
 def calculate_formula_rationality(response: dict, control: dict) -> dict:
-    '''
-        Calculate indicator 'formula rationality' score in evaluation layer.
+    """Calculate formula rationality indicator score based on compound names and concentration ranges.
 
-        Args:
-            response: Optimized recipe.
-            control: Control recipe.
+    Args:
+        response: Optimized recipe dictionary.
+        control: Control recipe dictionary.
 
-        Returns:
-            Indicator 'formula rationality' score.
-    '''
+    Returns:
+        Dictionary containing formula rationality score and reason.
+    """
 
 
     """
@@ -482,11 +581,11 @@ def calculate_formula_rationality(response: dict, control: dict) -> dict:
     try:
 
         response, control = get_param({
-            "control_FP": control,
-            "optimized_FP": response
+            "control_fp": control,
+            "optimized_fp": response
         })
 
-        response, control = get_fp_str(response, control)
+        response, control = get_formula_parameters_as_strings(response, control)
 
         result = {
             "reason": "initial score",
@@ -494,7 +593,7 @@ def calculate_formula_rationality(response: dict, control: dict) -> dict:
         }
 
         if not (response and control):
-            reason = "No valid optimized_FP and control_FP were found."
+            reason = "No valid optimized_fp and control_fp were found."
             print(reason)
             result["score"] = None
             result["reason"] = reason
@@ -626,7 +725,12 @@ def calculate_formula_rationality(response: dict, control: dict) -> dict:
 
 # 3
 @parameter_rationality_bp.route('/RECIPE/parameter_rationality', methods=['POST'])
-def parameter_rationality():
+def parameter_rationality() -> tuple:
+    """Handle parameter rationality evaluation API request.
+    
+    Returns:
+        JSON response containing parameter rationality score.
+    """
     data = request.get_json(force=True)
     response, control = get_param(data)
 
@@ -635,16 +739,15 @@ def parameter_rationality():
     return jsonify(result)
 
 def calculate_parameter_rationality(response: dict, control: dict) -> dict:
-    '''
-        Calculate indicator 'parameter rationality' score in evaluation layer.
+    """Calculate parameter rationality indicator score based on process parameter reliability.
 
-        Args:
-            response: Optimized recipe.
-            control: Control recipe.
+    Args:
+        response: Optimized recipe dictionary.
+        control: Control recipe dictionary.
 
-        Returns:
-            Indicator 'parameter rationality' score.
-    '''
+    Returns:
+        Dictionary containing parameter rationality score and reason.
+    """
 
     """
         Process parameter reliability evaluation
@@ -654,11 +757,11 @@ def calculate_parameter_rationality(response: dict, control: dict) -> dict:
     try:
 
         response, control = get_param({
-            "control_FP": control,
-            "optimized_FP": response
+            "control_fp": control,
+            "optimized_fp": response
         })
 
-        response, control = get_fp_str(response, control)
+        response, control = get_formula_parameters_as_strings(response, control)
 
         result = {
             "reason": "initial score",
@@ -666,7 +769,7 @@ def calculate_parameter_rationality(response: dict, control: dict) -> dict:
         }
 
         if not (response and control):
-            reason = "No valid optimized_FP and control_FP were found."
+            reason = "No valid optimized_fp and control_fp were found."
             print(reason)
             result["score"] = None
             result["reason"] = reason
@@ -806,7 +909,12 @@ def calculate_parameter_rationality(response: dict, control: dict) -> dict:
 
 # 4
 @performance_rationality_bp.route('/RECIPE/performance_rationality', methods=['POST'])
-def performance_rationality():
+def performance_rationality() -> tuple:
+    """Handle performance rationality evaluation API request.
+    
+    Returns:
+        JSON response containing performance rationality score.
+    """
     data = request.get_json(force=True)
     response, control = get_param(data)
 
@@ -815,19 +923,25 @@ def performance_rationality():
     return jsonify(result)
 
 def calculate_performance_rationality(response: dict, control: dict) -> dict:
-    '''
-        Calculate indicator 'performance rationality' score in evaluation layer.
+    """Calculate performance rationality indicator score based on physical limits and improvement合理性.
 
-        Args:
-            response: Optimized recipe.
-            control: Control recipe.
+    Args:
+        response: Optimized recipe dictionary with performance values.
+        control: Control recipe dictionary with performance values.
 
-        Returns:
-            Indicator 'performance rationality' score.
-    '''
+    Returns:
+        Dictionary containing performance rationality score and reason.
+    """
 
     def safe_float(value_str):
-        """Safely convert to float"""
+        """Safely convert string to float with error handling.
+        
+        Args:
+            value_str: String value to convert.
+            
+        Returns:
+            Float value if conversion successful, None otherwise.
+        """
         if not value_str or value_str == "":
             return None
         try:
@@ -838,11 +952,11 @@ def calculate_performance_rationality(response: dict, control: dict) -> dict:
     try:
 
         response, control = get_param({
-            "control_FP": control,
-            "optimized_FP": response
+            "control_fp": control,
+            "optimized_fp": response
         })
 
-        response, control = get_fp_str(response, control)
+        response, control = get_formula_parameters_as_strings(response, control)
 
         result = {
             "reason": "initial score",
@@ -852,7 +966,7 @@ def calculate_performance_rationality(response: dict, control: dict) -> dict:
         default_score = result["score"]
 
         if not (response and control):
-            reason = "No valid optimized_FP and control_FP were found."
+            reason = "No valid optimized_fp and control_fp were found."
             print(reason)
             result["score"] = None
             result["reason"] = reason
@@ -1073,16 +1187,15 @@ def recipe_recommendation():
 
 
 def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
-    '''
-        Calculate indicator 'recipe recommendation' score in evaluation layer.
+    """Calculate indicator 'recipe recommendation' score in evaluation layer.
 
-        Args:
-            response: Optimized recipe.
-            control: Control recipe.
+    Args:
+        response: Optimized recipe.
+        control: Control recipe.
 
-        Returns:
-            Indicator 'recipe recommendation' score.
-    '''
+    Returns:
+        Indicator 'recipe recommendation' score.
+    """
 
     def piecewise_difficulty(x):
         """
@@ -1182,11 +1295,11 @@ def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
 
     try:
         response, control = get_param({
-            "control_FP": control,
-            "optimized_FP": response
+            "control_fp": control,
+            "optimized_fp": response
         })
 
-        response, control = get_fp_str(response, control)
+        response, control = get_formula_parameters_as_strings(response, control)
 
         score = None
         result = {
@@ -1195,7 +1308,7 @@ def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
         }
 
         if not (response and control):
-            reason = "No valid optimized_FP and control_FP were found."
+            reason = "No valid optimized_fp and control_fp were found."
             print(reason)
             result["score"] = None
             result["reason"] = reason
@@ -1367,16 +1480,15 @@ def experimental_validation():
     return jsonify(result)
 
 def calculate_experimental_validation(response: dict, control: dict) -> dict:
-    '''
-        Calculate indicator 'experimental validation' score in evaluation layer.
+    """Calculate indicator 'experimental validation' score in evaluation layer.
 
-        Args:
-            response: Optimized recipe.
-            control: Control recipe.
+    Args:
+        response: Optimized recipe.
+        control: Control recipe.
 
-        Returns:
-            Indicator 'experimental validation' score.
-    '''
+    Returns:
+        Indicator 'experimental validation' score.
+    """
 
     def piecewise_difficulty(x):
         """
@@ -1443,11 +1555,11 @@ def calculate_experimental_validation(response: dict, control: dict) -> dict:
     try:
 
         response, control = get_param({
-            "control_FP": control,
-            "optimized_FP": response
+            "control_fp": control,
+            "optimized_fp": response
         })
 
-        response, control = get_fp_str(response, control)
+        response, control = get_formula_parameters_as_strings(response, control)
 
         score = None
         result = {
@@ -1456,7 +1568,7 @@ def calculate_experimental_validation(response: dict, control: dict) -> dict:
         }
 
         if not (response and control):
-            reason = "No valid optimized_FP and control_FP were found."
+            reason = "No valid optimized_fp and control_fp were found."
             print(reason)
             result["score"] = None
             result["reason"] = reason
@@ -1804,6 +1916,20 @@ def clean_response_only(response: dict) -> dict:
     return response
 
 # if __name__ == '__main__':
-#     data = {"control_FP": {"ff": "74.942%", "jsc": "23.137 mA/cm²", "pce": "11.862%", "voc": "0.6738 V", "Formula PVK": "Cs₀.₀₅MA₀.₂₃FA₀.₇₂PbI₂.₄Br₀.₆", "Formula SAM 1": "Me-4PACz", "Formula SAM 2": "", "Formula SAM 3": "", "Annealed Time PVK": "15 min", "Concentration PVK": "1.62 mol/L", "Formula Additive 1": "MACl", "Formula Additive 2": "", "Formula Additive 3": "", "Concentration SAM 1": "0.33 mg/mL", "Concentration SAM 2": "", "Concentration SAM 3": "", "Formula Passivator 1": "", "Formula Passivator 2": "", "Formula Passivator 3": "", "Passivator Volume (μL)": "", "Spin Coating Time PVK 1": "10 s", "Spin Coating Time PVK 2": "40 s", "Annealed Temperature PVK": "100°C", "Annealed Time Passivator": "", "Antisolvent Volume (μL)": "160", "Concentration Additive 1": "10.0 mg/mL", "Concentration Additive 2": "", "Concentration Additive 3": "", "Spin Coating Speed PVK 1": "1200 rpm", "Spin Coating Speed PVK 2": "5000 rpm", "Concentration Passivator 1": "", "Concentration Passivator 2": "", "Concentration Passivator 3": "", "Passivator Dropping Timing": "", "Antisolvent Dropping Timing": "8 s before end", "Spin Coating Time Passivator": "", "Spin Coating Speed Passivator": "", "Annealed Temperature Passivator": ""}}
+#     data = {"control_fp": {"ff": "74.942%", "jsc": "23.137 mA/cm²", "pce": "11.862%", "voc": "0.6738 V", "Formula PVK": "Cs₀.₀₅MA₀.₂₃FA₀.₇₂PbI₂.₄Br₀.₆", "Formula SAM 1": "Me-4PACz", "Formula SAM 2": "", "Formula SAM 3": "", "Annealed Time PVK": "15 min", "Concentration PVK": "1.62 mol/L", "Formula Additive 1": "MACl", "Formula Additive 2": "", "Formula Additive 3": "", "Concentration SAM 1": "0.33 mg/mL", "Concentration SAM 2": "", "Concentration SAM 3": "", "Formula Passivator 1": "", "Formula Passivator 2": "", "Formula Passivator 3": "", "Passivator Volume (μL)": "", "Spin Coating Time PVK 1": "10 s", "Spin Coating Time PVK 2": "40 s", "Annealed Temperature PVK": "100°C", "Annealed Time Passivator": "", "Antisolvent Volume (μL)": "160", "Concentration Additive 1": "10.0 mg/mL", "Concentration Additive 2": "", "Concentration Additive 3": "", "Spin Coating Speed PVK 1": "1200 rpm", "Spin Coating Speed PVK 2": "5000 rpm", "Concentration Passivator 1": "", "Concentration Passivator 2": "", "Concentration Passivator 3": "", "Passivator Dropping Timing": "", "Antisolvent Dropping Timing": "8 s before end", "Spin Coating Time Passivator": "", "Spin Coating Speed Passivator": "", "Annealed Temperature Passivator": ""}}
 #     opt, ctrl = get_param(data)
 #     print(ctrl)
+
+
+def init_app():
+    """Initialize application configurations.
+    
+    This function should be called during Flask app startup
+    to load all required configurations.
+    """
+    _init_compound_mapping()
+
+
+if __name__ == "__main__":
+    init_app()
+    print("Recipe recommendation module initialized.")

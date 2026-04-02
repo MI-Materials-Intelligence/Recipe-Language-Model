@@ -10,40 +10,35 @@ Usage:
 
 import os
 import sys
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-import sys
-import os
-
-# ==============================
-# Import configuration
-# ==============================
 # Load database configuration from app.config
-from seven_ai_layers_robotics.config import config
+try:
+    from seven_ai_layers_robotics.config import config
+    DB_CONFIG = {
+        'host': config.learning_database.host,
+        'port': config.learning_database.port,
+        'user': config.learning_database.user,
+        'password': config.learning_database.password,
+        'database': config.learning_database.database,
+        'charset': config.learning_database.charset,
+    }
+except Exception as e:
+    print(f"⚠️ WARNING: Failed to load config, using empty database configuration. Error: {e}")
+    DB_CONFIG = {
+        'host': '',
+        'port': 3306,
+        'user': 'root',
+        'password': '',
+        'database': '',
+        'charset': 'utf8mb4'
+    }
 
-DB_CONFIG = {
-    'host': config.learning_database.host,
-    'port': config.learning_database.port,
-    'user': config.learning_database.user,
-    'password': config.learning_database.password,
-    'database': config.learning_database.database,
-    'charset': config.learning_database.charset,
-}
-
-# ==============================
-# Built-in configuration (no need to pass from external)
-# ==============================
-
-# Working directory (default to current script path)
+# Working directory and data output paths
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Data output directory (at same level as src)
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# ==============================
-# Import extractor
-# ==============================
-
+# Import data extractor module
 try:
     # Use relative imports to avoid path issues in multi-process environments
     from .extraction.edge_report_extractor import EdgeReportExtractor
@@ -57,15 +52,21 @@ except ImportError as e:
 # ==============================
 
 class EdgeReportPipeline:
-    """Edge Report Data Automated Processing Pipeline"""
+    """Edge Report Data Automated Processing Pipeline.
+    
+    Supports: DB export -> Cleaning and deduplication -> Write-back to DB
+    """
 
-    def __init__(self,
-                 db_config: Optional[Dict[str, Any]] = None,
-                 work_dir: Optional[str] = None):
-        """
-        Initialize pipeline
-        :param db_config: Database configuration (optional, uses built-in config if not provided)
-        :param work_dir: Working directory (optional, uses built-in config if not provided)
+    def __init__(
+        self,
+        db_config: Optional[Dict[str, Any]] = None,
+        work_dir: Optional[str] = None,
+    ):
+        """Initialize pipeline.
+        
+        Args:
+            db_config: Database configuration dictionary. Defaults to DB_CONFIG if not provided.
+            work_dir: Working directory path. Defaults to WORK_DIR if not provided.
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.work_dir = work_dir if work_dir else WORK_DIR
@@ -78,14 +79,22 @@ class EdgeReportPipeline:
             self.data_extractor = EdgeReportExtractor(self.db_config)
 
     def run_full_process(self, src_table: str) -> bool:
-        """
-        Execute complete workflow: export -> cleaning and deduplication -> write-back
-        :param src_table: Source database table name
-        :param target_table: Target database table name
-        :return: Success status
+        """Execute complete workflow: export -> cleaning and deduplication -> write-back.
+        
+        Args:
+            src_table: Source database table name.
+            
+        Returns:
+            True if successful.
+            
+        Raises:
+            ImportError: If EdgeReportExtractor module is not available.
+            Exception: If workflow execution fails.
         """
         if not EXTRACTOR_AVAILABLE:
-            raise ImportError("EdgeReportExtractor module not found, unable to execute data extraction.")
+            raise ImportError(
+                "EdgeReportExtractor module not found, unable to execute data extraction."
+            )
 
         try:
             # Use EdgeReportExtractor for complete processing, all output to data directory

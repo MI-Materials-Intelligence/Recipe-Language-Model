@@ -19,26 +19,5 @@
       "m-F-PEACl"
     ],
     "material_type": "additive"
-  },
-  {
-    "meta_info": {
-      "Expert": "",
-      "Sample_ID_1": "50425,control device",
-      "Sample_ID_2": "49749,target device",
-      "Analysis_Type": "Formula Additive 2",
-      "Sample_ID_1_date": "2025-07-31",
-      "Sample_ID_2_date": "2025-07-25",
-      "Sample_ID_1_Group_ID": 4,
-      "Sample_ID_2_Group_ID": 20
-    },
-    "control_device_fabrication": "The device shows the highest PCE of 25.147% with negligible hysteresis, a VOC of 1.17917 V, a JSC of 26.2444 mA/cm² and a FF of 81.2593%. The process involved first dissolving Cs0.05MA0.1FA0.85I3 at 1.65 mol/L to create the primary perovskite solution. Careful addition of 4,4,4-NA (0.5 mg/mL) as a SAM ensured improved interface quality. The addition of MACl (15.0 mg/mL) and m-Br-PEACl (2.0 mg/mL) were instrumental in fine-tuning the perovskite film's optical properties. A sequential spin-coating procedure was employed, first at 1000 rpm for 5 s, followed by 5500 rpm for 30 s. At the last 15 s of the second step, 150 µL CB was dropped as antisolvent. By subjecting the film to 110 °C for 15 min, the perovskite lattice attained its ideal orientation. The passivator PDADI (0.5 mg/mL) was introduced into the system to improve material properties. The passivation layer was spin-coated using 5000 rpm for 30 s. During spin-coating, 70 µL of passivator was introduced at 6 s. The final step involved annealing the passivation layer at 100 °C for 5 min. In details, SAM solution was spin-coated on the substrate at 3000 rpm for 30 s, and annealed at 100 °C for 10 min.",
-    "target_device_fabrication": "The device shows the highest PCE of 25.7614% with negligible hysteresis, a VOC of 1.1862 V, a JSC of 25.5903 mA/cm² and a FF of 84.8668%. 1.65 mol/L Cs0.05MA0.1FA0.85I3 perovskite precursors were prepared. The addition of 4,4,4-NA (0.5 mg/mL) as a SAM was performed to optimize surface passivation and ensure improved interface quality. Then, around 15.0 mg/mL of MACl and 2.0 mg/mL of p-F-PEACl were also added into the mixed perovskite solution. The prepared precursor solution was spin-coated at 1000 rpm for 5 s and 5500 rpm for 30 s onto the substrate. At the last 15 s of the second step, 150 µL CB was dropped as antisolvent. The substrate was then transferred to a thermostatic heater and annealed at 110 °C for 15 min. For better device performance, a passivation layer of PDADI (0.5 mg/mL) was deposited through spin-coating. After cooled to room temperature, passivators were deposited by spin-coating with 5000 rpm. To enhance the passivation layer, 70 µL of passivator was dropped at 6 s during spin-coating. Passivator solution was spin-coated and annealed at 100 ℃ for 5 min. In details, SAM solution was spin-coated on the substrate at 3000 rpm for 30 s, and annealed at 100 °C for 10 min.",
-    "category_folder": "Formula Additive 2",
-    "match_file": "m-Br-PEACl -_ p-F-PEACl.json",
-    "primary_materials": [
-      "m-Br-PEACl",
-      "p-F-PEACl"
-    ],
-    "material_type": "additive"
   }
 ]

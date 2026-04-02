@@ -4,6 +4,8 @@ This module provides functions to convert database records into
 descriptive text using template-based generation.
 """
 
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
 import random
 import json
@@ -16,7 +18,7 @@ from pathlib import Path
 # --------------------------------------
 
 # Preparation-related phrases (15 items)
-prepared_phrases = [
+PREPARED_PHRASES = [
     "was prepared",
     "was formulated",
     "was synthesized",
@@ -34,8 +36,8 @@ prepared_phrases = [
     "was refined and produced"
 ]
 
-# （Introductory Phrases）
-intro_segments = [
+# Introductory Phrases
+INTRO_SEGMENTS = [
     "Based on a systematically tuned set of experimental parameters, this perovskite solar cell {prepared_term}, ultimately achieving a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
     "Drawing upon carefully optimized conditions, the perovskite device {prepared_term}, resulting in a PCE of {pce}%, with a fill factor of {ff}%, an open-circuit voltage of {voc} V, and a short-circuit current density of {jsc} mA/cm².",
     "By refining specific fabrication parameters, a perovskite solar cell {prepared_term}, culminating in performance metrics including a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
@@ -141,8 +143,8 @@ intro_segments = [
 #     "Through iterative refinements in substrate preparation, solution concentration, and coating protocols, this perovskite device {prepared_term}, echoing a PCE of {pce}%.",
 # ]
 
-# （Perovskite Formula Segments）
-perovskite_formula_segments = [
+# Perovskite Formula Segments
+PEROVSKITE_FORMULA_SEGMENTS = [
     "A perovskite precursor solution was first prepared using {formula_pvk} at {concentration_pvk} mol/L.",
     "Starting with a {formula_pvk} solution at {concentration_pvk} mol/L, the base solution was formulated to form the core perovskite layer.",
     "With {formula_pvk} at {concentration_pvk} mol/L forming the primary solution, the perovskite precursor was synthesized accordingly.",
@@ -213,7 +215,8 @@ perovskite_formula_segments = [
     "For perovskite film, the solution concentration of {formula_pvk} was {concentration_pvk} mol/L.",
 ]
 
-sam_formula_segments_single = [
+# SAM Formula Segments - Single
+SAM_FORMULA_SEGMENTS_SINGLE = [
     "The SAM material {formula_sam1} ({concentration_sam1} mg/mL) was subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) as a SAM was carried out to improve layer formation and refine the film’s interfacial structure.",
     "SAM material {formula_sam1} ({concentration_sam1} mg/mL) was added to the perovskite solution to fine-tune the interface and stabilize the perovskite layer.",
@@ -244,8 +247,8 @@ sam_formula_segments_single = [
     "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",
 ]
 
-# SAM Formula Segments
-sam_formula_segments_dual = [
+# SAM Formula Segments - Dual
+SAM_FORMULA_SEGMENTS_DUAL = [
     "Two SAM materials of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) as SAMs were carried out to improve layer formation and refine the film’s interfacial structure.",
     "SAM materials of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were added to the perovskite solution to fine-tune the interface and stabilize the perovskite layer.",
@@ -275,7 +278,8 @@ sam_formula_segments_dual = [
     "The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",
     ]
 
-sam_formula_segments_triple = [
+# SAM Formula Segments - Triple
+SAM_FORMULA_SEGMENTS_TRIPLE = [
     "Three SAM materials of {formula_sam1} ({concentration_sam1} mg/mL), {formula_sam2} ({concentration_sam2} mg/mL) and {formula_sam3} ({concentration_sam3} mg/mL) were subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL), {formula_sam2} ({concentration_sam2} mg/mL) and {formula_sam3} ({concentration_sam3} mg/mL) as SAMs were carried out to improve layer formation and refine the film’s interfacial structure.",
     "SAM materials of {formula_sam1} ({concentration_sam1} mg/mL), {formula_sam2} ({concentration_sam2} mg/mL) and {formula_sam3} ({concentration_sam3} mg/mL) were added to the perovskite solution to fine-tune the interface and stabilize the perovskite layer.",
@@ -298,7 +302,8 @@ sam_formula_segments_triple = [
 
 ]
 
-additive_formula_segments_single = [
+# Additive Formula Segments - Single
+ADDITIVE_FORMULA_SEGMENTS_SINGLE = [
     "{formula_add1} ({concentration_add1} mg/mL) was incorporated as an additive.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL) was added to the perovskite solution as an additive.",
     "We add {formula_add1} ({concentration_add1} mg/mL).",
@@ -349,8 +354,8 @@ additive_formula_segments_single = [
 
     ]
 
-# Additive Formula Segments
-additive_formula_segments_dual = [
+# Additive Formula Segments - Dual
+ADDITIVE_FORMULA_SEGMENTS_DUAL = [
     "{formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were incorporated as additives.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added to the perovskite solution as additives.",
     "We add {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL).",
@@ -387,7 +392,8 @@ additive_formula_segments_dual = [
 
     ]
 
-additive_formula_segments_triple = [
+# Additive Formula Segments - Triple
+ADDITIVE_FORMULA_SEGMENTS_TRIPLE = [
     "{formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were incorporated as additives.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were added to the perovskite solution as additives.",
     "We add {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL).",
@@ -420,7 +426,7 @@ additive_formula_segments_triple = [
     ]
 
 # Process Segments
-process_segments = [
+PROCESS_SEGMENTS = [
     "Spin-coating was conducted in two stages: {spin1_speed} rpm for {spin1_time} s, then {spin2_speed} rpm for {spin2_time} s.",
     "A sequential spin-coating procedure was employed, first at {spin1_speed} rpm for {spin1_time} s, followed by {spin2_speed} rpm for {spin2_time} s.",
     "The deposition process involved a two-step spin sequence ({spin1_speed} rpm/{spin1_time} s and {spin2_speed} rpm/{spin2_time} s) to achieve a controlled film thickness.",
@@ -504,7 +510,7 @@ process_segments = [
     ]
 
 # Antisolvent Segments
-antisolvent_segments = [
+ANTISOLVENT_SEGMENTS = [
     "During the second spin-coating step, {antisolvent_volume} µL of antisolvent was introduced at last {antisolvent_timing} s.",
     "At a carefully chosen interval ({antisolvent_timing} s) during the second stage, {antisolvent_volume} µL of antisolvent was gently dispensed to improve crystallization.",
     "To promote better film morphology, {antisolvent_volume} µL of antisolvent was added at last {antisolvent_timing} s in the latter spin-coating step.",
@@ -611,7 +617,7 @@ antisolvent_segments = [
     ]
 
 # Anneal Segments
-anneal_segments = [
+ANNEAL_SEGMENTS = [
     "The resulting films were then annealed at {anneal_temp} °C for {anneal_time} min.",
     "Subsequent thermal treatment was carried out at {anneal_temp} °C for {anneal_time} min to finalize the perovskite crystal structure.",
     "An annealing process at {anneal_temp} °C for {anneal_time} min allowed the perovskite grains to fully mature.",
@@ -685,8 +691,8 @@ anneal_segments = [
 
     ]
 
-# instruction
-instruction_templates = [
+# Instruction Templates
+INSTRUCTION_TEMPLATES = [
     "Recommend a set of perovskite solar cell preparation schemes with a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², including materials information and process parameters.",
     "Propose fabrication procedures for perovskite solar cells achieving a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², detailing the materials and methods used.",
     "Suggest a series of preparation strategies for perovskite solar cells targeting a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², encompassing material specifications and processing conditions.",
@@ -745,8 +751,8 @@ instruction_templates = [
 #     ]
 
 
-# 钝化层材料和工艺描述（Passivation Segments, 15条）
-passivation_material_segments_single = [
+# Passivation Material Segments - Single
+PASSIVATION_MATERIAL_SEGMENTS_SINGLE = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL) was incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL) was spin-coated onto the sample surface as a passivation layer.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL) was added as a passivator.",
@@ -790,7 +796,8 @@ passivation_material_segments_single = [
 
     ]
 
-passivation_material_segments_dual = [
+# Passivation Material Segments - Dual
+PASSIVATION_MATERIAL_SEGMENTS_DUAL = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were spin-coated onto the sample surface as a passivation layer.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were added as a passivator.",
@@ -834,7 +841,8 @@ passivation_material_segments_dual = [
 
 ]
 
-passivation_material_segments_triple = [
+# Passivation Material Segments - Triple
+PASSIVATION_MATERIAL_SEGMENTS_TRIPLE = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL)  were spin-coated onto the sample surface as a passivation layer.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were added as a passivator.",
@@ -868,7 +876,8 @@ passivation_material_segments_triple = [
 
         ]
 
-passivation_spin_segments = [
+# Passivation Spin Segments
+PASSIVATION_SPIN_SEGMENTS = [
     "The spin-coating process was conducted at {spin_speed_passivator} rpm for {spin_time_passivator} s.",
     "Spin-coating of the passivation layer was performed at {spin_speed_passivator} rpm for {spin_time_passivator} s.",
     "Using spin speeds of {spin_speed_passivator} rpm and spin times of {spin_time_passivator} s, the passivation layer was applied.",
@@ -928,7 +937,8 @@ passivation_spin_segments = [
 
     ]
 
-passivation_drop_segments = [
+# Passivation Drop Segments
+PASSIVATION_DROP_SEGMENTS = [
     "Subsequently, {passivator_volume} µL of passivator was dropped at {passivator_timing} s during spin-coating.",
     "During spin-coating, {passivator_volume} µL of passivator was introduced at {passivator_timing} s.",
     "At {passivator_timing} s, {passivator_volume} µL of passivator was added to the spinning passivation layer.",
@@ -947,7 +957,8 @@ passivation_drop_segments = [
 
     ]
 
-passivation_anneal_segments = [
+# Passivation Anneal Segments
+PASSIVATION_ANNEAL_SEGMENTS = [
     "The passivation layer was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min to enhance film quality.",
     "Annealing of the passivation layer was performed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",
     "The passivation layer underwent annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min to optimize its properties.",
@@ -984,34 +995,35 @@ passivation_anneal_segments = [
 
     ]
 
-# RGB Image analysis templates
-image_analysis_segments = [
+# RGB Image Analysis Templates
+IMAGE_ANALYSIS_SEGMENTS = [
     "Image analysis shows that the spin-coating coverage reaches {coverage}%, and the average grayscale value of the film is {grayscale_value}"
 ]
 
-# PL analysis templates
-pl_analysis_segments = [
+# PL Analysis Templates
+PL_ANALYSIS_SEGMENTS = [
     "Spectral analysis indicates that, upon the onset of annealing, the film reaches the explosive nucleation point at {peak_time} seconds, at which the photoluminescence (PL) intensity attains its maximum. Following this peak, the PL intensity decreases to 30% of its maximum value, with an average decay slope of {decay_slope}."
 ]
 
-# XRD analysis templates
-xrd_analysis_segments_12 = [
+# XRD Analysis Templates - 12.6°
+XRD_ANALYSIS_SEGMENTS_12 = [
     "XRD analysis showed a diffraction peak was identified at around 12.65°, with an intensity of {xrd_intensity_12} cts and a full width at half maximum (FWHM) of {xrd_fhwm_12}, which corresponds to the characteristic peak of PbI2. The relatively low intensity of this peak suggests a limited presence of residual PbI2."
 ]
 
-xrd_analysis_segments_stress = [
+# XRD Analysis Templates - Stress
+XRD_ANALYSIS_SEGMENTS_STRESS = [
     "XRD analysis showed a diffraction peak was identified at 4.00°, with an intensity of {xrd_intensity_4} cts，which corresponds to the formation of a 2D structure within the perovskite lattice. The high intensity implies efficient surface passivation, contributing positively to device performance. GIXRD analysis further revealed a residual tensile stress of {xrd_Stress} MPa in the perovskite film via measurement conducted at an incident angle of 1°."
 ]
 
 
 # ===================== Safe value retrieval utilities =====================
-def gv(row: pd.Series, col: str, default='N/A'):
+def gv(row: pd.Series, col: str, default: str = 'N/A') -> str:
     """Safely retrieve value from pandas Series.
 
     Args:
         row: Pandas Series containing experimental data.
         col: Column name to retrieve.
-        default: Default value if column missing or NaN.
+        default: Default value if column missing or NaN. Default is 'N/A'.
 
     Returns:
         String representation of value or default.
@@ -1021,7 +1033,7 @@ def gv(row: pd.Series, col: str, default='N/A'):
         val = default
     return str(val)
 
-def _normalize_material(x):
+def _normalize_material(x) -> Optional[str]:
     """Normalize material name by stripping whitespace and filtering empty values.
 
     Args:
@@ -1186,10 +1198,7 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
     if all(k in row.index for k in pl_keys) and all(gv(row, k) != 'N/A' for k in pl_keys):
         parts.append(
             templates['pl_analysis'].format(
-                # crystal_time=gv(row, 'crystal_time'),
-                # max_PL=gv(row, 'max_PL'),
                 peak_time=gv(row, 'peak_time'),
-                # decay_time=gv(row, 'decay_time'),
                 decay_slope=gv(row, 'decay_slope'),
             )
         )
@@ -1229,19 +1238,18 @@ def build_templates_for_row(row: pd.Series) -> dict:
     Returns:
         Dictionary mapping template keys to selected template strings.
     """
-    prepared_term = random.choice(prepared_phrases)
-    intro_template = random.choice(intro_segments)
-    perovskite_template = random.choice(perovskite_formula_segments)
-    process_template = random.choice(process_segments)
-    antisolvent_template = random.choice(antisolvent_segments)
-    anneal_template = random.choice(anneal_segments)
-    instruction_template = random.choice(instruction_templates)
-    image_analysis_template = random.choice(image_analysis_segments)
-    pl_analysis_template = random.choice(pl_analysis_segments)
+    prepared_term = random.choice(PREPARED_PHRASES)
+    intro_template = random.choice(INTRO_SEGMENTS)
+    perovskite_template = random.choice(PEROVSKITE_FORMULA_SEGMENTS)
+    process_template = random.choice(PROCESS_SEGMENTS)
+    antisolvent_template = random.choice(ANTISOLVENT_SEGMENTS)
+    anneal_template = random.choice(ANNEAL_SEGMENTS)
+    instruction_template = random.choice(INSTRUCTION_TEMPLATES)
+    image_analysis_template = random.choice(IMAGE_ANALYSIS_SEGMENTS)
+    pl_analysis_template = random.choice(PL_ANALYSIS_SEGMENTS)
 
-
-    xrd_analysis_12 = random.choice(xrd_analysis_segments_12)
-    xrd_analysis_stress = random.choice(xrd_analysis_segments_stress) if gv(row, 'xrd_Stress') != 'N/A' else ""
+    xrd_analysis_12 = random.choice(XRD_ANALYSIS_SEGMENTS_12)
+    xrd_analysis_stress = random.choice(XRD_ANALYSIS_SEGMENTS_STRESS) if gv(row, 'xrd_Stress') != 'N/A' else ""
 
     # SAM
     sam1, sam2, sam3 = gv(row, 'Formula SAM 1'), gv(row, 'Formula SAM 2'), gv(row, 'Formula SAM 3')
@@ -1249,25 +1257,25 @@ def build_templates_for_row(row: pd.Series) -> dict:
         sam_formula_template = ""
     else:
         if sam2 == 'N/A' and sam3 == 'N/A':
-            sam_formula_template = random.choice(sam_formula_segments_single)
+            sam_formula_template = random.choice(SAM_FORMULA_SEGMENTS_SINGLE)
         elif sam3 == 'N/A':
-            sam_formula_template = random.choice(sam_formula_segments_dual)
+            sam_formula_template = random.choice(SAM_FORMULA_SEGMENTS_DUAL)
         else:
-            sam_formula_template = random.choice(sam_formula_segments_triple)
+            sam_formula_template = random.choice(SAM_FORMULA_SEGMENTS_TRIPLE)
 
-    # 添加剂
+    # Additives
     add1, add2, add3 = gv(row, 'Formula Additive 1'), gv(row, 'Formula Additive 2'), gv(row, 'Formula Additive 3')
     if add1 == 'N/A':
         additive_formula_template = ""
     else:
         if add2 == 'N/A' and add3 == 'N/A':
-            additive_formula_template = random.choice(additive_formula_segments_single)
+            additive_formula_template = random.choice(ADDITIVE_FORMULA_SEGMENTS_SINGLE)
         elif add3 == 'N/A':
-            additive_formula_template = random.choice(additive_formula_segments_dual)
+            additive_formula_template = random.choice(ADDITIVE_FORMULA_SEGMENTS_DUAL)
         else:
-            additive_formula_template = random.choice(additive_formula_segments_triple)
+            additive_formula_template = random.choice(ADDITIVE_FORMULA_SEGMENTS_TRIPLE)
 
-    # 钝化层
+    # Passivation layer
     passivation_material_template = ""
     passivation_spin_template = ""
     passivation_drop_template = ""
@@ -1276,14 +1284,14 @@ def build_templates_for_row(row: pd.Series) -> dict:
         p2 = gv(row, 'Formula Passivator 2')
         p3 = gv(row, 'Formula Passivator 3')
         if p2 != 'N/A' and p3 != 'N/A':
-            passivation_material_template = random.choice(passivation_material_segments_triple)
+            passivation_material_template = random.choice(PASSIVATION_MATERIAL_SEGMENTS_TRIPLE)
         elif p2 != 'N/A':
-            passivation_material_template = random.choice(passivation_material_segments_dual)
+            passivation_material_template = random.choice(PASSIVATION_MATERIAL_SEGMENTS_DUAL)
         else:
-            passivation_material_template = random.choice(passivation_material_segments_single)
-        passivation_spin_template = random.choice(passivation_spin_segments)
-        passivation_drop_template = random.choice(passivation_drop_segments)
-        passivation_anneal_template = random.choice(passivation_anneal_segments)
+            passivation_material_template = random.choice(PASSIVATION_MATERIAL_SEGMENTS_SINGLE)
+        passivation_spin_template = random.choice(PASSIVATION_SPIN_SEGMENTS)
+        passivation_drop_template = random.choice(PASSIVATION_DROP_SEGMENTS)
+        passivation_anneal_template = random.choice(PASSIVATION_ANNEAL_SEGMENTS)
 
     return {
         'prepared_term': prepared_term,
@@ -1300,9 +1308,6 @@ def build_templates_for_row(row: pd.Series) -> dict:
         'passivation_drop': passivation_drop_template,
         'passivation_anneal': passivation_anneal_template,
         'image_analysis': image_analysis_template,
-        # 'pl_analysis': pl_analysis_template,
-        # 'xrd_analysis_12': xrd_analysis_12,
-        # 'xrd_analysis_stress': xrd_analysis_stress,
     }
 
 def row_to_text(row: pd.Series) -> str:
@@ -1345,11 +1350,9 @@ import json
 from sqlalchemy import create_engine
 
 
-DB_CONFIG = {
+DB_CONFIG: Dict[str, Any] = {}
 
-}
-
-def get_random_row_from_db(config: dict) -> pd.Series:
+def get_random_row_from_db(config: Dict[str, Any]) -> pd.Series:
     """Fetch random row from MySQL database.
 
     Args:
@@ -1382,7 +1385,7 @@ def get_random_row_from_db(config: dict) -> pd.Series:
 import pandas as pd
 from sqlalchemy import create_engine
 
-def get_all_rows_from_db(config: dict) -> pd.DataFrame:
+def get_all_rows_from_db(config: Dict[str, Any]) -> pd.DataFrame:
     """Fetch all rows from MySQL database.
     Args:
         config: Database configuration with keys: host, user, password, database, port, table

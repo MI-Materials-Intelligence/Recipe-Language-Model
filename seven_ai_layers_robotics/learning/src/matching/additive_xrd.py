@@ -5,14 +5,14 @@ def run_additive_xrd(
     verbose: bool = True,
 ) -> None:
     """
-    Run Image Process pipeline.
+    Run Additive XRD pipeline.
 
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
+    Args:
+        seed: Override random seed (optional).
+        verbose: Print start / end logs.
+        
+    Returns:
+        None
     """
     if verbose:
         print("▶ Running Additive XRD pipeline...")
@@ -26,7 +26,7 @@ def run_additive_xrd(
     main()
 
     if verbose:
-        print("✅ Image Process pipeline finished.")
+        print("✅ Additive XRD pipeline finished.")
 import sys
 import json
 import random
@@ -42,9 +42,16 @@ from mysql.connector import Error
 import os
 
 
-def export_table_to_csv_exclude_id(table_name, output_csv, mysql_config):
-    """
-    Export MySQL table to CSV, excluding 'id' column, and safely handle output path.
+def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_config: dict) -> None:
+    """Export MySQL table to CSV, excluding 'id' column, and safely handle output path.
+    
+    Args:
+        table_name: Name of the MySQL table to export.
+        output_csv: Output CSV file path.
+        mysql_config: MySQL database configuration dictionary.
+        
+    Returns:
+        None
     """
     # Safely create output directory (only when path is not empty)
     output_dir = os.path.dirname(output_csv)
@@ -170,6 +177,17 @@ WRITE_DEBUG_CSV = True
 # 1) CSV I/O helpers
 # -------------------------
 def read_csv_auto(path: Path) -> pd.DataFrame:
+    """Read CSV file with automatic encoding detection.
+    
+    Args:
+        path: Path to the CSV file.
+        
+    Returns:
+        Loaded DataFrame.
+        
+    Raises:
+        RuntimeError: If file cannot be read with utf-8-sig/utf-8/gbk encodings.
+    """
     last_err = None
     for enc in ("utf-8-sig", "utf-8", "gbk"):
         try:
@@ -180,6 +198,14 @@ def read_csv_auto(path: Path) -> pd.DataFrame:
 
 
 def strip_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Strip whitespace from all column names in DataFrame.
+    
+    Args:
+        df: Input DataFrame.
+        
+    Returns:
+        DataFrame with stripped column names.
+    """
     df = df.copy()
     df.rename(columns=lambda c: str(c).strip(), inplace=True)
     return df
@@ -187,8 +213,17 @@ def strip_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def ensure_index_col(df: pd.DataFrame, index_col: str) -> pd.DataFrame:
     """Ensure there is a stable ID column (index_col) and normalize it as string.
-    - If index_col is missing, we fall back to the current DataFrame index (reset_index).
-    - Empty IDs are dropped.
+    
+    Args:
+        df: Input DataFrame.
+        index_col: Name of the index column to ensure/create.
+        
+    Returns:
+        DataFrame with normalized index column.
+        
+    Note:
+        - If index_col is missing, falls back to the current DataFrame index (reset_index).
+        - Empty IDs are dropped.
     """
     df = df.copy()
     if index_col not in df.columns:
@@ -199,7 +234,14 @@ def ensure_index_col(df: pd.DataFrame, index_col: str) -> pd.DataFrame:
     return df
 
 def normalize_series(s: pd.Series) -> pd.Series:
-    """Normalize text cells without pandas.replace downcasting warnings."""
+    """Normalize text cells without pandas.replace downcasting warnings.
+    
+    Args:
+        s: Input Series to normalize.
+        
+    Returns:
+        Normalized Series with stripped strings and standardized NaN values.
+    """
     s = s.astype("string").fillna("")
     s = s.str.strip()
     s = s.str.replace(r"\s+", " ", regex=True)
@@ -208,7 +250,14 @@ def normalize_series(s: pd.Series) -> pd.Series:
 
 
 def normalize_date(v: Any) -> str:
-    """Normalize date to 'YYYYMMDD' string. Returns '' if missing/unparseable."""
+    """Normalize date to 'YYYYMMDD' string.
+    
+    Args:
+        v: Value to normalize (can be any type).
+        
+    Returns:
+        Formatted date string in 'YYYYMMDD' format, or '' if missing/unparseable.
+    """
     if v is None:
         return ""
     try:
@@ -236,6 +285,17 @@ def count_pairs_differing_in_one_column(
     target_col: str,
     row_index_col: str = "_row_index",
 ) -> Tuple[int, List[Dict[str, Any]]]:
+    """Find all pairs where ONLY target_col differs and all other cols in cols_all are identical.
+    
+    Args:
+        df_in: Input DataFrame.
+        cols_all: List of all column names to consider.
+        target_col: The column that should differ between pairs.
+        row_index_col: Name of the row index column.
+        
+    Returns:
+        Tuple of (number of pairs, list of pair records).
+    """
     other_cols = [c for c in cols_all if c != target_col]
     if not other_cols:
         return 0, []
@@ -285,6 +345,18 @@ def build_pairs(
     conc_cols: List[str],
     formula_diff_ignore: List[str],
 ) -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, Any]]:
+    """Build formula and concentration pairs from main DataFrame.
+    
+    Args:
+        df_main: Main DataFrame containing all data.
+        index_col: Name of the index column.
+        formula_cols: List of formula column names.
+        conc_cols: List of concentration column names.
+        formula_diff_ignore: List of formula columns to ignore when finding differing columns.
+        
+    Returns:
+        Tuple of (pairs_formula_df, pairs_conc_df, summary_dict).
+    """
     df = df_main.copy()
 
     fcols = [c for c in formula_cols if c in df.columns]
@@ -340,11 +412,23 @@ def rule_xrd_better_but_pce_worse(
     row1: pd.Series, row2: pd.Series,
     intensity_col: str, fwhm_col: str, pce_col: str
 ) -> Optional[str]:
-    """
-    Keep pairs where:
-      - One row has better XRD: higher intensity AND lower FWHM
-      - but that row has worse PCE (lower)
-    Return "row1" / "row2" indicating which row is "better XRD but worse PCE".
+    """Keep pairs where one row has better XRD but worse PCE.
+    
+    Args:
+        row1: First row data Series.
+        row2: Second row data Series.
+        intensity_col: Name of the XRD intensity column.
+        fwhm_col: Name of the FWHM (full width at half maximum) column.
+        pce_col: Name of the PCE column.
+        
+    Returns:
+        "row1" if row1 has better XRD but worse PCE,
+        "row2" if row2 has better XRD but worse PCE,
+        None if condition not met or data missing.
+        
+    Condition:
+        - One row has better XRD: higher intensity AND lower FWHM
+        - but that row has worse PCE (lower)
     """
     i1, f1, p1 = row1[intensity_col], row1[fwhm_col], row1[pce_col]
     i2, f2, p2 = row2[intensity_col], row2[fwhm_col], row2[pce_col]
@@ -368,6 +452,23 @@ def evaluate_pairs(
     fwhm_col: str,
     pce_col: str,
 ) -> pd.DataFrame:
+    """Evaluate and filter pairs based on XRD and PCE metrics.
+    
+    Args:
+        pairs_df: DataFrame containing pair records.
+        df_main: Main DataFrame with all metrics.
+        index_col: Name of the index column.
+        metric_cols: List of metric column names to check.
+        intensity_col: Name of the XRD intensity column.
+        fwhm_col: Name of the FWHM column.
+        pce_col: Name of the PCE column.
+        
+    Returns:
+        Filtered DataFrame with condition_case column added.
+        
+    Raises:
+        ValueError: If main table missing required metric columns.
+    """
     if pairs_df is None or pairs_df.empty:
         return pairs_df.copy()
 
@@ -407,7 +508,15 @@ def evaluate_pairs(
 # -------------------------
 # 4) Text generation via templates_lib
 # -------------------------
-def import_templates_lib():
+def import_templates_lib() -> dict:
+    """Import and return templates from templates_lib module.
+    
+    Returns:
+        Dictionary containing all template lists from templates_lib.
+        
+    Raises:
+        ImportError: If templates_lib module cannot be imported.
+    """
     script_dir = Path(__file__).parent.resolve()
     # 确保 matching 目录在 Python 路径中
     if str(script_dir) not in sys.path:
@@ -485,6 +594,16 @@ def import_templates_lib():
 
 
 def gv(row: pd.Series, col: str, default: str = "N/A") -> str:
+    """Get value from row safely with default fallback.
+    
+    Args:
+        row: DataFrame row Series.
+        col: Column name to retrieve.
+        default: Default value if column missing or NaN.
+        
+    Returns:
+        String value from the column, or default if unavailable.
+    """
     if col not in row.index:
         return default
     val = row[col]
@@ -494,6 +613,15 @@ def gv(row: pd.Series, col: str, default: str = "N/A") -> str:
 
 
 def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]:
+    """Build template dictionary for a single data row.
+    
+    Args:
+        row: DataFrame row Series containing device parameters.
+        T: Templates dictionary from templates_lib.
+        
+    Returns:
+        Dictionary mapping template keys to selected template strings.
+    """
     prepared_term = random.choice(T["prepared_phrases"])
     intro_template = random.choice(T["intro_segments"])
     perovskite_template = random.choice(T["perovskite_formula_segments"])
@@ -560,6 +688,15 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
 
 
 def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
+    """Generate complete output text from row data and templates.
+    
+    Args:
+        row: DataFrame row Series containing device parameters.
+        templates: Dictionary of template strings.
+        
+    Returns:
+        Complete formatted text description of the device.
+    """
     parts: List[str] = []
 
     parts.append(
@@ -683,6 +820,15 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
 
 
 def row_to_text(row: pd.Series, T: Dict[str, Any]) -> str:
+    """Convert row data to text using templates.
+    
+    Args:
+        row: DataFrame row Series.
+        T: Templates dictionary.
+        
+    Returns:
+        Formatted text string for the row.
+    """
     templates = build_templates_for_row(row, T)
     return generate_output_text(row, templates)
 
@@ -691,6 +837,14 @@ def row_to_text(row: pd.Series, T: Dict[str, Any]) -> str:
 # 5) Additive list extraction
 # -------------------------
 def _normalize_material(x: Any) -> Optional[str]:
+    """Normalize material name, returning None for invalid values.
+    
+    Args:
+        x: Value to normalize.
+        
+    Returns:
+        Normalized string or None if invalid.
+    """
     if x is None:
         return None
     s = str(x).strip()
@@ -700,6 +854,15 @@ def _normalize_material(x: Any) -> Optional[str]:
 
 
 def _collect_materials(row: pd.Series, cols: List[str]) -> List[str]:
+    """Collect material names from specified columns in row.
+    
+    Args:
+        row: DataFrame row Series.
+        cols: List of column names to check.
+        
+    Returns:
+        List of unique material names found in the columns.
+    """
     out: List[str] = []
     seen = set()
     for c in cols:
@@ -713,6 +876,15 @@ def _collect_materials(row: pd.Series, cols: List[str]) -> List[str]:
 
 
 def ordered_union(a: List[str], b: List[str]) -> List[str]:
+    """Create ordered union of two lists, preserving order and removing duplicates.
+    
+    Args:
+        a: First list of strings.
+        b: Second list of strings.
+        
+    Returns:
+        Combined list with unique elements in order of appearance.
+    """
     seen, out = set(), []
     for lst in (a, b):
         for x in lst:

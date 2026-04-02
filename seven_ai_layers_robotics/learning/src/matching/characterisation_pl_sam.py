@@ -5,14 +5,14 @@ def run_characterisation_pl_sam(
     verbose: bool = True,
 ) -> None:
     """
-    Run Image Process pipeline.
+    Run Characterisation PL SAM pipeline.
 
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
+    Args:
+        seed: Override random seed (optional).
+        verbose: Print start / end logs.
+        
+    Returns:
+        None
     """
     if verbose:
         print("▶ Running PL SAM pipeline...")
@@ -26,7 +26,7 @@ def run_characterisation_pl_sam(
     main()
 
     if verbose:
-        print("✅ Image Process pipeline finished.")
+        print("✅ PL SAM pipeline finished.")
 
 import sys
 import json
@@ -43,9 +43,16 @@ from mysql.connector import Error
 import os
 
 
-def export_table_to_csv_exclude_id(table_name, output_csv, mysql_config):
-    """
-    Export MySQL table to CSV, excluding 'id' column, and safely handle output path.
+def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_config: dict) -> None:
+    """Export MySQL table to CSV, excluding 'id' column, and safely handle output path.
+    
+    Args:
+        table_name: Name of the MySQL table to export.
+        output_csv: Output CSV file path.
+        mysql_config: MySQL database configuration dictionary.
+        
+    Returns:
+        None
     """
     # Safely create output directory (only when path is not empty)
 
@@ -182,6 +189,17 @@ WRITE_DEBUG_CSV = True
 # 1) CSV I/O helpers
 # -------------------------
 def read_csv_auto(path: Path) -> pd.DataFrame:
+    """Read CSV file with automatic encoding detection.
+    
+    Args:
+        path: Path to the CSV file.
+        
+    Returns:
+        Loaded DataFrame.
+        
+    Raises:
+        RuntimeError: If file cannot be read with utf-8-sig/utf-8/gbk/GBK encodings.
+    """
     last_err = None
     for enc in ("utf-8-sig", "utf-8", "gbk", "GBK"):
         try:
@@ -192,6 +210,14 @@ def read_csv_auto(path: Path) -> pd.DataFrame:
 
 
 def strip_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Strip whitespace from all column names in DataFrame.
+    
+    Args:
+        df: Input DataFrame.
+        
+    Returns:
+        DataFrame with stripped column names.
+    """
     df = df.copy()
     df.rename(columns=lambda c: str(c).strip(), inplace=True)
     return df

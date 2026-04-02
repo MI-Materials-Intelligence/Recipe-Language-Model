@@ -42,7 +42,7 @@ from seven_ai_layers_robotics.learning import (
 from seven_ai_layers_robotics.generating import (
     VariableReportPipeline,
     CharacterisationReportPipeline,
-    GeneratingEdgeReportPipeline
+    EdgeReportPipeline as GeneratingEdgeReportPipeline
 )
 from seven_ai_layers_robotics.recipeQA import CorpusGenerator
 import asyncio

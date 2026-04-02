@@ -179,7 +179,7 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
     if not record_ids:
         return
 
-    conn = pymysql.connect(**DB_CONFIG)
+    conn = pymysql.connect(**DB_CONFIG, connect_timeout=30)
     cursor = conn.cursor()
 
     uploadtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -202,7 +202,7 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
 # Ensure single_report has unique index
 # =========================
 def ensure_single_report_unique_index():
-    conn = pymysql.connect(**DB_CONFIG)
+    conn = pymysql.connect(**DB_CONFIG, connect_timeout=30)
     cursor = conn.cursor()
     cursor.execute("""
         SELECT COUNT(1) FROM information_schema.statistics

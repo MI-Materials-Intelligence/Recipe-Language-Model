@@ -13,8 +13,12 @@ import mysql.connector
 from mysql.connector import Error
 
 # ===== Config Loader =====
-def load_recipeqa_config():
-    """从 config.toml 加载 RecipeQA 配置"""
+def _load_recipeqa_config() -> Dict[str, Any]:
+    """Load RecipeQA configuration from config.toml.
+    
+    Returns:
+        Dictionary containing LLM and database configuration.
+    """
     try:
         from pathlib import Path
         import tomllib
@@ -75,11 +79,11 @@ except Exception as e:
     RECIPEQA_LLM_CONFIG = {}
 
 # ===== Config =====
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # RecipeQA
-DATA_DIR = os.path.join(BASE_DIR,"..", "data")  # RecipeQA/data/
+BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # RecipeQA
+DATA_DIR: str = os.path.join(BASE_DIR, "..", "data")  # RecipeQA/data/
 
 # Load LLM configuration from app.config
-LLM_CONFIG = RECIPEQA_LLM_CONFIG or {
+LLM_CONFIG: Dict[str, Any] = RECIPEQA_LLM_CONFIG or {
     'api_key': '',
     'base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     'model': '',
@@ -87,23 +91,23 @@ LLM_CONFIG = RECIPEQA_LLM_CONFIG or {
     'timeout': 60,
 }
 
-client = AsyncOpenAI(
-    api_key=LLM_CONFIG["api_key"],
-    base_url=LLM_CONFIG["base_url"]
-)
+MAX_CONCURRENT_REQUESTS: int = 5
+MAX_RETRIES: int = 5
+RETRY_BASE_DELAY: int = 10
 
-MAX_CONCURRENT_REQUESTS = 5
-semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-MAX_RETRIES = 5
-RETRY_BASE_DELAY = 10
-
-MAPPING_RELATION = {
+MAPPING_RELATION: Dict[str, str] = {
     "DMAcPA": "DMACPA",
     "PEACI": "PEACl",
     "PY3": "py3",
     "Py3": "py3",
     "PEACL": "PEACl",
 }
+
+client: AsyncOpenAI = AsyncOpenAI(
+    api_key=LLM_CONFIG["api_key"],
+    base_url=LLM_CONFIG["base_url"]
+)
+semaphore: asyncio.Semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 SYS_PROMPT = """
 You are a perovskite mechanims expert.
@@ -126,14 +130,36 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
 
 # ===== Utils =====
 def safe_filename(name: str) -> str:
+    """Remove invalid characters from filename.
+    
+    Args:
+        name: Original filename.
+        
+    Returns:
+        Sanitized filename with invalid characters replaced by underscores.
+    """
     name = (name or "").strip()
-    return re.sub(r'[\\/:\*\?"<>\|]+', '_', name)
+    return re.sub(r'[\\/:\*?"<>\|]+', '_', name)
 
 def read_text_file(path: str) -> str:
+    """Read text content from file.
+    
+    Args:
+        path: File path to read.
+        
+    Returns:
+        File content as string.
+    """
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 def atomic_write_json(path: str, data: Any) -> None:
+    """Atomically write JSON data to file.
+    
+    Args:
+        path: Target file path.
+        data: Data to serialize to JSON.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = f"{path}.tmp.{os.getpid()}.{uuid.uuid4().hex}"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -143,6 +169,13 @@ def atomic_write_json(path: str, data: Any) -> None:
     os.replace(tmp, path)
 
 def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
+    """Save data to JSON file.
+    
+    Args:
+        data: Data to serialize.
+        file_path: Output file path.
+        indent: JSON indentation level. Default is 2.
+    """
     parent_dir = os.path.dirname(file_path)
     if parent_dir:
         os.makedirs(parent_dir, exist_ok=True)
@@ -150,10 +183,27 @@ def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
         json.dump(data, f, indent=indent, ensure_ascii=False)
 
 def read_json_file(file_path: str) -> Any:
+    """Read JSON file and parse content.
+    
+    Args:
+        file_path: Path to JSON file.
+        
+    Returns:
+        Parsed JSON data.
+    """
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
+    """Recursively find files by extension in directory.
+    
+    Args:
+        directory: Root directory to search.
+        extensions: List of file extensions to match.
+        
+    Returns:
+        List of absolute file paths matching the extensions.
+    """
     if not os.path.isdir(directory):
         return []
     out = []

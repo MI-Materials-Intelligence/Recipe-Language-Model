@@ -1,9 +1,11 @@
-import json
 import hashlib
+import json
+
 import mysql.connector
+
 from seven_ai_layers_robotics.config import config
 
-# Load database configuration from app.config
+# Category: Global Configuration
 MYSQL_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,

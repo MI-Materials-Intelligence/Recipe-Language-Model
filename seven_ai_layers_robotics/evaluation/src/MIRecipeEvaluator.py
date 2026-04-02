@@ -93,20 +93,20 @@ class MIRecipeEvaluator:
             print(f"❌ Failed to call score API: {e}")
             return None
 
-    def get_evaluation_score(self, db_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def get_evaluation_score(self, db_record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Build evaluation payload from database record and call local evaluation functions.
 
         Args:
-            db_data: Database record containing recipe and reasoning data.
+            db_record: Database record containing recipe and reasoning data.
 
         Returns:
             Dictionary with 'index', 'predicted_pce', and 'score' keys, or None if evaluation fails.
         """
         try:
             # 1. Build recipe data
-            control_fp = json.loads(db_data["control_recipe_value"])
-            optimized_fp = json.loads(db_data["recommend_value"])
+            control_fp = json.loads(db_record["control_recipe_value"])
+            optimized_fp = json.loads(db_record["recommend_value"])
 
             # 2. Call calculate_recipe_recommendation to calculate recipe recommendation results
             recipe_recommendation_result = calculate_recipe_recommendation(optimized_fp, control_fp)
@@ -114,10 +114,10 @@ class MIRecipeEvaluator:
 
             # 3. Build input for evaluation_custom
             eval_input = {
-                "control_FP": control_fp,
-                "optimized_FP": optimized_fp,
-                "mechanism": str(db_data["mechanism"]),
-                "substance": json.loads(db_data["reasoning_output"]).get("5_Supporting_Information", None),
+                "control_fp": control_fp,
+                "optimized_fp": optimized_fp,
+                "mechanism": str(db_record["mechanism"]),
+                "substance": json.loads(db_record["reasoning_output"]).get("5_Supporting_Information", None),
                 "evaluation_custom": {
                     "indicator_weight": {
                         "recipe_integrity": 0.05,
@@ -144,7 +144,7 @@ class MIRecipeEvaluator:
             print(f"✅ Local evaluation completed - predicted_pce: {predicted_pce}, overall_score: {score_result.get('score', {}).get('overall', None)}")
 
             return {
-                "index": db_data["index"],
+                "index": db_record["index"],
                 "predicted_pce": predicted_pce,
                 "score": score_result
             }
@@ -204,13 +204,13 @@ class MIRecipeEvaluator:
             print("⚠️ No data to process (status IS NULL).")
             return
 
-        # for record in pending[:1]:
-        for record in pending:
+        # for db_record in pending[:1]:
+        for db_record in pending:
             print("\n============================")
-            print(f"▶️ Starting to process index = {record['index']}")
+            print(f"▶️ Starting to process index = {db_record['index']}")
             print("============================")
 
-            result = self.get_evaluation_score(record)
+            result = self.get_evaluation_score(db_record)
             self.update_score_to_db(result)
 
         print("\n🎉 All records with status IS NULL have been processed!")

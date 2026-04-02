@@ -1,57 +1,16 @@
 from __future__ import annotations
-def run_process_report(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Image Process pipeline.
 
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
-    """
-    if verbose:
-        print("▶ Running image pair to report...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("✅Running image pair to report finished.")
-
-
-
-
-
-import re
-import mysql.connector
+import json
 import os
 import re
-import json
-from openai import OpenAI
-from pathlib import Path
 import traceback
-import json
-import os
+from pathlib import Path
 
-# Import configuration loader
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-generate_root = script_dir.parent.parent  # characterization_function -> generate
-if str(generate_root) not in sys.path:
-    sys.path.insert(0, str(generate_root))
+import mysql.connector
+from openai import OpenAI
+import numpy as np
 
-# Import configuration loader (using Generating/src/config_loader.py)
+# Category: Global Configuration
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
@@ -65,7 +24,7 @@ MYSQL_CONFIG = {
     'database': config.generating_database.database,
     'charset': config.generating_database.charset,
 }
-llm_config = {
+LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
@@ -74,13 +33,42 @@ llm_config = {
 }
 
 client = OpenAI(
-    api_key=llm_config["api_key"],
-    base_url=llm_config["base_url"]
+    api_key=LLM_CONFIG["api_key"],
+    base_url=LLM_CONFIG["base_url"]
 )
 TABLE_NAME = "characterisation_match"
 
 
+def run_process_report(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run Process pair to report pipeline.
 
+    Parameters
+    ----------
+    seed : int | None
+        Override random seed (optional).
+    verbose : bool
+        Print start / end logs.
+    """
+    if verbose:
+        print("▶ Running process pair to report...")
+
+    if seed is not None:
+        import random
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("✅ Running process pair to report finished.")
+
+
+# Category: Constants
 SYSTEM_PROMPT_ABSTRACT = (
     "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
     "Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. "

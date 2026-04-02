@@ -7,8 +7,12 @@ from pathlib import Path
 import tomllib
 
 # ===== Config Loader =====
-def load_recipeqa_config():
-    """Load RecipeQA configuration from config.toml"""
+def _load_recipeqa_config() -> Dict[str, Any]:
+    """Load RecipeQA configuration from config.toml.
+    
+    Returns:
+        Dictionary containing configuration with database and LLM settings.
+    """
     try:
         # Project root: current file is in .../RecipeQA/src/
         # Path levels: src -> RecipeQA -> RLM -> tool -> app -> OpenManus (5 levels up to workspace root)
@@ -75,7 +79,7 @@ class CorpusGenerator:
         self.data_dir = osp.join(self.workspace_root, "data")
 
         # Load configuration ONCE using centralized loader
-        full_config = load_recipeqa_config()
+        full_config = _load_recipeqa_config()
         
         # Extract database config with priority: recipeqa.database > database > default
         self.db_config = (
@@ -195,7 +199,7 @@ class CorpusGenerator:
                 task_save_path = config.get("task_save_path", task_save_path)
                 dist_save_root = config.get("dist_save_root", dist_save_root)
                 dataset_path = config.get("dataset_path", dataset_path)
-            print(f"[INFO] Workspace1111 root: {dist_save_root}")
+            
             
             # 0. Rebuild mechanism library from database
             print(f"[INFO] Rebuilding mechanism library from database...")
@@ -324,18 +328,20 @@ class CorpusGenerator:
 
 
 # Convenience function
-def generate_corpora(corpora_type: str = "all", workspace_root: str = None,
-                     config: Optional[Dict[str, Any]] = None) -> str:
-    """
-    Convenience function: Generate specified type of corpus
-
+def generate_corpora(
+    corpora_type: str = "all",
+    workspace_root: Optional[str] = None,
+    config: Optional[Dict[str, Any]] = None
+) -> str:
+    """Convenience function to generate specified type of corpus.
+    
     Args:
-        corpora_type: Corpus type ("optimized", "single", "all")
-        workspace_root: Workspace root directory
-        config: Optional configuration
-
+        corpora_type: Corpus type ("optimized", "single", or "all"). Default is "all".
+        workspace_root: Workspace root directory. Default is None (auto-detect).
+        config: Optional configuration dictionary. Default is None.
+        
     Returns:
-        Generation result information
+        Generation result message.
     """
     generator = CorpusGenerator(workspace_root)
 

@@ -14,8 +14,12 @@ from mysql.connector import Error
 from collections import defaultdict
 
 # ===== Config Loader =====
-def load_recipeqa_config():
-    """Load RecipeQA configuration from app.config"""
+def _load_recipeqa_config() -> Dict[str, Any]:
+    """Load RecipeQA configuration from app.config
+    
+    Returns:
+        Dictionary containing LLM configuration with api_key, base_url, model, and temperature.
+    """
     try:
         from seven_ai_layers_robotics.config import config
 
@@ -27,12 +31,6 @@ def load_recipeqa_config():
             "temperature": config.recipeqa_llm.temperature if hasattr(config, 'recipeqa_llm') else 0.4,
         }
 
-        # Debug print to verify API key is loaded
-        # if llm_config.get("api_key"):
-            # print(f"[INFO] RecipeQA LLM config loaded: api_key={llm_config['api_key'][:10]}...***")
-        # else:
-            # print("[WARN] RecipeQA LLM api_key is empty!")
-
         return llm_config
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
@@ -40,28 +38,54 @@ def load_recipeqa_config():
 
 # ===== Config =====
 # Current file location: RecipeQA/src/distill/
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # RecipeQA
-DATA_DIR = os.path.join(BASE_DIR, "data")  # RecipeQA/data
+BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # RecipeQA
+DATA_DIR: str = os.path.join(BASE_DIR, "data")  # RecipeQA/data
 
-# Load LLM configuration from app.config
-RECIPEQA_CONFIG = load_recipeqa_config()
-LLM_CONFIG = {
-    "api_key": RECIPEQA_CONFIG.get("api_key", ""),
-    "base_url": RECIPEQA_CONFIG.get("base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
-    "model": RECIPEQA_CONFIG.get("model", "qwen-plus"),
-    "temperature": RECIPEQA_CONFIG.get("temperature", 0.4),
-}
+# Lazy-loaded global variables
+RECIPEQA_CONFIG: Dict[str, Any] = {}
+LLM_CONFIG: Dict[str, Any] = {}
+MAX_CONCURRENT_REQUESTS: int = 5
+MAX_RETRIES: int = 5
+RETRY_BASE_DELAY: int = 10
+client: Optional[AsyncOpenAI] = None
+semaphore: Optional[asyncio.Semaphore] = None
 
-client = AsyncOpenAI(
-    api_key=LLM_CONFIG["api_key"],
-    base_url=LLM_CONFIG["base_url"]
-)
-MAX_CONCURRENT_REQUESTS = RECIPEQA_CONFIG.get("max_concurrent_requests", 5)
-semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
-MAX_RETRIES = RECIPEQA_CONFIG.get("max_retries", 5)
-RETRY_BASE_DELAY = RECIPEQA_CONFIG.get("retry_base_delay", 10)
 
-MAPPING_RELATION = {
+def _init_llm_config() -> None:
+    """Initialize LLM configuration from config file."""
+    global RECIPEQA_CONFIG, LLM_CONFIG, MAX_CONCURRENT_REQUESTS, MAX_RETRIES, RETRY_BASE_DELAY
+    RECIPEQA_CONFIG = _load_recipeqa_config()
+    LLM_CONFIG = {
+        "api_key": RECIPEQA_CONFIG.get("api_key", ""),
+        "base_url": RECIPEQA_CONFIG.get("base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+        "model": RECIPEQA_CONFIG.get("model", "qwen-plus"),
+        "temperature": RECIPEQA_CONFIG.get("temperature", 0.4),
+    }
+    MAX_CONCURRENT_REQUESTS = RECIPEQA_CONFIG.get("max_concurrent_requests", 5)
+    MAX_RETRIES = RECIPEQA_CONFIG.get("max_retries", 5)
+    RETRY_BASE_DELAY = RECIPEQA_CONFIG.get("retry_base_delay", 10)
+
+
+def _create_llm_client() -> AsyncOpenAI:
+    """Create and configure the LLM client.
+    
+    Returns:
+        Configured AsyncOpenAI client instance.
+    """
+    return AsyncOpenAI(
+        api_key=LLM_CONFIG["api_key"],
+        base_url=LLM_CONFIG["base_url"]
+    )
+
+
+def init_llm() -> None:
+    """Initialize LLM client and semaphore."""
+    global client, semaphore
+    _init_llm_config()
+    client = _create_llm_client()
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
+
+MAPPING_RELATION: Dict[str, str] = {
     "DMAcPA": "DMACPA",
     "PEACI": "PEACl",
     "PY3": "py3",
@@ -135,14 +159,36 @@ Do not propose any process changes.
 
 # ===== Utils =====
 def safe_filename(name: str) -> str:
+    """Remove invalid characters from filename.
+    
+    Args:
+        name: Original filename.
+        
+    Returns:
+        Sanitized filename with invalid characters replaced by underscores.
+    """
     name = (name or "").strip()
-    return re.sub(r'[\\/:\*\?"<>\|]+', '_', name)
+    return re.sub(r'[\\/:\*?"<>\|]+', '_', name)
 
 def read_text_file(path: str) -> str:
+    """Read text content from file.
+    
+    Args:
+        path: File path to read.
+        
+    Returns:
+        File content as string.
+    """
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
 def atomic_write_json(path: str, data: Any) -> None:
+    """Atomically write JSON data to file.
+    
+    Args:
+        path: Target file path.
+        data: Data to serialize to JSON.
+    """
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = f"{path}.tmp.{os.getpid()}.{uuid.uuid4().hex}"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -152,6 +198,13 @@ def atomic_write_json(path: str, data: Any) -> None:
     os.replace(tmp, path)
 
 def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
+    """Save data to JSON file.
+    
+    Args:
+        data: Data to serialize.
+        file_path: Output file path.
+        indent: JSON indentation level. Default is 2.
+    """
     parent_dir = os.path.dirname(file_path)
     if parent_dir:  # Create only when parent directory is not empty
         os.makedirs(parent_dir, exist_ok=True)
@@ -159,20 +212,27 @@ def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
         json.dump(data, f, indent=indent, ensure_ascii=False)
 
 def read_json_file(file_path: str) -> Any:
+    """Read JSON file and parse content.
+    
+    Args:
+        file_path: Path to JSON file.
+        
+    Returns:
+        Parsed JSON data.
+    """
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 def rebuild_mechanism_from_db(
     output_root: str,
     db_config: dict,
     table_name: str = "expert_mechanisms"
-):
-    """
-    Rebuild mechanism folder structure from database.
+) -> None:
+    """Rebuild mechanism folder structure from database.
 
     Args:
-        output_root: Output directory, e.g., "./mechanism"
-        db_config: MySQL configuration
-        table_name: Table name
+        output_root: Output directory, e.g., "./mechanism".
+        db_config: MySQL configuration dictionary with host, port, user, password, database.
+        table_name: Database table name. Default is "expert_mechanisms".
     """
     print(f"[INFO] Starting rebuild_mechanism_from_db...")
     print(f"[INFO] DB config: {db_config['host']}:{db_config['port']}/{db_config['database']}")
@@ -257,6 +317,15 @@ def rebuild_mechanism_from_db(
             print(f"[INFO] Database connection closed")
 # ===== Main =====
 def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
+    """Recursively find files by extension in directory.
+    
+    Args:
+        directory: Root directory to search.
+        extensions: List of file extensions to match (e.g., [".json", ".md"]).
+        
+    Returns:
+        List of absolute file paths matching the extensions.
+    """
     if not os.path.isdir(directory):
         return []
     out = []
@@ -267,6 +336,16 @@ def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
     return out
 
 def _safe_get(d: dict, path: List[str], default: str = "") -> str:
+    """Safely get nested dictionary value by path.
+    
+    Args:
+        d: Dictionary to query.
+        path: List of keys representing the path to the value.
+        default: Default value if path not found. Default is empty string.
+        
+    Returns:
+        Value at path or default if not found.
+    """
     cur = d
     for k in path:
         if not isinstance(cur, dict) or k not in cur:
@@ -275,16 +354,23 @@ def _safe_get(d: dict, path: List[str], default: str = "") -> str:
     return cur if isinstance(cur, str) else (json.dumps(cur, ensure_ascii=False) if cur is not None else default)
 
 def normalize_material_key(name: str) -> str:
-    """
-    Normalize material/variable name to a key for md file matching:
-    - First use MAPPING_RELATION for alias correction (e.g., PEACI -> PEACl)
-    - Then convert all to uppercase, keep only letters and numbers
-    -> Filename matching automatically ignores case
+    """Normalize material/variable name to a key for md file matching.
+    
+    Normalization steps:
+    1. Apply MAPPING_RELATION for alias correction (e.g., PEACI -> PEACl)
+    2. Convert to uppercase
+    3. Keep only letters and numbers
+    
+    Args:
+        name: Raw material or variable name.
+        
+    Returns:
+        Normalized key for filename matching (case-insensitive).
     """
     if not name:
         return ""
     s = name.strip()
-    s = MAPPING_RELATION.get(s, s)  # 先统一别名
+    s = MAPPING_RELATION.get(s, s)
     return re.sub(r"[^A-Z0-9]+", "", s.upper())
 
 
@@ -973,6 +1059,10 @@ def get_tasks_from_db(
 
 # ===== Main =====
 def main():
+    # Initialize LLM configuration and client
+    init_llm()
+    print(f"[INFO] LLM initialized: model={LLM_CONFIG.get('model')}")
+
     # Load database configuration from app.config
     try:
         from seven_ai_layers_robotics.config import config

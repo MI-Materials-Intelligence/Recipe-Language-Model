@@ -69,9 +69,26 @@ from templates_new_revised import (
 # Utility Functions
 # =========================
 def choose_random(lst):
+    """Select a random element from a list.
+    
+    Args:
+        lst: A non-empty list to select from.
+        
+    Returns:
+        A randomly selected element from the list.
+    """
     return random.choice(lst)
 
 def format_number_int_like(x, ndigits=2):
+    """Format a number to integer-like string representation.
+    
+    Args:
+        x: Input number to format.
+        ndigits: Number of decimal places for rounding comparison. Defaults to 2.
+        
+    Returns:
+        String representation (integer if close to whole number, otherwise formatted decimal).
+    """
     if pd.isna(x):
         return ""
     try:
@@ -83,6 +100,15 @@ def format_number_int_like(x, ndigits=2):
     return f"{x:.{ndigits}f}".rstrip("0").rstrip(".")
 
 def format_multiple_materials(materials, label):
+    """Format multiple material names and concentrations into a descriptive string.
+    
+    Args:
+        materials: List of tuples containing (formula, concentration) pairs.
+        label: Label for the material group (e.g., 'additives', 'SAMs').
+        
+    Returns:
+        Formatted descriptive string of materials.
+    """
     parts = []
     for f, c in materials:
         if pd.isna(f) and pd.isna(c):
@@ -94,6 +120,14 @@ def format_multiple_materials(materials, label):
     return f"The {label} included " + ", ".join(parts) + "." if parts else ""
 
 def read_table(table):
+    """Read a database table into a pandas DataFrame.
+    
+    Args:
+        table: Name of the database table to read.
+        
+    Returns:
+        pandas DataFrame containing the table data with cleaned column names.
+    """
     df = pd.read_sql(f"SELECT * FROM `{table}`;", con=engine)
     df.columns = [str(c).strip() for c in df.columns]
     return df
@@ -102,6 +136,15 @@ def read_table(table):
 # Core Paragraph Generation Functions
 # =========================
 def safe_float(x, ndigits=None):
+    """Safely convert a value to float with optional rounding.
+    
+    Args:
+        x: Value to convert to float.
+        ndigits: Number of decimal places for rounding. If None, no rounding.
+        
+    Returns:
+        Float value or None if conversion fails.
+    """
     try:
         x = float(x)
         return round(x, ndigits) if ndigits is not None else x
@@ -109,6 +152,15 @@ def safe_float(x, ndigits=None):
         return None
 
 def generate_paragraph(row, xrd_mode=None):
+    """Generate experimental description paragraph from a data row.
+    
+    Args:
+        row: Dictionary-like row containing experimental data.
+        xrd_mode: XRD analysis mode ('additives', 'passivators', or None).
+        
+    Returns:
+        Generated paragraph text describing the experiment.
+    """
     pce = safe_float(row.get('PCE'), 4)
     ff  = safe_float(row.get('FF'), 4)
     voc = safe_float(row.get('Voc'), 4)
@@ -176,15 +228,26 @@ def generate_paragraph(row, xrd_mode=None):
 #  Write Function (deduplication + status codes)
 # =========================
 def insert_single_report_records(table_name: str, record_ids: list, status_code: int, location: str):
+    """Insert single report records into database with deduplication.
+    
+    Args:
+        table_name: Source table name for reference.
+        record_ids: List of record IDs to insert.
+        status_code: Status code (0=skipped, 1=generated, 2=failed).
+        location: File path location of the generated report.
+        
+    Returns:
+        None
+    """
     if not record_ids:
         return
 
-    conn = pymysql.connect(**DB_CONFIG)
+    conn = pymysql.connect(**DB_CONFIG, connect_timeout=30)
     cursor = conn.cursor()
 
     uploadtime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     sql = """
-    INSERT IGNORE INTO `` (`type`, `id`, `status`, `uploadtime`, `location`)
+    INSERT IGNORE INTO `report_edge` (`type`, `id`, `status`, `uploadtime`, `location`)
     VALUES (%s, %s, %s, %s, %s)
     """
     data = [(table_name, rid, status_code, uploadtime, location) for rid in record_ids]
@@ -202,17 +265,24 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
 # Ensure  has unique index
 # =========================
 def ensure_single_report_unique_index():
-    conn = pymysql.connect(**DB_CONFIG)
+    """Ensure unique index exists on report_edge table for (type, id) combination.
+    
+    Creates the unique index if it doesn't exist to prevent duplicate entries.
+    
+    Returns:
+        None
+    """
+    conn = pymysql.connect(**DB_CONFIG, connect_timeout=30)
     cursor = conn.cursor()
     cursor.execute("""
         SELECT COUNT(1) FROM information_schema.statistics
         WHERE table_schema = %s
-          AND table_name = ''
+          AND table_name = 'report_edge'
           AND index_name = 'uniq_type_id';
     """, (DB_CONFIG['database'],))
     exists = cursor.fetchone()[0] > 0
     if not exists:
-        cursor.execute("ALTER TABLE `` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
+        cursor.execute("ALTER TABLE `report_edge` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
         print("✅ Added unique index (type, id) to ")
     cursor.close()
     conn.close()
@@ -221,6 +291,22 @@ def ensure_single_report_unique_index():
 # DataFrame → Word + Record Status
 # =========================
 def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source_table=None):
+    """Generate Word document from DataFrame and record status to database.
+    
+    Args:
+        df: pandas DataFrame containing experimental data.
+        output_path: Output file path for the generated Word document.
+        xrd_mode: XRD analysis mode ('additives', 'passivators', or None).
+        index_col: Column name to use as record ID. If None, uses row index.
+        source_table: Source database table name for recording status.
+        
+    Returns:
+        None
+        
+    Side Effects:
+        - Creates Word document at output_path
+        - Inserts records into report_edge table with status codes
+    """
     doc = Document()
     df = df.copy()
     df.columns = [str(c).strip() for c in df.columns]

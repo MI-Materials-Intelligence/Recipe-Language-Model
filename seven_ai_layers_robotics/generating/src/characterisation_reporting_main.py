@@ -10,13 +10,9 @@ Usage:
 
 import os
 import sys
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-# ==============================
-# Import Configuration Loader
-# ==============================
-# Add the current script's directory to sys.path to import config_loader and Characterisation_Reporting
-
+# Add current script directory to sys.path for config import
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
@@ -24,7 +20,11 @@ if _script_dir not in sys.path:
 # Load configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-# Load database and LLM configuration from app.config
+# Working directory and data paths
+WORK_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(WORK_DIR, "..", "data")
+
+# Database and LLM configuration loaded from app.config
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -74,10 +74,10 @@ try:
     except ImportError as e:
         print(f"⚠️ Warning: Unable to import Process report generator. Error: {e}")
 
-    GENERATORS_AVAILABLE = len(REPORT_GENERATORS) > 0
+    ARE_GENERATORS_AVAILABLE = len(REPORT_GENERATORS) > 0
 
 except Exception as e:
-    GENERATORS_AVAILABLE = False
+    ARE_GENERATORS_AVAILABLE = False
     print(f"⚠️ Warning: Unable to load report generators, report generation functionality will be unavailable. Error: {e}")
 
 # ==============================
@@ -85,19 +85,22 @@ except Exception as e:
 # ==============================
 
 class CharacterisationReportPipeline:
-    """Characterisation Report Automated Processing Pipeline"""
+    """Characterisation Report Automated Processing Pipeline.
+    
+    This class provides an automated pipeline for fetching pending data from the database,
+    generating reports, and saving to the data directory.
+    """
 
     def __init__(self,
                  db_config: Optional[Dict[str, Any]] = None,
                  llm_config: Optional[Dict[str, Any]] = None,
                  work_dir: Optional[str] = None):
-        """
-        Initialize the pipeline.
+        """Initialize the characterisation report pipeline.
         
         Args:
-            db_config: Database configuration (Optional, uses built-in config if not provided).
-            llm_config: LLM configuration (Optional, uses built-in config if not provided).
-            work_dir: Working directory (Optional, uses built-in config if not provided).
+            db_config: Database configuration dictionary. Uses built-in config if not provided.
+            llm_config: LLM configuration dictionary. Uses built-in config if not provided.
+            work_dir: Working directory path. Uses built-in config if not provided.
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.llm_config = llm_config if llm_config else LLM_CONFIG
@@ -107,17 +110,16 @@ class CharacterisationReportPipeline:
         os.makedirs(self.data_dir, exist_ok=True)
 
     def run(self, report_type: str = 'all', verbose: bool = True) -> bool:
-        """
-        Execute the report generation process.
+        """Execute the report generation process.
         
         Args:
             report_type: Report type ('sam', 'additive', 'passivator', 'process', or 'all').
             verbose: Whether to print detailed logs.
-        
+            
         Returns:
-            Success status.
+            bool: Success status of the pipeline execution.
         """
-        if not GENERATORS_AVAILABLE:
+        if not ARE_GENERATORS_AVAILABLE:
             raise ImportError("Report generator modules not found, unable to execute report generation.")
 
         try:

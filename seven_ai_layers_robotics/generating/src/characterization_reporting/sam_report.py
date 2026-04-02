@@ -1,58 +1,20 @@
 from __future__ import annotations
-def run_sam_report(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Image Process pipeline.
 
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
-    """
-    if verbose:
-        print("▶ Running sam pair to report...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("✅Running sam pair to report finished.")
-
-import re
-import mysql.connector
+import json
 import os
 import re
-import json
-from openai import OpenAI
-from pathlib import Path
+import sys
 import traceback
-import json
-import os
+from pathlib import Path
 
-# Import configuration loader
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-generate_root = script_dir.parent.parent  # characterization_function -> generate
-if str(generate_root) not in sys.path:
-    sys.path.insert(0, str(generate_root))
+import mysql.connector
+from openai import OpenAI
 
-# Import configuration loader (using Generating/src/config_loader.py)
-import sys
+# Add project root to path for config import
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
-# ========= Load configuration from app.config =========
+# Database and LLM configuration loaded from app.config
 MYSQL_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -61,7 +23,7 @@ MYSQL_CONFIG = {
     'database': config.generating_database.database,
     'charset': config.generating_database.charset,
 }
-llm_config = {
+LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
@@ -70,23 +32,32 @@ llm_config = {
 }
 
 client = OpenAI(
-    api_key=llm_config["api_key"],
-    base_url=llm_config["base_url"]
+    api_key=LLM_CONFIG["api_key"],
+    base_url=LLM_CONFIG["base_url"]
 )
 TABLE_NAME = "characterisation_match"
 
-def ensure_parent_dir(path: str):
-    """
-    Ensure the parent directory of the file path exists
+def ensure_parent_dir(path: str) -> None:
+    """Ensure the parent directory of the file path exists.
+    
+    Args:
+        path: File path whose parent directory needs to be created.
+        
+    Returns:
+        None
     """
     parent = os.path.dirname(path)
     if parent and not os.path.exists(parent):
         os.makedirs(parent, exist_ok=True)
 
 def db_row_to_item(row: dict) -> dict:
-    """
-    Convert a database row to your original JSON item structure
-    (Ensures zero intrusion to subsequent logic)
+    """Convert a database row to JSON item structure.
+    
+    Args:
+        row: Dictionary containing database row data.
+        
+    Returns:
+        Dictionary with standardized JSON item structure.
     """
 
     item = {
@@ -100,7 +71,7 @@ def db_row_to_item(row: dict) -> dict:
         "sample_id_2_date": row.get("sample_id_2_date"),
     }
 
-    # ⚠️ Only one of the four regulation factor types will be matched
+    # Only one of the four regulation factor types will be matched
     if row.get("sam"):
         item["SAM"] = json.loads(row["sam"]) if isinstance(row["sam"], str) else row["sam"]
 
@@ -115,10 +86,18 @@ def db_row_to_item(row: dict) -> dict:
 
     return item
 
-def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
-    """
-    Read pending records of specified regulation factor type
-    factor_type: "SAM", "Additive", "Passivator", "Process"
+def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> list:
+    """Read pending records of specified regulation factor type.
+    
+    Args:
+        limit: Maximum number of records to fetch. If None, fetch all.
+        factor_type: Type of regulation factor ('SAM', 'Additive', 'Passivator', 'Process').
+        
+    Returns:
+        List of pending record dictionaries.
+        
+    Raises:
+        ValueError: If factor_type is not one of the valid types.
     """
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor(dictionary=True)
@@ -167,17 +146,21 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
     return rows
 
 
-# =============================
-# Material name normalization
-# =============================
+# Material name normalization utilities
 def normalize_material_name(name: str) -> str:
-    """
-    Material name normalization:
-    - Convert to uppercase
-    - Remove non-alphanumeric characters
+    """Normalize material name by converting to uppercase and removing non-alphanumeric characters.
+    
+    Args:
+        name: Raw material name string.
+        
+    Returns:
+        Normalized material name (uppercase, alphanumeric only).
+        
     Examples:
-        "MACl" -> "MACL"
-        "PMACl (1.8 mg/mL)" -> "PMACL"
+        >>> normalize_material_name("MACl")
+        'MACL'
+        >>> normalize_material_name("PMACl (1.8 mg/mL)")
+        'PMACL'
     """
     if not isinstance(name, str):
         return ""
@@ -187,17 +170,15 @@ def normalize_material_name(name: str) -> str:
 # =============================
 # Load all markdown from database
 # =============================
-def build_material_content_map_from_db(category: str | None = None):
-    """
-    Read Markdown content from expert_mechanisms table, optionally filtered by category.
-
+def build_material_content_map_from_db(category: str | None = None) -> dict:
+    """Read Markdown content from expert_mechanisms table with optional category filtering.
+    
     Args:
-        category (str or None):
-            - If None, load all categories;
-            - If a string (e.g., "SAM"), only load records of that category.
-
+        category: Category filter. If None, loads all categories.
+                 If string (e.g., "SAM"), loads only that category.
+        
     Returns:
-        dict: {normalized material name -> markdown content}
+        Dictionary mapping normalized material names to markdown content.
     """
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor(dictionary=True)
@@ -233,16 +214,21 @@ def build_material_content_map_from_db(category: str | None = None):
 
     if not material_content_map:
         if category:
-            print(f"[WARN] No valid Markdown content found for category='{category}' in expert_mechanisms table")
+            print(f"[WARNING] No valid Markdown content found for category='{category}'")
         else:
-            print("[WARN] No markdown content read from expert_mechanisms table")
+            print("[WARNING] No markdown content read from expert_mechanisms table")
 
     return material_content_map
 
-def update_status(pair_id: int, status: str):
-    """
-    Update the status of a specific pair
-    status: pending / processing / done / error
+def update_status(pair_id: int, status: str) -> None:
+    """Update the status of a specific pair in database.
+    
+    Args:
+        pair_id: Unique identifier of the pair to update.
+        status: New status value ('pending', 'processing', 'done', 'error').
+        
+    Returns:
+        None
     """
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor()
@@ -259,6 +245,37 @@ def update_status(pair_id: int, status: str):
     conn.commit()
     cursor.close()
     conn.close()
+
+
+def run_sam_report(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """Execute SAM pair to report generation pipeline.
+    
+    Args:
+        seed: Random seed for reproducibility. If None, uses default random state.
+        verbose: If True, prints start and completion messages.
+        
+    Returns:
+        None
+    """
+    if verbose:
+        print("▶ Running sam pair to report...")
+
+    if seed is not None:
+        import random
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("✅ Running sam pair to report finished.")
+
+
 # =============================
 # Extract background knowledge from item (database version)
 # =============================
@@ -311,6 +328,8 @@ def get_material_background_from_item(
         return "\n\n".join(background_chunks)
     else:
         return ""
+
+
 # ========== 1. General LLM call encapsulation ==========
 
 def get_answer_and_thinking(
@@ -514,9 +533,7 @@ DATA:
 - Use ONLY numbers and mechanisms from the user's input.
 '''
 
-# ========== 3. Main flow: load -> call model -> generate SFT samples + report ==========
-
-# ========== 3. Main flow: database-driven version ==========
+# ========== 2. Main flow: database-driven version ==========
 def main() -> None:
 
     # ===== Output path configuration =====

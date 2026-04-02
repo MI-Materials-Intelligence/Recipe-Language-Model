@@ -13,12 +13,13 @@ from sqlalchemy import create_engine, text
 
 
 class EdgeReportExtractor:
-    """Edge Report Data Extractor - Handles data cleaning, deduplication and write-back"""
+    """Edge Report Data Extractor - Handles data cleaning, deduplication and write-back."""
 
     def __init__(self, db_config: Dict[str, Any]):
-        """
-        Initialize extractor
-        :param db_config: Database configuration dictionary
+        """Initialize extractor.
+        
+        Args:
+            db_config: Database configuration dictionary.
         """
         self.db_config = db_config
         self.db_uri = f"mysql+pymysql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}?charset=utf8mb4"
@@ -63,13 +64,25 @@ class EdgeReportExtractor:
         ]
 
     def _assert_columns(self, df: pd.DataFrame, required_cols: List[str]) -> None:
-        """Check if DataFrame contains all required columns"""
+        """Check if DataFrame contains all required columns.
+        
+        Args:
+            df: Input DataFrame to validate.
+            required_cols: List of required column names.
+            
+        Raises:
+            ValueError: If any required columns are missing.
+        """
         missing = [c for c in required_cols if c not in df.columns]
         if missing:
             raise ValueError(f"Missing required columns: {missing}")
 
     def _coerce_numeric_inplace(self, df: pd.DataFrame) -> None:
-        """Convert No and metric columns to numeric, invalid values become NaN"""
+        """Convert No and metric columns to numeric, invalid values become NaN.
+        
+        Args:
+            df: Input DataFrame to convert in-place.
+        """
         df["No"] = pd.to_numeric(df["No"], errors="coerce")
         for c in self.metric_cols:
             df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -110,11 +123,19 @@ class EdgeReportExtractor:
         return df.loc[mask_all].copy()
 
     def clean_and_dedup_keep_max_pce(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        1) Remove outliers (by No segments)
-        2) Deduplication (by PARAM_COLS, keep max PCE)
-        3) Remove outliers again (to prevent idxmax from taking values outside/beyond the boundary)
-        4) Restore original order
+        """Clean and deduplicate data, keeping rows with maximum PCE.
+        
+        Processing steps:
+            1. Remove outliers by No segments
+            2. Deduplication by PARAM_COLS (keep max PCE)
+            3. Remove outliers again (to prevent idxmax boundary issues)
+            4. Restore original order
+        
+        Args:
+            df: Input DataFrame to clean and deduplicate.
+            
+        Returns:
+            Cleaned and deduplicated DataFrame.
         """
         self._assert_columns(df, self.all_write_cols)
 
@@ -182,7 +203,14 @@ class EdgeReportExtractor:
 
     @staticmethod
     def to_param(col: str) -> str:
-        """Convert DB/CSV column names to bind parameter names for SQLAlchemy"""
+        """Convert database column name to bind parameter name for SQLAlchemy.
+        
+        Args:
+            col: Database column name.
+            
+        Returns:
+            Bind parameter name with 'p_' prefix and underscores replaced.
+        """
         return "p_" + col.replace(" ", "_").replace("-", "_")
 
     def upsert_to_target_table(self, df: pd.DataFrame, target_table: str) -> None:

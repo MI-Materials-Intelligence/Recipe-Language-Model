@@ -8,43 +8,39 @@ Usage:
     2. Import externally: from this_script import CharacterizationDataPipeline; pipeline = CharacterizationDataPipeline(); pipeline.run_all()
 """
 
-import os
-import sys
 import json
-from typing import Optional, Dict, Any, List
-from pathlib import Path
-import sys
 import os
+import sys
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-# ==============================
-# Import configuration
-# ==============================
 # Load database configuration from app.config
-from seven_ai_layers_robotics.config import config
+try:
+    from seven_ai_layers_robotics.config import config
+    DB_CONFIG = {
+        'host': config.learning_database.host,
+        'port': config.learning_database.port,
+        'user': config.learning_database.user,
+        'password': config.learning_database.password,
+        'database': config.learning_database.database,
+        'charset': config.learning_database.charset,
+    }
+except Exception as e:
+    print(f"⚠️ WARNING: Failed to load config, using empty database configuration. Error: {e}")
+    DB_CONFIG = {
+        'host': '',
+        'port': 3306,
+        'user': 'root',
+        'password': '',
+        'database': '',
+        'charset': 'utf8mb4'
+    }
 
-DB_CONFIG = {
-    'host': config.learning_database.host,
-    'port': config.learning_database.port,
-    'user': config.learning_database.user,
-    'password': config.learning_database.password,
-    'database': config.learning_database.database,
-    'charset': config.learning_database.charset,
-}
-
-# ==============================
-# Built-in configuration
-# ==============================
-
-# Working directory (default to current script path)
+# Working directory and data output paths
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Data output directory
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# ==============================
 # Import characterization data processing modules
-# ==============================
-
 try:
     # Use absolute imports instead of relative imports to avoid path issues in multi-process environments
     from .matching.characterisation_pl_sam import run_characterisation_pl_sam
@@ -73,15 +69,22 @@ except ImportError as e:
 # ==============================
 
 class CharacterizationDataPipeline:
-    """Characterization Data Automated Processing Pipeline"""
+    """Characterization Data Automated Processing Pipeline.
+    
+    Supports: PL SAM, Image Process, Additive XRD, Passivator XRD 
+    data extraction -> JSON generation -> Database insertion
+    """
 
-    def __init__(self,
-                 db_config: Optional[Dict[str, Any]] = None,
-                 work_dir: Optional[str] = None):
-        """
-        Initialize pipeline
-        :param db_config: Database configuration (optional, uses built-in config if not provided)
-        :param work_dir: Working directory (optional, uses built-in config if not provided)
+    def __init__(
+        self,
+        db_config: Optional[Dict[str, Any]] = None,
+        work_dir: Optional[str] = None,
+    ):
+        """Initialize pipeline.
+        
+        Args:
+            db_config: Database configuration dictionary. Defaults to DB_CONFIG if not provided.
+            work_dir: Working directory path. Defaults to WORK_DIR if not provided.
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.work_dir = work_dir if work_dir else WORK_DIR
@@ -101,7 +104,11 @@ class CharacterizationDataPipeline:
         }
 
     def check_module_status(self) -> Dict[str, bool]:
-        """Check availability status of each module"""
+        """Check availability status of each processing module.
+        
+        Returns:
+            Dictionary mapping module names to their availability status.
+        """
         return self.module_status.copy()
 
     def run_characterisation_pl_sam_pipeline(self, verbose: bool = True) -> bool:
@@ -220,9 +227,10 @@ class CharacterizationDataPipeline:
             return False
 
     def run_full_process(self) -> bool:
-        """
-        Execute complete workflow: all characterization data processing + database insertion
-        :return: Success status
+        """Execute complete workflow: all characterization data processing + database insertion.
+        
+        Returns:
+            True if all steps succeeded, False otherwise.
         """
         try:
             # Execute all characterization data processing workflows and database insertion

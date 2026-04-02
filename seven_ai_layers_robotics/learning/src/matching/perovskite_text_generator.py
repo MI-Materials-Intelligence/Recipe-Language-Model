@@ -1,4 +1,9 @@
 # perovskite_text_generator.py
+"""Perovskite Text Generator - Generates text descriptions for perovskite solar cell fabrication.
+
+This module contains templates and functions for generating structured text descriptions
+of perovskite solar cell preparation processes, including materials, parameters, and performance metrics.
+"""
 import random
 
 
@@ -1028,7 +1033,17 @@ compared_groups = {
 
 }
 
-def generate_compared_group_desc(control_device: dict, target_device: dict, compared_group: str):
+def generate_compared_group_desc(control_device: dict, target_device: dict, compared_group: str) -> str:
+    """Generate description text for comparing control and target devices.
+    
+    Args:
+        control_device: Dictionary containing control device parameters and metrics.
+        target_device: Dictionary containing target device parameters and metrics.
+        compared_group: Name of the comparison group (e.g., 'Formula Additive 1-Adding').
+        
+    Returns:
+        Formatted description string highlighting differences between devices.
+    """
     device_info = {
         'control_device_pce': control_device['PCE'],
         'target_device_pce': target_device['PCE'],
@@ -1049,20 +1064,26 @@ def generate_compared_group_desc(control_device: dict, target_device: dict, comp
 
 
 def generate_text(features: dict) -> str:
+    """Generate complete text description from feature dictionary.
+    
+    Args:
+        features: Dictionary containing perovskite device features including:
+            - PCE, FF, Voc, Jsc (performance metrics)
+            - Formula PVK, Concentration PVK (perovskite material)
+            - Formula SAM 1/2/3, Concentration SAM 1/2/3 (SAM materials)
+            - Formula Additive 1/2/3, Concentration Additive 1/2/3 (additives)
+            - Spin Coating Speed/Time PVK 1/2 (process parameters)
+            - Antisolvent Volume, Dropping Timing
+            - Annealed Temperature/Time PVK
+            - Formula Passivator 1/2/3, Concentration Passivator 1/2/3
+            - Spin Coating Speed/Time Passivator
+            - Passivator Volume, Dropping Timing
+            - Annealed Temperature/Time Passivator
+            
+    Returns:
+        Complete formatted text description of the device fabrication process.
     """
-    features: dict 包含键值对，如 'PCE', 'FF', 'Voc', 'Jsc',
-    'Formula_PVK', 'Concentration_PVK',
-    'Formula_SAM', 'Concentration_SAM',
-    'Formula_Additive', 'Concentration_Additive',
-    'Spin1_Speed', 'Spin1_Time', 'Spin2_Speed', 'Spin2_Time',
-    'Antisolvent_Volume', 'Antisolvent_Timing',
-    'Anneal_Temp', 'Anneal_Time',
-    'Formula_Passivator', 'Concentration_Passivator',
-    'Spin_Passivator_Speed', 'Spin_Passivator_Time',
-    'Passivator_Volume', 'Passivator_Timing',
-    'Anneal_Temp_Passivator', 'Anneal_Time_Passivator'.
-    返回组装好的描述文本。
-    """
+    # ... existing code ...
 
     parts = []
 
@@ -1256,7 +1277,16 @@ def generate_text(features: dict) -> str:
 
     return " ".join(parts)
 
-def generate_singla_var_pair_metrics_text(high_pce_metrics_features: dict, low_pce_metrics_features: dict):
+def generate_singla_var_pair_metrics_text(high_pce_metrics_features: dict, low_pce_metrics_features: dict) -> tuple:
+    """Generate paired text for high and low PCE device metrics.
+    
+    Args:
+        high_pce_metrics_features: Dictionary containing high PCE device features.
+        low_pce_metrics_features: Dictionary containing low PCE device features.
+        
+    Returns:
+        Tuple of (high_pce_intro, low_pce_intro) text strings.
+    """
     prepared = random.choice(prepared_phrases)
 
     high_pce_intro = random.choice(intro_segments).format(
@@ -1278,7 +1308,21 @@ def generate_singla_var_pair_metrics_text(high_pce_metrics_features: dict, low_p
     return high_pce_intro, low_pce_intro
 
 
-def generate_segmented_text(features: dict) -> str:
+def generate_segmented_text(features: dict) -> dict:
+    """Generate segmented text description organized by component type.
+    
+    Args:
+        features: Dictionary containing perovskite device features (same structure as generate_text).
+        
+    Returns:
+        Dictionary with segmented text parts:
+            - Metrics: Performance metrics introduction
+            - PVK: Perovskite layer description
+            - SAM: Self-assembled monolayer description
+            - Additive: Additive description
+            - Passivator: Passivation layer description
+            - Single_Coating: Single coating process description
+    """
 
     parts = {
         "Metrics": None,

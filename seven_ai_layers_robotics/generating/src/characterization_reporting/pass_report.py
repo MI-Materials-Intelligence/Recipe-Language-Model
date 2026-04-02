@@ -1,45 +1,44 @@
 from __future__ import annotations
-def run_pass_report(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Image Process pipeline.
 
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
-    """
-    if verbose:
-        print("▶ Running pass pair to report...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("✅ Running pass pair to report finished.")
-
-
-
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import threading
 import json
-import mysql.connector
-from pathlib import Path
 import os
 import re
+import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
+
+import mysql.connector
+import threading
 from openai import OpenAI
 
-import traceback  # ✅ Correct spelling
+# Category: Global Configuration
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+from seven_ai_layers_robotics.config import config
+
+MYSQL_CONFIG = {
+    'host': config.generating_database.host,
+    'port': config.generating_database.port,
+    'user': config.generating_database.user,
+    'password': config.generating_database.password,
+    'database': config.generating_database.database,
+    'charset': config.generating_database.charset,
+}
+LLM_CONFIG = {
+    'api_key': config.generating_llm.dashscope_api_key,
+    'base_url': config.generating_llm.base_url,
+    'model': config.generating_llm.dashscope_model,
+    'temperature': config.generating_llm.temperature,
+    'timeout': config.generating_llm.timeout,
+}
+
+client = OpenAI(
+    api_key=LLM_CONFIG["api_key"],
+    base_url=LLM_CONFIG["base_url"]
+)
+TABLE_NAME = "characterisation_match"
+
+# Category: Constants
 SYSTEM_PROMPT_ABSTRACT = (
     "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
     "Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. "
@@ -308,16 +307,10 @@ def get_material_background_from_item(
         return ""
 # ========== 1. General LLM call encapsulation ==========
 
-# === Global configuration (loaded from config file) ===
+# Category: Global Configuration
 import sys
 from pathlib import Path as PathLib
 script_dir = PathLib(__file__).parent
-generate_root = script_dir.parent.parent  # characterization_function -> generate
-if str(generate_root) not in sys.path:
-    sys.path.insert(0, str(generate_root))
-
-# Import configuration loader (using Generating/src/config_loader.py)
-import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
@@ -627,8 +620,34 @@ def main() -> None:
     print(f"📄 SFT JSONL: {paths['sft_jsonl']}")
     print(f"📄 Report JSONL: {paths['report_jsonl']}")
 
-# === Other helper functions (db_row_to_item, get_material_background_from_item, load_pending_items) remain unchanged ===
-# ... [Please keep your original functions here] ...
+def run_pass_report(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run pass pair to report pipeline.
+
+    Parameters
+    ----------
+    seed : int | None
+        Override random seed (optional).
+    verbose : bool
+        Print start / end logs.
+    """
+    if verbose:
+        print("▶ Running pass pair to report...")
+
+    if seed is not None:
+        import random
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("✅ Running pass pair to report finished.")
 
 if __name__ == "__main__":
     run_pass_report()

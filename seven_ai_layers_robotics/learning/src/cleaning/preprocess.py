@@ -89,6 +89,15 @@ def save_dataframe_to_csv(
 
 
 def format_number(element, num):
+    """Format chemical element number representation.
+    
+    Args:
+        element: Chemical element symbol (e.g., 'Pb', 'Cs').
+        num: Numeric value for the element.
+    
+    Returns:
+        Formatted string representation of element with number.
+    """
     if num == 0:
         return ""  # Do not keep this element
     if element == "Pb" and num == 1:
@@ -100,6 +109,17 @@ def format_number(element, num):
 
 
 def generate_dedup_data(data_path):
+    """Generate deduplicated data from input CSV file.
+    
+    Args:
+        data_path: Path to the input CSV file.
+    
+    Returns:
+        Tuple of three DataFrames:
+            - df_formula_dedup: Deduplicated by formula columns
+            - df_dedup: Deduplicated by full process columns
+            - df_with_group_id: Original data with group IDs
+    """
     # df = pd.read_excel(data_path)
     df = pd.read_csv(data_path)
     df = df.fillna("NA")
@@ -126,7 +146,18 @@ def generate_dedup_data(data_path):
 
 def preprocess(
     src_file: str, formula_dedup_path: str, fp_dedup_path: str, no_dedup_path: str
-):
+) -> None:
+    """Preprocess data: remove abnormalities and perform deduplication.
+    
+    Args:
+        src_file: Path to source CSV file.
+        formula_dedup_path: Output path for formula-deduplicated CSV.
+        fp_dedup_path: Output path for full-process-deduplicated CSV.
+        no_dedup_path: Output path for non-deduplicated CSV with group IDs.
+    
+    Returns:
+        None
+    """
     df_formula_dedup, df_fp_dedup, df_with_group_id = generate_dedup_data(src_file)
 
     if not osp.exists(osp.dirname(formula_dedup_path)):

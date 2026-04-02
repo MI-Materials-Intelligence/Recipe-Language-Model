@@ -10,12 +10,9 @@ Usage:
 
 import os
 import sys
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-# ==============================
-# Import Configuration Loader
-# ==============================
-# Add the current script's directory to sys.path to import config_loader
+# Add current script directory to sys.path for config import
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
@@ -23,7 +20,7 @@ if _script_dir not in sys.path:
 # Load configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-# Load database configuration from app.config (using Generating module)
+# Database configuration loaded from app.config (Using Generating module)
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -34,61 +31,43 @@ DB_CONFIG = {
 }
 DEFAULT_DB_URI = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4"
 
-# ==============================
-# Built-in Configuration (No external input required)
-# ==============================
-
-# Working Directory (Defaults to current script path)
+# Working directory and data paths
 WORK_DIR = _script_dir
-
-# Data Output Directory (Sibling to src)
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# ==============================
-# Import Step Modules
-# ==============================
-
-# Attempt to import each step module
+# Import step modules
 STEP_MODULES = {}
-MODULES_AVAILABLE = False
+ARE_MODULES_AVAILABLE = False
 
 try:
-    # Add Edge_Reporting directory to sys.path
-    _edge_reporting_dir = os.path.join(_script_dir, 'Edge_Reporting')
+    # Add edge_reporting directory to sys.path
+    _edge_reporting_dir = os.path.join(_script_dir, 'edge_reporting')
     if _edge_reporting_dir not in sys.path:
         sys.path.insert(0, _edge_reporting_dir)
-    
-    # print(f"[DEBUG] Edge_Reporting dir: {_edge_reporting_dir}")
-    # print(f"[DEBUG] sys.path contains: {_edge_reporting_dir in sys.path}")
-    # print(f"[DEBUG] Directory exists: {os.path.exists(_edge_reporting_dir)}")
-    # print(f"[DEBUG] Files in directory: {os.listdir(_edge_reporting_dir)}")
 
     # Step 2: Generate Report
     try:
-        import step2_report
-        STEP_MODULES['step2'] = step2_report
-        # print(f"✅ step2_report imported successfully")
+        import edge_report_generator
+        STEP_MODULES['step2'] = edge_report_generator
+        # print(f"✅ edge_report_generator imported successfully")
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import step2_report module. Error: {e}")
+        print(f"⚠️ Warning: Unable to import edge_report_generator module. Error: {e}")
         import traceback
         traceback.print_exc()
 
     # Step 3: DeepSeek Analysis
     try:
-        import step3_deepseek
-        STEP_MODULES['step3'] = step3_deepseek
-        # print(f"✅ step3_deepseek imported successfully")
+        import edge_mechanism_analyzer
+        STEP_MODULES['step3'] = edge_mechanism_analyzer
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import step3_deepseek module. Error: {e}")
+        print(f"⚠️ Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
         import traceback
         traceback.print_exc()
 
-    MODULES_AVAILABLE = len(STEP_MODULES) > 0
-    # print(f"[DEBUG] STEP_MODULES keys: {list(STEP_MODULES.keys())}")
-    # print(f"[DEBUG] MODULES_AVAILABLE: {MODULES_AVAILABLE}")
+    ARE_MODULES_AVAILABLE = len(STEP_MODULES) > 0
 
 except Exception as e:
-    MODULES_AVAILABLE = False
+    ARE_MODULES_AVAILABLE = False
     print(f"⚠️ Warning: Unable to load step modules, some functionality will be unavailable. Error: {e}")
     import traceback
     traceback.print_exc()
@@ -99,19 +78,24 @@ except Exception as e:
 # ==============================
 
 class EdgeReportPipeline:
-    """Edge Report Automated Data Processing Pipeline"""
+    """Edge Report Automated Data Processing Pipeline.
+    
+    This class provides an automated pipeline for data cleaning, generating experimental
+    description reports, and calling DeepSeek for mechanism analysis.
+    """
 
     def __init__(self,
                  db_uri: Optional[str] = None,
                  db_config: Optional[Dict[str, Any]] = None,
                  json_root_dir: Optional[str] = None,
                  work_dir: Optional[str] = None):
-        """
-        Initialize the pipeline
-        :param db_uri: Database URI (Optional, uses built-in config if not provided)
-        :param db_config: Database configuration (Optional, uses built-in config if not provided)
-        :param json_root_dir: JSON root directory (Optional, uses built-in config if not provided)
-        :param work_dir: Working directory (Optional, uses built-in config if not provided)
+        """Initialize the edge report pipeline.
+        
+        Args:
+            db_uri: Database URI string. Uses built-in config if not provided.
+            db_config: Database configuration dictionary. Uses built-in config if not provided.
+            json_root_dir: JSON root directory path. Uses built-in config if not provided.
+            work_dir: Working directory path. Uses built-in config if not provided.
         """
         self.db_uri = db_uri if db_uri else DEFAULT_DB_URI
         self.db_config = db_config if db_config else DB_CONFIG
@@ -122,10 +106,12 @@ class EdgeReportPipeline:
         os.makedirs(self.work_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
 
-        # Dynamically inject configuration into each step module
+        self._initialize_step_modules()
+
+    def _initialize_step_modules(self):
+        """Dynamically inject configuration into each step module."""
         self._setup_step2()
         self._setup_step3()
-
 
     def _setup_step2(self):
         """Configure Step 2 module"""
@@ -157,10 +143,17 @@ class EdgeReportPipeline:
             s3.API_URL = s3.API_URL.strip()
 
 
-    def run_step2(self, verbose: bool = True):
-        """Execute Step 2: Generate experimental description report"""
+    def run_step2(self, verbose: bool = True) -> None:
+        """Execute Step 2 to generate experimental description report.
+        
+        Args:
+            verbose: Whether to print detailed logs. Defaults to True.
+            
+        Raises:
+            ImportError: If edge_report_generator module is not found.
+        """
         if 'step2' not in STEP_MODULES:
-            raise ImportError("step2_report module not found")
+            raise ImportError("edge_report_generator module not found")
 
         if verbose:
             print("📄 Step 2: Generating experimental description report")
@@ -178,10 +171,17 @@ class EdgeReportPipeline:
                     source_table=task["table"]
                 )
 
-    def run_step3(self, verbose: bool = True):
-        """Execute Step 3: Call DeepSeek to generate mechanism analysis"""
+    def run_step3(self, verbose: bool = True) -> None:
+        """Execute Step 3 to call DeepSeek for mechanism analysis.
+        
+        Args:
+            verbose: Whether to print detailed logs. Defaults to True.
+            
+        Raises:
+            ImportError: If edge_mechanism_analyzer module is not found.
+        """
         if 'step3' not in STEP_MODULES:
-            raise ImportError("step3_deepseek module not found")
+            raise ImportError("edge_mechanism_analyzer module not found")
 
         if verbose:
             print("🧠 Step 3: Calling DeepSeek to generate mechanism analysis")
@@ -190,13 +190,16 @@ class EdgeReportPipeline:
         s3.main()
 
     def run(self, steps: str = 'all', verbose: bool = True) -> bool:
+        """Execute the report generation pipeline.
+        
+        Args:
+            steps: Steps to execute ('all', 'step1', 'step2', 'step3', or combinations like 'step1,step2').
+            verbose: Whether to print detailed logs. Defaults to True.
+            
+        Returns:
+            bool: True if pipeline executed successfully, False otherwise.
         """
-        Execute the report generation process
-        :param steps: Steps to execute ('all', 'step1', 'step2', 'step3', or combinations like 'step1,step2')
-        :param verbose: Whether to print detailed logs
-        :return: Success status
-        """
-        if not MODULES_AVAILABLE:
+        if not ARE_MODULES_AVAILABLE:
             raise ImportError("Step modules not found, unable to execute report generation.")
 
         try:

@@ -8,55 +8,31 @@ Usage:
     2. Import externally: from this_script import RoboticDataPipeline; pipeline = RoboticDataPipeline(); pipeline.run_full_process(table_name="xxx")
 """
 
-import os
-import sys
 import csv
 import json
+import os
 import shutil
-import pandas as pd
+import sys
+from pathlib import Path
+from typing import Any, Dict, Optional
+
 import mysql.connector
+import pandas as pd
 from mysql.connector import Error
-from typing import Optional, Dict, Any
 
-# ==============================
-# Built-in configuration (no need to pass from external)
-# ==============================
-
-# Load database configuration from config.toml
+# Load database configuration from app.config
 try:
-    import tomllib
-    from pathlib import Path
-    
-    # Get project root directory
-    current_file = Path(__file__).resolve()
-    project_root = current_file.parent.parent.parent.parent
-    # print(f"Project root: {project_root}")
-    config_path = project_root /  "config.toml"
-    # print(f"Config path: {config_path}")
-    if config_path.exists():
-        with config_path.open("rb") as f:
-            config_data = tomllib.load(f)
-        # Use learning_database configuration
-        DB_CONFIG = config_data.get('learning_database', {
-            'host': '',
-            'port': 3306,
-            'user': 'root',
-            'password': '',
-            'database': '',
-            'charset': 'utf8mb4'
-        })
-    else:
-        # Fallback to default empty config
-        DB_CONFIG = {
-            'host': '',
-            'port': 3306,
-            'user': 'root',
-            'password': '',
-            'database': '',
-            'charset': 'utf8mb4'
-        }
+    from seven_ai_layers_robotics.config import config
+    DB_CONFIG = {
+        'host': config.learning_database.host,
+        'port': config.learning_database.port,
+        'user': config.learning_database.user,
+        'password': config.learning_database.password,
+        'database': config.learning_database.database,
+        'charset': config.learning_database.charset,
+    }
 except Exception as e:
-    print(f"⚠️ WARNING: Failed to load config.toml, using default configuration. Error: {e}")
+    print(f"⚠️ WARNING: Failed to load config, using empty database configuration. Error: {e}")
     DB_CONFIG = {
         'host': '',
         'port': 3306,
@@ -66,16 +42,11 @@ except Exception as e:
         'charset': 'utf8mb4'
     }
 
-# Working directory (default to parent directory of current script path)
+# Working directory and data output paths
 WORK_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Data output directory
 DATA_DIR = os.path.join(WORK_DIR, "data")
 
-# ==============================
-# Import pipeline function and extractor
-# ==============================
-
+# Import pipeline functions and extractor
 try:
     # Use relative imports to avoid path issues in multi-process environments
     from .matching.single_var_matching_pipeline import run as single_var_matching_pipeline
@@ -100,15 +71,22 @@ except ImportError as e:
 # ==============================
 
 class RoboticDataPipeline:
-    """Robotic Learning Data Automated Processing Pipeline"""
+    """Robotic Learning Data Automated Processing Pipeline.
+    
+    Supports: DB export -> Excel conversion -> Algorithm matching -> 
+    Write-back to DB -> Cleanup
+    """
 
-    def __init__(self,
-                 db_config: Optional[Dict[str, Any]] = None,
-                 work_dir: Optional[str] = None):
-        """
-        Initialize pipeline
-        :param db_config: Database configuration (optional, uses built-in config if not provided)
-        :param work_dir: Working directory (optional, uses built-in config if not provided)
+    def __init__(
+        self,
+        db_config: Optional[Dict[str, Any]] = None,
+        work_dir: Optional[str] = None,
+    ):
+        """Initialize pipeline.
+        
+        Args:
+            db_config: Database configuration dictionary. Defaults to DB_CONFIG if not provided.
+            work_dir: Working directory path. Defaults to WORK_DIR if not provided.
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.work_dir = work_dir if work_dir else WORK_DIR
@@ -123,9 +101,22 @@ class RoboticDataPipeline:
 
 
     def run_matching_pipeline(self, xlsx_filename: str) -> bool:
-        """Execute external matching algorithm Pipeline"""
+        """Execute external matching algorithm pipeline.
+        
+        Args:
+            xlsx_filename: Input Excel filename to process.
+            
+        Returns:
+            True if successful.
+            
+        Raises:
+            ImportError: If single_var_matching_pipeline module is not available.
+            Exception: If pipeline execution fails.
+        """
         if not PIPELINE_AVAILABLE:
-            raise ImportError("single_var_matching_pipeline module not found, unable to execute matching.")
+            raise ImportError(
+                "single_var_matching_pipeline module not found, unable to execute matching."
+            )
         try:
             print("🚀 Starting single_var_matching_pipeline...")
             # Execute matching in data directory
@@ -375,15 +366,26 @@ class RoboticDataPipeline:
         else:
             print("ℹ️ No intermediate files to clean up.")
 
-    def run_full_process(self, table_name: str, output_xlsx_name: Optional[str] = None) -> bool:
-        """
-        Execute complete workflow: export -> conversion -> matching -> write-back -> cleanup
-        :param table_name: Source database table name
-        :param output_xlsx_name: Output Excel filename (optional, defaults to table_name.xlsx)
-        :return: Success status
+    def run_full_process(
+        self, table_name: str, output_xlsx_name: Optional[str] = None
+    ) -> bool:
+        """Execute complete workflow: export -> conversion -> matching -> write-back -> cleanup.
+        
+        Args:
+            table_name: Source database table name.
+            output_xlsx_name: Output Excel filename. Defaults to table_name.xlsx if not provided.
+            
+        Returns:
+            True if successful.
+            
+        Raises:
+            ImportError: If DataExtractor module is not available.
+            Exception: If any workflow step fails.
         """
         if not EXTRACTOR_AVAILABLE:
-            raise ImportError("DataExtractor module not found, unable to execute data extraction.")
+            raise ImportError(
+                "DataExtractor module not found, unable to execute data extraction."
+            )
 
         if output_xlsx_name is None:
             output_xlsx_name = f"{table_name}.xlsx"

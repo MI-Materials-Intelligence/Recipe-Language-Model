@@ -242,7 +242,7 @@ def build_json_obj(experiment_text, summary_text):
 def fetch_pending_records():
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor(pymysql.cursors.DictCursor)
-    cursor.execute("SELECT `index`, `type`, `id`, `location` FROM `` WHERE `status` = 1")
+    cursor.execute("SELECT `index`, `type`, `id`, `location` FROM `report_edge` WHERE `status` = 1")
     records = cursor.fetchall()
     cursor.close()
     conn.close()
@@ -251,7 +251,7 @@ def fetch_pending_records():
 def mark_as_done(report_index):
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
-    cursor.execute("UPDATE `` SET `status` = 2 WHERE `index` = %s", (report_index,))
+    cursor.execute("UPDATE `report_edge` SET `status` = 2 WHERE `index` = %s", (report_index,))
     conn.commit()
     cursor.close()
     conn.close()

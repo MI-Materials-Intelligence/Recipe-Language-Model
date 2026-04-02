@@ -302,9 +302,6 @@ class ReportBuilder:
 
         # Conditional generation of Abstract and Table
         abstract, table_md = "", ""
-        # if llm and method_text and rd_text and not skip_if_empty:
-        print(llm)
-        print(rd_text)
         if llm and method_text and rd_text:
             abstract = llm.generate_abstract(method_text, rd_text)
             table_md = llm.generate_conclusion_table(rd_text)

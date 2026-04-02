@@ -37,7 +37,16 @@ def get_all_json_files(directory: str, recursive: bool = True) -> List[str]:
     return json_files
 
 
-def process_single_data(data: dict, single_var_id: int):
+def process_single_data(data: dict, single_var_id: int) -> dict:
+    """Process single data item with unique identifier.
+    
+    Args:
+        data: Dictionary containing matched pair information.
+        single_var_id: Unique identifier for this single variable pair.
+        
+    Returns:
+        Structured dictionary with Meta Info, Input, and Output sections.
+    """
     low_pce_identifier = f"Sample_{data['index_low_PCE_date']}_{data['index_low_PCE']}"
     high_pce_identifier = (
         f"Sample_{data['index_high_PCE_date']}_{data['index_high_PCE']}"
@@ -80,6 +89,14 @@ def process_single_data(data: dict, single_var_id: int):
 
 
 def reorg_data(data: list) -> dict:
+    """Reorganize data list into dictionary grouped by difference columns.
+    
+    Args:
+        data: List of dictionaries containing matched pair data.
+        
+    Returns:
+        Dictionary organized by difference column sets.
+    """
     total_diff_items = {}
     counter = 0
     avaiable_diff_columns = []

@@ -10,12 +10,9 @@ Usage:
 
 import os
 import sys
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
-# ==============================
-# Import Configuration Loader
-# ==============================
-# Add the current script's directory to sys.path to import config_loader
+# Add current script directory to sys.path for config import
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
@@ -23,7 +20,7 @@ if _script_dir not in sys.path:
 # Load configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-# Load database and LLM configuration from app.config
+# Database and LLM configuration loaded from app.config
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -40,23 +37,14 @@ LLM_CONFIG = {
     'timeout': config.generating_llm.timeout,
 }
 
-# ==============================
-# Built-in Configuration (No external input required)
-# ==============================
-
-# Working Directory (Defaults to current script path)
+# Working directory and data paths
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Data Output Directory (Sibling to src)
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# ==============================
-# Import Report Generation Modules
-# ==============================
-
+# Import report generation modules
 try:
     # Attempt to import Variable_Reporting module
-    VARIABLE_REPORT_AVAILABLE = False
+    IS_VARIABLE_REPORT_AVAILABLE = False
 
     # Add Variable_Reporting directory to sys.path
     _var_reporting_dir = os.path.join(_script_dir, 'Variable_Reporting')
@@ -66,12 +54,12 @@ try:
     try:
         from single_report_prepare import PerovskiteAnalyzer
         from single_report import ReportGenerator
-        VARIABLE_REPORT_AVAILABLE = True
+        IS_VARIABLE_REPORT_AVAILABLE = True
     except ImportError as e:
         print(f"⚠️ Warning: Unable to import Variable_Reporting module. Error: {e}")
 
 except Exception as e:
-    VARIABLE_REPORT_AVAILABLE = False
+    IS_VARIABLE_REPORT_AVAILABLE = False
     print(f"⚠️ Warning: Unable to load Variable_Reporting module, report generation functionality will be unavailable. Error: {e}")
 
 # ==============================
@@ -79,17 +67,22 @@ except Exception as e:
 # ==============================
 
 class VariableReportPipeline:
-    """Variable Report Automated Data Processing Pipeline"""
+    """Variable Report Automated Data Processing Pipeline.
+    
+    This class provides an automated pipeline for fetching pending data from the database,
+    generating reports, and saving to the data directory.
+    """
 
     def __init__(self,
                  db_config: Optional[Dict[str, Any]] = None,
                  llm_config: Optional[Dict[str, Any]] = None,
                  work_dir: Optional[str] = None):
-        """
-        Initialize the pipeline
-        :param db_config: Database configuration (Optional, uses built-in config if not provided)
-        :param llm_config: LLM configuration (Optional, uses built-in config if not provided)
-        :param work_dir: Working directory (Optional, uses built-in config if not provided)
+        """Initialize the variable report pipeline.
+        
+        Args:
+            db_config: Database configuration dictionary. Uses built-in config if not provided.
+            llm_config: LLM configuration dictionary. Uses built-in config if not provided.
+            work_dir: Working directory path. Uses built-in config if not provided.
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.llm_config = llm_config if llm_config else LLM_CONFIG
@@ -99,14 +92,17 @@ class VariableReportPipeline:
         os.makedirs(self.data_dir, exist_ok=True)
 
     def run(self, steps: str = 'all', rebuild_knowledge: bool = True, verbose: bool = True) -> bool:
+        """Execute the report generation process.
+        
+        Args:
+            steps: Steps to execute ('all', 'prepare', 'report').
+            rebuild_knowledge: Whether to rebuild knowledge base (default True).
+            verbose: Whether to print detailed logs.
+            
+        Returns:
+            Success status of the pipeline execution.
         """
-        Execute the report generation process
-        :param steps: Steps to execute ('all', 'prepare', 'report')
-        :param rebuild_knowledge: Whether to rebuild knowledge base (default True)
-        :param verbose: Whether to print detailed logs
-        :return: Success status
-        """
-        if not VARIABLE_REPORT_AVAILABLE:
+        if not IS_VARIABLE_REPORT_AVAILABLE:
             raise ImportError("Variable_Reporting module not found, unable to execute report generation.")
 
         try:

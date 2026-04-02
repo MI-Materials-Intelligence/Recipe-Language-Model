@@ -52,24 +52,24 @@ try:
     # Attempt to import each step module
     STEP_MODULES = {}
 
-    # Add Edge_Reporting directory to sys.path
-    _edge_reporting_dir = os.path.join(_script_dir, 'Edge_Reporting')
+    # Add edge_reporting directory to sys.path
+    _edge_reporting_dir = os.path.join(_script_dir, 'edge_reporting')
     if _edge_reporting_dir not in sys.path:
         sys.path.insert(0, _edge_reporting_dir)
 
     # Step 2: Generate Report
     try:
-        import step2_report
-        STEP_MODULES['step2'] = step2_report
+        import edge_report_generator
+        STEP_MODULES['step2'] = edge_report_generator
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import step2_report module. Error: {e}")
+        print(f"⚠️ Warning: Unable to import edge_report_generator module. Error: {e}")
 
     # Step 3: DeepSeek Analysis
     try:
-        import step3_deepseek
-        STEP_MODULES['step3'] = step3_deepseek
+        import edge_mechanism_analyzer
+        STEP_MODULES['step3'] = edge_mechanism_analyzer
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import step3_deepseek module. Error: {e}")
+        print(f"⚠️ Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
 
     MODULES_AVAILABLE = len(STEP_MODULES) > 0
 
@@ -144,7 +144,7 @@ class EdgeReportPipeline:
     def run_step2(self, verbose: bool = True):
         """Execute Step 2: Generate experimental description report"""
         if 'step2' not in STEP_MODULES:
-            raise ImportError("step2_report module not found")
+            raise ImportError("edge_report_generator module not found")
 
         if verbose:
             print("📄 Step 2: Generating experimental description report")
@@ -165,7 +165,7 @@ class EdgeReportPipeline:
     def run_step3(self, verbose: bool = True):
         """Execute Step 3: Call DeepSeek to generate mechanism analysis"""
         if 'step3' not in STEP_MODULES:
-            raise ImportError("step3_deepseek module not found")
+            raise ImportError("edge_mechanism_analyzer module not found")
 
         if verbose:
             print("🧠 Step 3: Calling DeepSeek to generate mechanism analysis")

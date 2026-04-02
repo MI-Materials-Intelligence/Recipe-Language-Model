@@ -222,6 +222,17 @@ IGNORED_FEATURES = [
 
 
 def check_feature_set(features: list) -> str:
+    """Check if input features belong to a valid feature set category.
+    
+    Args:
+        features: List of feature names to validate.
+        
+    Returns:
+        Feature set category name (e.g., 'PVK', 'SAM', 'Additive', etc.).
+        
+    Raises:
+        Exception: If features don't match any known feature set.
+    """
     input_feature_set = set(features)
 
     for feature_set_name, feature_set in FEATURE_SET_DICT.items():
@@ -232,7 +243,19 @@ def check_feature_set(features: list) -> str:
     raise
 
 
-def check_trans_stage_feature(feature_columns, high_pce_features, low_pce_features):
+def check_trans_stage_feature(
+    feature_columns: list, high_pce_features: dict, low_pce_features: dict
+) -> str | bool:
+    """Check if transition stage feature is valid for single variable comparison.
+    
+    Args:
+        feature_columns: List of differing feature columns.
+        high_pce_features: Dictionary of features for high PCE sample.
+        low_pce_features: Dictionary of features for low PCE sample.
+        
+    Returns:
+        Target column name if valid, False otherwise.
+    """
     feature_column_set = set(feature_columns)
     if feature_column_set not in PERMITTED_FEATURE_TUPLE:
         return False
@@ -242,7 +265,10 @@ def check_trans_stage_feature(feature_columns, high_pce_features, low_pce_featur
 
     target_column = feature_column_set.intersection(FORMULA_COLUMN_SET).pop()
 
-    if high_pce_features[target_column] == "" or low_pce_features[target_column] == "":
+    if (
+        high_pce_features[target_column] == ""
+        or low_pce_features[target_column] == ""
+    ):
         return target_column
     else:
         return False

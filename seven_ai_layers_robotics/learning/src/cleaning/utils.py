@@ -89,6 +89,14 @@ ITEM_FIELDS = {
 
 
 def item_format_check(data: dict) -> Optional[dict | bool]:
+    """Check if data item matches required format fields.
+    
+    Args:
+        data: Dictionary containing item fields to validate.
+        
+    Returns:
+        Dict with formatted data if valid, False otherwise.
+    """
     data_keys = data.keys()
     if set(data_keys).intersection(ITEM_FIELDS) != ITEM_FIELDS:
         return False
@@ -118,7 +126,15 @@ def item_format_check(data: dict) -> Optional[dict | bool]:
         return False
 
 
-def parse_output_content(text):
+def parse_output_content(text: str) -> list[dict]:
+    """Parse content inside <output> tags into structured data.
+    
+    Args:
+        text: Input text containing <output>...</output> blocks.
+        
+    Returns:
+        List of dictionaries representing parsed entries.
+    """
     # Extract content inside <output> tags
     match = re.search(r"<output>(.*?)</output>", text, re.DOTALL)
     if not match:

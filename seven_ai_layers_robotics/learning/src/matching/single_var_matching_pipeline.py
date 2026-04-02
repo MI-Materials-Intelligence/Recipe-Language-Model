@@ -1,4 +1,5 @@
 import os.path as osp
+from typing import Optional
 
 from .generating_single_var import generate_single_var
 from .get_single_var_diff_class import get_single_var_diff_class
@@ -7,16 +8,18 @@ from ..cleaning.preprocess import preprocess
 from ..cleaning.remove_abnormal import remove_abnormal
 
 
-def run_cleaning(process_root: str, src_file_name: str = ""):
-    """
-    Data Cleaning Stage: Remove abnormal samples and perform deduplication
-
+def run_cleaning(process_root: str, src_file_name: str = "") -> dict:
+    """Data Cleaning Stage: Remove abnormal samples and perform deduplication.
+    
     Args:
-        process_root (str): Processing directory path
-        src_file_name (str): Source file name
-
+        process_root: Processing directory path.
+        src_file_name: Source file name (default: empty string).
+        
     Returns:
-        dict: File path information generated after cleaning
+        Dictionary containing file paths:
+            - formula_dedup_path: Path to formula-deduplicated CSV
+            - fp_dedup_path: Path to full-process-deduplicated CSV
+            - no_dedup_path: Path to non-deduplicated CSV with group IDs
     """
     # Step 1: Remove abnormal samples
     src_file = osp.join(process_root, src_file_name)
@@ -38,14 +41,16 @@ def run_cleaning(process_root: str, src_file_name: str = ""):
     }
 
 
-def run_matching(process_root: str, cleaning_result: dict = None):
-    """
-    Matching and Classification Stage: Generate single variable matching pairs and perform difference classification
-
+def run_matching(process_root: str, cleaning_result: Optional[dict] = None) -> None:
+    """Matching and Classification Stage: Generate single variable matching pairs and classify differences.
+    
     Args:
-        process_root (str): Processing directory path
-        cleaning_result (dict, optional): Results from cleaning stage, containing dedup file paths
-                                       If None, uses default paths
+        process_root: Processing directory path.
+        cleaning_result: Optional dictionary containing dedup file paths from cleaning stage.
+                       If None, uses default paths.
+                       
+    Returns:
+        None
     """
     # If cleaning result not provided, use default paths
     if cleaning_result is None:
@@ -74,13 +79,15 @@ def run_matching(process_root: str, cleaning_result: dict = None):
     print("Get single var diff class finished")
 
 
-def run(process_root: str, src_file_name: str = ""):
-    """
-    Complete Workflow: Execute cleaning and matching stages sequentially
-
+def run(process_root: str, src_file_name: str = "") -> None:
+    """Complete Workflow: Execute cleaning and matching stages sequentially.
+    
     Args:
-        process_root (str): Processing directory path
-        src_file_name (str): Source file name
+        process_root: Processing directory path.
+        src_file_name: Source file name (default: empty string).
+        
+    Returns:
+        None
     """
     # Stage 1: Data Cleaning
     print("=" * 50)

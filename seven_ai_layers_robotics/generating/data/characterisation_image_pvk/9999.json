@@ -1,0 +1,10 @@
+{
+  "1_Abstract": {},
+  "2_Introduction": "The champion PCE of the device can be further improved to 14.392% (VOC of 1.0127 V, JSC of 18.961 mA/cm², and FF of 74.955%). The perovskite precursor solution (1.6 mol/L) composed of a formula of Cs0.1FA0.9Pb1I2.8Br0.2. The chosen spin-coating regimen first applied 1000 rpm for 10 s, then 5000 rpm for 30 s, ensuring layer consistency. When the countdown was 10 s, 120 µL CB serving as antisolvent was dropped onto the substrates. Subsequently, the sample was annealed at 110 °C for 15 min. Image analysis shows that the spin-coating coverage reaches 98.8%, and the average grayscale value of the film is 10.6284.",
+  "3_Result_Discussion": "The high-precursor-concentration (1.6 mol/L) mixed-cation mixed-halide perovskite Cs0.1FA0.9Pb1I2.8Br0.2, where Cs⁺ stabilizes the α-phase and Br⁻ moderately widens the bandgap, was crystallized via a two-step spin-coating regimen (1000 rpm for 10 s, then 5000 rpm for 30 s) followed by a precisely timed chlorobenzene antisolvent drip (120 µL at 10 s) and a 110°C/15 min anneal, a process engineered to rapidly drive supersaturation, suppress heterogeneous nucleation, and promote dense, large-grained growth with minimal bulk defects and suppressed halide segregation. This optimized crystallization is directly corroborated by image-derived morphological evidence, which shows exceptional film continuity with 98.8% substrate coverage and a low average grayscale value of 10.6284, indicative of a uniform, pinhole-free morphology with reduced local defect density that ensures unimpeded charge transport pathways and minimizes non-radiative recombination centers. The resultant high-quality absorber layer, characterized by its excellent structural and interfacial integrity, enables efficient charge extraction and collection, yielding a champion device with a power conversion efficiency of 14.392%, supported by a high open-circuit voltage of 1.0127 V, a short-circuit current density of 18.961 mA/cm², and a fill factor of 74.955%.",
+  "4_Conclusion": {},
+  "5_Supporting_Information": {
+    "substance": "",
+    "reference": ""
+  }
+}

@@ -1,63 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-def run_add_report(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Image Process pipeline.
 
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
-    """
-    if verbose:
-        print("▶ Running add pair to report...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("✅Running add pair to report finished.")
-
-
-
-
-
-import re
-import mysql.connector
-import os
-import re
 import json
-from openai import OpenAI
-from pathlib import Path
+import os
+import random
+import re
+import sys
 import traceback
-import json
-import os
+from pathlib import Path
 
-# Import configuration loader
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-generate_root = script_dir.parent.parent  # characterization_function -> generate
-if str(generate_root) not in sys.path:
-    sys.path.insert(0, str(generate_root))
+import mysql.connector
+import numpy as np
+from openai import OpenAI
 
-# Import configuration loader (using Generating/src/config_loader.py)
-import sys
+# Category: Global Configuration
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
-# ========= Load configuration from app.config =========
 MYSQL_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -66,7 +25,7 @@ MYSQL_CONFIG = {
     'database': config.generating_database.database,
     'charset': config.generating_database.charset,
 }
-llm_config = {
+LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
@@ -75,8 +34,8 @@ llm_config = {
 }
 
 client = OpenAI(
-    api_key=llm_config["api_key"],
-    base_url=llm_config["base_url"]
+    api_key=LLM_CONFIG["api_key"],
+    base_url=LLM_CONFIG["base_url"]
 )
 TABLE_NAME = "characterisation_match"
 def update_status(pair_id: int, status: str):
@@ -126,7 +85,7 @@ def build_material_file_map(md_dir: str):
     material_file_map = {}
 
     for md_file in md_dir_path.glob("*.md"):
-        stem = md_file.stem  # Filename without suffix
+        stem = md_file.stem
         key = normalize_material_name(stem)
         material_file_map[key] = str(md_file)
 
@@ -134,23 +93,6 @@ def build_material_file_map(md_dir: str):
         print(f"[WARN] No .md files found in directory {md_dir_path}, please check the path.")
 
     return material_file_map
-
-    # Actually read md file content
-    background_chunks = []
-    for md_path in sorted(set(selected_files)):
-        if md_path not in cache:
-            try:
-                with open(md_path, "r", encoding="utf-8") as f:
-                    cache[md_path] = f.read()
-            except Exception as e:
-                print(f"[ERROR] Failed to read md file: {md_path}, Error: {e}")
-                continue
-        background_chunks.append(cache[md_path])
-
-    if background_chunks:
-        return "\n\n".join(background_chunks)
-    else:
-        return ""  # Return empty string if no match
 def get_material_background_from_item(
     item: dict,
     material_content_map: dict,
@@ -200,6 +142,36 @@ def get_material_background_from_item(
         return "\n\n".join(background_chunks)
     else:
         return ""
+
+
+def run_add_report(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run additive pair to report pipeline.
+
+    Parameters
+    ----------
+    seed : int | None
+        Override random seed (optional).
+    verbose : bool
+        Print start / end logs.
+    """
+    if verbose:
+        print("▶ Running add pair to report...")
+
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("✅ Running add pair to report finished.")
+
+
 # ========== 1. General LLM Call Encapsulation ==========
 
 
@@ -601,7 +573,7 @@ def main() -> None:
     ]:
         ensure_parent_dir(p)
     # ===== 1. Build "Material Name -> md File" Mapping =====
-    material_content_map = build_material_content_map_from_db("添加剂机理库")
+    material_content_map = build_material_content_map_from_db("Additive Mechanism Library")
     md_cache = {}  # Cache md content
 
     # ===== 2. Read all entries in json =====

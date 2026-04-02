@@ -185,7 +185,7 @@ JSON TEMPLATE:
 ]"""
 
     @classmethod
-    def get_analyze_prompts(cls, input_text: str) -> tuple[str, str]:
+    def get_analyze_prompts(cls, input_text: str) -> Tuple[str, str]:
         """Get prompts for formulation optimization analysis.
 
         Args:
@@ -200,7 +200,7 @@ JSON TEMPLATE:
         )
 
     @classmethod
-    def get_rewrite_prompts(cls, answer_content_analyze: str) -> tuple[str, str]:
+    def get_rewrite_prompts(cls, answer_content_analyze: str) -> Tuple[str, str]:
         """Get prompts for material name extraction.
 
         Args:
@@ -215,7 +215,7 @@ JSON TEMPLATE:
         )
 
     @classmethod
-    def get_material_prompts(cls, material_name: str) -> tuple[str, str]:
+    def get_material_prompts(cls, material_name: str) -> Tuple[str, str]:
         """Get prompts for material mechanism explanation.
 
         Args:
@@ -230,7 +230,7 @@ JSON TEMPLATE:
         )
 
     @classmethod
-    def get_abstract_prompts(cls, input_text: str, answer_content_analyze: str) -> tuple[str, str]:
+    def get_abstract_prompts(cls, input_text: str, answer_content_analyze: str) -> Tuple[str, str]:
         """Get prompts for abstract generation.
 
         Args:
@@ -249,7 +249,7 @@ JSON TEMPLATE:
         )
 
     @classmethod
-    def get_table_prompts(cls, answer_content_analyze: str) -> tuple[str, str]:
+    def get_table_prompts(cls, answer_content_analyze: str) -> Tuple[str, str]:
         """Get prompts for conclusion table generation.
 
         Args:
@@ -264,7 +264,7 @@ JSON TEMPLATE:
         )
 
     @classmethod
-    def get_json_prompts(cls, input_text: str, answer_content_analyze: str) -> tuple[str, str]:
+    def get_json_prompts(cls, input_text: str, answer_content_analyze: str) -> Tuple[str, str]:
         """Get prompts for JSON parameter extraction.
 
         Args:

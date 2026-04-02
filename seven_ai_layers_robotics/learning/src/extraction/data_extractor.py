@@ -43,21 +43,27 @@ def load_database_config() -> Dict[str, Any]:
 
 
 class DataExtractor:
-    """Data Extractor - Handles database export and format conversion"""
+    """Data Extractor - Handles database export and format conversion."""
 
     def __init__(self, db_config: Optional[Dict[str, Any]] = None):
-        """
-        Initialize extractor
-        :param db_config: Database configuration dictionary, if None will load from config.toml
+        """Initialize extractor.
+        
+        Args:
+            db_config: Database configuration dictionary. If None, loads from config.toml.
         """
         self.db_config = db_config if db_config is not None else load_database_config()
 
-    def export_table_to_csv_exclude_id(self, table_name: str, output_csv: str) -> bool:
-        """
-        Export MySQL table as CSV (excluding id column)
-        :param table_name: Table name
-        :param output_csv: Output CSV file path
-        :return: True if successful, False if failed
+    def export_table_to_csv_exclude_id(
+        self, table_name: str, output_csv: str
+    ) -> bool:
+        """Export MySQL table to CSV (excluding id column).
+        
+        Args:
+            table_name: Name of the database table to export.
+            output_csv: Output CSV file path.
+            
+        Returns:
+            True if successful, False if failed.
         """
         output_dir = os.path.dirname(output_csv)
         if output_dir:
@@ -102,11 +108,14 @@ class DataExtractor:
                 conn.close()
 
     def csv_to_xlsx(self, csv_path: str, xlsx_path: str) -> bool:
-        """
-        Convert CSV to XLSX
-        :param csv_path: CSV file path
-        :param xlsx_path: XLSX file path
-        :return: True if successful, False if failed
+        """Convert CSV file to XLSX format.
+        
+        Args:
+            csv_path: Input CSV file path.
+            xlsx_path: Output XLSX file path.
+            
+        Returns:
+            True if successful, False if failed.
         """
         try:
             df = pd.read_csv(csv_path, low_memory=False)
@@ -117,13 +126,21 @@ class DataExtractor:
             print(f"❌ CSV to XLSX conversion failed: {e}")
             return False
 
-    def extract_and_convert(self, table_name: str, output_csv: str, output_xlsx: str) -> bool:
-        """
-        Execute complete extraction and conversion workflow
-        :param table_name: Table name
-        :param output_csv: CSV output path
-        :param output_xlsx: XLSX output path
-        :return: True if successful, raises exception on failure
+    def extract_and_convert(
+        self, table_name: str, output_csv: str, output_xlsx: str
+    ) -> bool:
+        """Execute complete extraction and conversion workflow.
+        
+        Args:
+            table_name: Database table name to extract.
+            output_csv: Output CSV file path.
+            output_xlsx: Output XLSX file path.
+            
+        Returns:
+            True if successful.
+            
+        Raises:
+            Exception: If export or conversion fails.
         """
         print("📤 Exporting data from database...")
         if not self.export_table_to_csv_exclude_id(table_name, output_csv):

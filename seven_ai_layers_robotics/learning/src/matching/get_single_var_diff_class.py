@@ -3,9 +3,8 @@ import os.path as osp
 import random
 from functools import lru_cache
 from typing import List, Tuple
-import os
-import os.path as osp
 import re
+
 from ..cleaning.utils import read_json, save_json
 
 CONCENTRATION_COLUMN = [
@@ -132,22 +131,26 @@ VALUE_COLUMN = [
 ]
 
 
-@lru_cache(maxsize=1)
 def get_predefined_relation() -> Tuple[List, List]:
-    different_column_list = []
-    concern_column_list = []
-    class_list = []
-
-    for different_columns, concern_column, class_name in COLUMN_RELATION:
-        different_columns = list(different_columns)
-        different_columns.sort()
-        different_column_list.append(different_columns)
-        concern_column_list.append(concern_column)
-        class_list.append(class_name)
-    return different_column_list, concern_column_list, class_list
+    """Get predefined column relation mappings for difference classification.
+    
+    Returns:
+        Tuple containing three lists (cached):
+            - different_column_list: List of different column combinations
+            - concern_column_list: List of corresponding concern columns  
+            - class_list: List of classification names for each combination
+    """
 
 
-def process_single_data(data: dict):
+def process_single_data(data: dict) -> dict:
+    """Process single data item into structured result format.
+    
+    Args:
+        data: Dictionary containing matched pair information.
+        
+    Returns:
+        Structured dictionary with Meta Info, Input, and Output sections.
+    """
     low_pce_sample_id = f"{data['control_device_sample_id']},control device"
     high_pce_sample_id = f"{data['target_device_sample_id']},target device"
 
@@ -175,7 +178,15 @@ def process_single_data(data: dict):
     return result
 
 
-def parse_equipment_value(change_desc: str):
+def parse_equipment_value(change_desc: str) -> tuple[float, float] | None:
+    """Parse equipment value change description string.
+    
+    Args:
+        change_desc: Change description in format "old_value->new_value".
+        
+    Returns:
+        Tuple of (old_value, new_value) as floats, or None if parsing fails.
+    """
     if "->" not in change_desc:
         return None
     control_device_value, target_device_value = change_desc.split("->", 1)
@@ -251,8 +262,19 @@ def get_target_field_desc(
     return desc, reverse_desc
 
 
-def get_meta_info(data: dict):
-
+def get_meta_info(data: dict) -> tuple[list, str, str, str]:
+    """Extract metadata information from data dictionary.
+    
+    Args:
+        data: Dictionary containing matched pair data.
+        
+    Returns:
+        Tuple containing:
+            - data_different_columns: Sorted list of different columns
+            - meta_class_name: Classification name for the difference type
+            - diff_class: Description of the change
+            - reverse_diff_class: Description of the reverse change
+    """
     data_different_columns = data["diff_columns"]
     data_different_columns.sort()
     diff_item = data["Diff_Desc"]
@@ -295,11 +317,24 @@ def get_meta_info(data: dict):
         reverse_diff_class = reverse_desc
 
     if diff_class == reverse_diff_class:
-        raise f"diff_class and reverse_diff_class are same: {reverse_diff_class}"
+        raise ValueError(
+            f"diff_class and reverse_diff_class are same: {reverse_diff_class}"
+        )
     return data_different_columns, meta_class_name, diff_class, reverse_diff_class
 
 
-def remove_conflict_in_columns(diff_classes: dict):
+def remove_conflict_in_columns(diff_classes: dict) -> dict:
+    """Remove conflicting entries where both a class and its reverse exist.
+    
+    Args:
+        diff_classes: Dictionary mapping difference class names to their data.
+        
+    Returns:
+        Filtered dictionary with conflicts removed (keeps higher PCE entry).
+        
+    Raises:
+        ValueError: If same PCE appears for conflict pair.
+    """
     valid_result = {}
 
     for class_name in diff_classes.keys():
@@ -319,7 +354,15 @@ def remove_conflict_in_columns(diff_classes: dict):
     return valid_result
 
 
-def remove_conflict(data_dict: dict):
+def remove_conflict(data_dict: dict) -> dict:
+    """Remove conflicts across all difference column groups.
+    
+    Args:
+        data_dict: Dictionary organized by difference columns.
+        
+    Returns:
+        Filtered dictionary with conflicts removed from each group.
+    """
     valid_result = {}
 
     for diff_columns, diff_classes in data_dict.items():
@@ -328,7 +371,16 @@ def remove_conflict(data_dict: dict):
     return valid_result
 
 
-def process_data(data_list: list):
+def process_data(data_list: list) -> dict:
+    """Process list of matched pairs into classified difference structure.
+    
+    Args:
+        data_list: List of dictionaries containing matched pair data.
+        
+    Returns:
+        Nested dictionary organized by meta class name and difference class,
+        containing max PCE samples and processed single data items.
+    """
     result = {}
 
     for d in data_list:
@@ -394,6 +446,18 @@ def get_middle_ten(sorted_list: List[int]) -> List[int]:
 
 
 def save_data(data: dict, save_root: str):
+    """Save classified difference data to JSON files organized by type.
+    
+    Args:
+        data: Processed and classified difference data dictionary.
+        save_root: Root directory path to save JSON files.
+        
+    Returns:
+        None
+        
+    Side Effects:
+        Creates subdirectories and JSON files for each difference type.
+    """
     count = 0
     for joint_diff_columns, content in data.items():
    
@@ -413,13 +477,33 @@ def save_data(data: dict, save_root: str):
             save_json(data_info, save_path)
 
 def sanitize_filename_for_windows(name: str) -> str:
-    """仅在 Windows 下需要的安全化函数"""
-    # 替换 Windows 非法字符：< > : " | ? * \ /
+    """Sanitize filename for Windows compatibility by replacing illegal characters.
+    
+    Args:
+        name: Original filename string.
+        
+    Returns:
+        Sanitized filename safe for Windows filesystem.
+    """
+    # Replace Windows illegal characters: < > : " | ? * \ /
     safe_name = re.sub(r'[<>:"|?*\\/]', '_', name)
     safe_name = safe_name.strip(' .')
     return safe_name if safe_name else "unnamed"
 
 def get_single_var_diff_class(formula_data_root, fp_data_root):
+    """Process and classify single variable differences for formula and full-process data.
+    
+    Args:
+        formula_data_root: Root directory containing formula matching results.
+        fp_data_root: Root directory containing full-process matching results.
+        
+    Returns:
+        None
+        
+    Side Effects:
+        Reads overall_tasks.json from both roots, processes data, and saves
+        classified results to 'tasks' subdirectories.
+    """
     formula_data_path = osp.join(formula_data_root, "overall_tasks.json")
     fp_data_path = osp.join(fp_data_root, "overall_tasks.json")
     formula_save_root = osp.join(formula_data_root, "tasks")
