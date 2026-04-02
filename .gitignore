@@ -1,3 +1,7 @@
 ﻿# Configuration files with sensitive data
 config.toml
  
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
