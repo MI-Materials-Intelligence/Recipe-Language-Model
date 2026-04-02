@@ -10,7 +10,7 @@ from seven_ai_layers_robotics.config import config
 evaluation_custom_bp = Blueprint('evaluation_custom', __name__)
 
 
-def get_required_params(data: dict) -> [dict, dict, str, any, any, dict]:
+def get_required_params(data: dict) -> tuple[dict, dict, str, any, any, dict]:
     '''
     Get input params of 'evaluation custom' from Report.
 
@@ -37,15 +37,21 @@ def get_required_params(data: dict) -> [dict, dict, str, any, any, dict]:
 
 @evaluation_custom_bp.route('/evaluation_custom', methods=['POST'])
 def evaluation_custom():
-
     data = request.get_json()
     optimize, control, to_evaluate, substance, ground, indicator_weight = get_required_params(data)
 
-    result = calculate_evaluation_custom(optimize, control, to_evaluate, substance, indicator_weight)
+    result = calculate_evaluation_custom(optimize, control, to_evaluate, substance, ground, indicator_weight)
 
     return jsonify(result)
 
-def calculate_evaluation_custom(optimize: dict, control: dict, to_evaluate: str, substance: str=None, ground: str=None, indicator_weight: dict=None) -> dict:
+def calculate_evaluation_custom(
+    optimize: dict,
+    control: dict,
+    to_evaluate: str,
+    substance: str = None,
+    ground: str = None,
+    indicator_weight: dict = None
+) -> dict:
     '''
     Calculate evaluation layer score based on indicators and weights.
 
@@ -76,7 +82,7 @@ def calculate_evaluation_custom(optimize: dict, control: dict, to_evaluate: str,
     mechanism_comprehensiveness_weight = indicator_weight.get("mechanism_comprehensiveness", 0)
     mechanism_coherence_weight = indicator_weight.get("mechanism_coherence", 0)
 
-    weights = sum([
+    valid_weights = [
         0 <= recipe_integrity_weight <= 1,
         0 <= formula_rationality_weight <= 1,
         0 <= parameter_rationality_weight <= 1,
@@ -88,7 +94,8 @@ def calculate_evaluation_custom(optimize: dict, control: dict, to_evaluate: str,
         0 <= mechanism_interpretation_weight <= 1,
         0 <= mechanism_comprehensiveness_weight <= 1,
         0 <= mechanism_coherence_weight <= 1
-    ])
+    ]
+    weights = sum(valid_weights)
 
     recipe_weight = recipe_integrity_weight + formula_rationality_weight + parameter_rationality_weight + performance_rationality_weight + recipe_recommendation_weight + experimental_validation_weight
     mechanism_weight = domain_knowledge_weight + mechanism_integrity_weight + mechanism_interpretation_weight + mechanism_comprehensiveness_weight + mechanism_coherence_weight
@@ -105,7 +112,7 @@ def calculate_evaluation_custom(optimize: dict, control: dict, to_evaluate: str,
     try:
         recipe_score = 0
         for key, item in recipe_results.items():
-            if key in config.evaluation.recipe_custom+config.evaluation.mechanism_custom:
+            if key in config.evaluation.recipe_custom + config.evaluation.mechanism_custom:
                 recipe_score += indicator_weight.get(key, 0) * item.get("score", 0)
     except Exception as e:
         print("recipe_error", e)

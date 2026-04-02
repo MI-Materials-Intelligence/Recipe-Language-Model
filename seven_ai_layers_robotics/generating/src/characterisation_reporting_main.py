@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Characterisation Report Automated Processing Pipeline
 Supports: Fetching pending data from the database -> Generating reports -> Saving to the data directory
@@ -39,20 +40,6 @@ LLM_CONFIG = {
     'temperature': config.generating_llm.temperature,
     'timeout': config.generating_llm.timeout,
 }
-
-# ==============================
-# Built-in Configuration (No external input required)
-# ==============================
-
-# Working Directory (Defaults to current script path)
-WORK_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Data Output Directory (Sibling to src)
-DATA_DIR = os.path.join(WORK_DIR, "..", "data")
-
-# ==============================
-# Import Report Generation Modules
-# ==============================
 
 try:
     # Attempt to import different types of report generators
@@ -105,10 +92,12 @@ class CharacterisationReportPipeline:
                  llm_config: Optional[Dict[str, Any]] = None,
                  work_dir: Optional[str] = None):
         """
-        Initialize the pipeline
-        :param db_config: Database configuration (Optional, uses built-in config if not provided)
-        :param llm_config: LLM configuration (Optional, uses built-in config if not provided)
-        :param work_dir: Working directory (Optional, uses built-in config if not provided)
+        Initialize the pipeline.
+        
+        Args:
+            db_config: Database configuration (Optional, uses built-in config if not provided).
+            llm_config: LLM configuration (Optional, uses built-in config if not provided).
+            work_dir: Working directory (Optional, uses built-in config if not provided).
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.llm_config = llm_config if llm_config else LLM_CONFIG
@@ -119,10 +108,14 @@ class CharacterisationReportPipeline:
 
     def run(self, report_type: str = 'all', verbose: bool = True) -> bool:
         """
-        Execute the report generation process
-        :param report_type: Report type ('sam', 'additive', 'passivator', 'process', or 'all')
-        :param verbose: Whether to print detailed logs
-        :return: Success status
+        Execute the report generation process.
+        
+        Args:
+            report_type: Report type ('sam', 'additive', 'passivator', 'process', or 'all').
+            verbose: Whether to print detailed logs.
+        
+        Returns:
+            Success status.
         """
         if not GENERATORS_AVAILABLE:
             raise ImportError("Report generator modules not found, unable to execute report generation.")

@@ -18,7 +18,6 @@ from evaluation.evaluation_custom import calculate_evaluation_custom, get_requir
 from recipe_recommendation.recipe_recommendation import calculate_recipe_recommendation
 
 
-
 class MIRecipeEvaluator:
     """
     A evaluator for perovskite solar cell recipe recommendations.
@@ -125,8 +124,8 @@ class MIRecipeEvaluator:
                         "formula_rationality": 0.05,
                         "parameter_rationality": 0.05,
                         "performance_rationality": 0,
-                        "recipe_recommendation": 0,
-                        "experimental_validation": 0.35,
+                        "recipe_recommendation": 0.35,
+                        "experimental_validation": 0,
                         "domain_knowledge": 0.1,
                         "mechanism_integrity": 0.1,
                         "mechanism_interpretation": 0.1,
@@ -135,7 +134,6 @@ class MIRecipeEvaluator:
                     }
                 }
             }
-
 
             print("eval_input:", eval_input)
 

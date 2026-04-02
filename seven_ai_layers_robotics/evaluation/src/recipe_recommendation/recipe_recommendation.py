@@ -33,9 +33,9 @@ recipe_bp = Blueprint('recipe', __name__)
 # ignore the warning in X_new = df_FP_params[col_PCE].replace('', np.nan).fillna(0)
 pd.set_option("future.no_silent_downcasting", True)
 
-compound_mapping = json.load(open(config.get_evaluation_data_path('data/compound_mapping.json'), 'r', encoding='utf-8'))
+COMPOUND_MAPPING = json.load(open(config.get_evaluation_data_path('data/compound_mapping.json'), 'r', encoding='utf-8'))
 
-def get_compound_mapping_invert(compound_mapping):
+def get_compound_mapping_invert(compound_mapping: dict) -> dict:
     compound_mapping_invert = {}
     for k, v in compound_mapping.items():
         v_ = v.split(" (")[1][:-1].lower()
@@ -44,10 +44,10 @@ def get_compound_mapping_invert(compound_mapping):
     return compound_mapping_invert
 
 
-compound_mapping_invert = get_compound_mapping_invert(compound_mapping)
+COMPOUND_MAPPING_INVERT = get_compound_mapping_invert(COMPOUND_MAPPING)
 
 
-def get_valid_number(string):
+def get_valid_number(string: str) -> str:
     reg = re.compile(r'\d*\.\d+|\d+')
     matches = re.search(reg, string)
     if matches:
@@ -56,14 +56,14 @@ def get_valid_number(string):
 
 
 # zqy
-def get_formula_pvk(string):
+def get_formula_pvk(string: str) -> str:
     reg = re.compile(r'[A-Za-z]+\d\.{0,1}\d*')
     matches = re.findall(reg, string)
 
     formula_pvk = ''.join(matches)
     return formula_pvk
 
-def clean_formula(formula: str):
+def clean_formula(formula: str) -> str:
     if not isinstance(formula, str):
         return formula
 
@@ -134,7 +134,7 @@ PASSIVATOR_P_FIELDS = ["Spin Coating Speed Passivator", "Spin Coating Time Passi
 INVALID_STRINGS = ["none", "nan", "null", "n/a", "na", "0", "", "0.0"]
 INORGANIC = ["NiOx", "C60", "Ag", "BCP"]
 
-def get_FP_str(response: dict, control: dict) -> [dict, dict]:
+def get_fp_str(response: dict, control: dict) -> tuple[dict, dict]:
 
     """
     Convert all values in JSON format to uniform strings
@@ -158,7 +158,7 @@ def get_FP_str(response: dict, control: dict) -> [dict, dict]:
 
     except Exception as e:
         print(f"The input may be neither JSON nor a JSON string ({e})")
-        return {},{}
+        return {}, {}
 
 def get_valid_number_str(string: str) -> str:
     """Extract valid digits"""
@@ -336,7 +336,7 @@ def calculate_recipe_integrity(response: dict, control: dict) -> dict:
             "optimized_FP": response
         })
 
-        response, control = get_FP_str(response, control)
+        response, control = get_fp_str(response, control)
 
         if not (response and control):
             reason = "No valid optimized_FP and control_FP were found."
@@ -486,7 +486,7 @@ def calculate_formula_rationality(response: dict, control: dict) -> dict:
             "optimized_FP": response
         })
 
-        response, control = get_FP_str(response, control)
+        response, control = get_fp_str(response, control)
 
         result = {
             "reason": "initial score",
@@ -658,7 +658,7 @@ def calculate_parameter_rationality(response: dict, control: dict) -> dict:
             "optimized_FP": response
         })
 
-        response, control = get_FP_str(response, control)
+        response, control = get_fp_str(response, control)
 
         result = {
             "reason": "initial score",
@@ -842,7 +842,7 @@ def calculate_performance_rationality(response: dict, control: dict) -> dict:
             "optimized_FP": response
         })
 
-        response, control = get_FP_str(response, control)
+        response, control = get_fp_str(response, control)
 
         result = {
             "reason": "initial score",
@@ -1181,13 +1181,12 @@ def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
         return min(score/35, 1.0)
 
     try:
-
         response, control = get_param({
             "control_FP": control,
             "optimized_FP": response
         })
 
-        response, control = get_FP_str(response, control)
+        response, control = get_fp_str(response, control)
 
         score = None
         result = {
@@ -1233,7 +1232,16 @@ def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
         try:
             control_copy = control.copy()
             optimized_only_copy = response.copy()
+            
+            # Ensure inputs are dictionaries
+            if not isinstance(control_copy, dict) or not isinstance(optimized_only_copy, dict):
+                raise TypeError(f"control and response must be dict before clean_response")
+            
             optimized_copy = clean_response(response, control)
+            
+            # Ensure output is also a dictionary
+            if not isinstance(optimized_copy, dict):
+                raise TypeError(f"clean_response() should return dict, got {type(optimized_copy)}")
 
             # First check whether there are parameter changes
             difference = 0
@@ -1296,8 +1304,24 @@ def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
                 result["reason"] = reason
                 return result
 
-            control_pce = get_prediction(control).get('pce',None)
-            optimized_pce = get_prediction(clean_response(response, control)).get('pce',None)
+            # Ensure control and response are dictionaries before prediction
+            if not isinstance(control, dict):
+                raise TypeError(f"control must be dict, got {type(control)}")
+            if not isinstance(response, dict):
+                raise TypeError(f"response must be dict, got {type(response)}")
+            
+            control_pce_result = get_prediction(control)
+            optimized_copy_for_pred = clean_response(response.copy(), control.copy())
+            optimized_pce_result = get_prediction(optimized_copy_for_pred)
+            
+            # Ensure results are dictionaries
+            if not isinstance(control_pce_result, dict):
+                raise TypeError(f"get_prediction() should return dict for control, got {type(control_pce_result)}")
+            if not isinstance(optimized_pce_result, dict):
+                raise TypeError(f"get_prediction() should return dict for optimized, got {type(optimized_pce_result)}")
+            
+            control_pce = control_pce_result.get('pce', None)
+            optimized_pce = optimized_pce_result.get('pce', None)
 
             score = get_score_predictor(float(ctrl_pce_true), optimized_pce)
             temp = optimized_pce - control_pce
@@ -1311,9 +1335,11 @@ def calculate_recipe_recommendation(response: dict, control: dict) -> dict:
             result["control_PCE_pred"] = str(control_pce)
 
         except Exception as e:
+            import traceback
             score = 0
             reason = f"{indicator}({score} points): error in accuracy_reward ({e})"
             print(reason)
+            print(f"Full traceback:\n{traceback.format_exc()}")
             result["score"] = score
             result["reason"] = reason
             result["optimize_PCE_pred"] = ""
@@ -1421,7 +1447,7 @@ def calculate_experimental_validation(response: dict, control: dict) -> dict:
             "optimized_FP": response
         })
 
-        response, control = get_FP_str(response, control)
+        response, control = get_fp_str(response, control)
 
         score = None
         result = {
@@ -1618,6 +1644,16 @@ def calculate_recipe(response, control):
 
 # After format check, clean response
 def clean_response(response: dict, control: dict) -> dict:
+    """
+    Clean and normalize recipe response data.
+    
+    Args:
+        response: Optimized recipe dictionary.
+        control: Control recipe dictionary.
+    
+    Returns:
+        Cleaned recipe dictionary.
+    """
     def fix_json_string(json_str):
         """
         Automatically fix format issues in JSON strings, only handle values without quotes
@@ -1661,8 +1697,8 @@ def clean_response(response: dict, control: dict) -> dict:
         else:
             formula_cleaned = formula
 
-        if formula_cleaned.lower() in compound_mapping_invert.keys():
-            formula_cleaned = compound_mapping_invert[formula_cleaned.lower()]
+        if formula_cleaned.lower() in COMPOUND_MAPPING_INVERT.keys():
+            formula_cleaned = COMPOUND_MAPPING_INVERT[formula_cleaned.lower()]
 
         formula_cleaned = normalize_chemical_formula(formula_cleaned)
 
@@ -1670,6 +1706,12 @@ def clean_response(response: dict, control: dict) -> dict:
         return formula_cleaned
 
 
+    # Ensure response is a dictionary
+    if not isinstance(response, dict):
+        raise TypeError(f"response must be dict, got {type(response)}")
+    if not isinstance(control, dict):
+        raise TypeError(f"control must be dict, got {type(control)}")
+    
     for key, value in response.items():
         value = str(value)
         value = normalize_chemical_formula(value)
@@ -1687,7 +1729,16 @@ def clean_response(response: dict, control: dict) -> dict:
             if value not in INVALID_STRINGS:
                 response[key] = get_valid_number(value)
             else:
-                response[key] = control[key]
+                # Only assign if control[key] exists and is not a list/dict
+                if key in control:
+                    control_value = control[key]
+                    # If control value is a valid number string, use it; otherwise keep empty
+                    if isinstance(control_value, (int, float)) or (isinstance(control_value, str) and get_valid_number(control_value)):
+                        response[key] = get_valid_number(str(control_value))
+                    else:
+                        response[key] = ""  # Default to empty string instead of potentially invalid value
+                else:
+                    response[key] = ""
 
     return response
 
