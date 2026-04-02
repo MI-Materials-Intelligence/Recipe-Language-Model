@@ -1,7 +1,15 @@
 ﻿# Configuration files with sensitive data
 config.toml
  
-# Python 缓存文件
+# Python 
 __pycache__/
 *.py[cod]
 *$py.class
+
+# data 
+**/data/*
+!**/data/.gitkeep
+
+# Learning/data 
+**/Learning/data/
+**/Learning/data/**
