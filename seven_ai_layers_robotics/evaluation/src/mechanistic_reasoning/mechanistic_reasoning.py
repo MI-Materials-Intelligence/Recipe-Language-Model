@@ -536,12 +536,26 @@ def score_one_sample(sample: str, rubric: Dict[str, Any]) -> Dict[str, Any]:
 
     raw = answer.strip()
 
+    if "<think>" in raw and "</think>" in raw:
+        think_end = raw.find("</think>") + len("</think>")
+        raw = raw[think_end:].strip()
+    
+    # Step 2: Try to extract from markdown code blocks
     if raw.startswith("```"):
         raw = raw.strip("`")
         if "\n" in raw:
             raw = raw.split("\n", 1)[1]
         if raw.endswith("```"):
             raw = raw.rsplit("```", 1)[0]
+        raw = raw.strip()
+    
+    # Step 3: If still not starting with { or [, find the first JSON object
+    if not (raw.startswith("{") or raw.startswith("[")):
+        # Find first { and last } to extract JSON
+        start_idx = raw.find("{")
+        end_idx = raw.rfind("}") + 1
+        if start_idx != -1 and end_idx > start_idx:
+            raw = raw[start_idx:end_idx]
 
     try:
         scores = json.loads(raw)

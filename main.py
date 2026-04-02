@@ -131,7 +131,7 @@ def run_reasoning(args):
         generator = PerovskiteReportGenerator.from_config()
         print("✓ Successfully loaded configuration from config.toml")
         print("\nStarting report generation...")
-        generator.run_once(total_runs=args.total_runs, max_workers=args.max_workers)
+        generator.run_all(total_runs=args.total_runs, max_workers=args.max_workers)
         print("✓ Report generation completed")
         return True
     except Exception as e:

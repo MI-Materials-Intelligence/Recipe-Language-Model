@@ -1378,6 +1378,31 @@ def get_random_row_from_db(config: dict) -> pd.Series:
         raise ValueError("Table is empty")
     return df.iloc[0]
 
+
+import pandas as pd
+from sqlalchemy import create_engine
+
+def get_all_rows_from_db(config: dict) -> pd.DataFrame:
+    """Fetch all rows from MySQL database.
+    Args:
+        config: Database configuration with keys: host, user, password, database, port, table
+    Returns:
+        Pandas DataFrame containing all row data.
+    """
+    engine = create_engine(
+        f"mysql+pymysql://{config['user']}:{config['password']}@"
+        f"{config['host']}:{config['port']}/{config['database']}?charset=utf8mb4"
+    )
+    table = config['table']
+
+    query = f"SELECT * FROM `{table}`;"
+    df = pd.read_sql(query, engine)
+    if df.empty:
+        print("⚠️ Warning: Table is empty")
+    return df
+
+
+
 def main():
     """Main function to test text generation from database."""
     try:
