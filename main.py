@@ -13,14 +13,14 @@ A seven-layer AI architecture for perovskite solar cell research:
 - Optimization: DPO optimization API
 
 Usage:
-    python main.py learning              # Run robotic learning data pipeline
+    python main.py learning              # Run variable learning data pipeline
     python main.py generating            # Run all report generation pipelines
     python main.py recipeqa              # Generate all corpora
     python main.py reasoning             # Generate perovskite reports
     python main.py evaluation            # Run MIRecipe evaluation
     
     # Specific pipeline examples:
-    python main.py learning --pipeline robotic      # Robotic data pipeline
+    python main.py learning --pipeline variable      # variable data pipeline
     python main.py learning --pipeline edge         # Edge report pipeline
     python main.py learning --pipeline characterization  # Characterization pipeline
     python main.py generating --report variable     # Variable reports
@@ -54,8 +54,8 @@ def run_learning_pipeline(args):
     """Execute learning module pipelines"""
     pipeline_type = args.pipeline.lower()
     
-    if pipeline_type == 'robotic':
-        print("\n🤖 Running Robotic Learning Data Pipeline...")
+    if pipeline_type == 'variable':
+        print("\n🤖 Running Variable Learning Data Pipeline...")
         pipeline = RoboticDataPipeline()
         success = pipeline.run_full_process(table_name="experiments_data")
         return success
@@ -74,7 +74,7 @@ def run_learning_pipeline(args):
         
     else:
         print(f"❌ Unknown learning pipeline type: {pipeline_type}")
-        print("Available types: robotic, edge, characterization")
+        print("Available types:variable, edge, characterization")
         return False
 
 

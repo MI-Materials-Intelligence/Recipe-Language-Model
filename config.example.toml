@@ -6,7 +6,7 @@ api_key = "sk-YOUR_API_KEY_HERE"
 max_tokens = 4096
 temperature = 0.0
 
-
+# Global database configuration
 [database]
 host = "127.0.0.1"
 port = 3306
@@ -15,12 +15,7 @@ password = "your_password"
 database = "exp_data"
 charset = "utf8mb4"
 
-[services]
-evaluation_api_url = "http://127.0.0.1:13338/RECIPE/recipe_recommendation"
-http_timeout_sec = 300
-
-
-# Optional configuration for specific LLM models
+# LLM vision configuration
 [llm.vision]
 model = "qwen-plus"
 base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -28,66 +23,28 @@ api_key = "sk-YOUR_API_KEY_HERE"
 max_tokens = 4096
 temperature = 0.0
 
-# Optional Runflow configuration
+# Runflow configuration
 [runflow]
 use_data_analysis_agent = false
 
-# RecipeQA LLM configuration
-[recipeqa_llm]
+# Learning module database configuration
+[learning_database]
+host = "127.0.0.1"
+port = 3306
+user = "root"
+password = "your_password"
+database = "exp_data"
+charset = "utf8mb4"
+
+# Learning module LLM configuration
+[learning_llm]
+model = "qwen-plus"
 base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-dashscope_api_key = "sk-YOUR_API_KEY_HERE"
-dashscope_model = "qwen-plus"
-temperature = 0.4
-timeout = 60
+api_key = "sk-YOUR_API_KEY_HERE"
+max_tokens = 4096
+temperature = 0.0
 
-# DeepSeek configuration for edge reporting
-[deepseek]
-api_key = "sk-YOUR_DEEPSEEK_API_KEY_HERE"
-base_url = "https://api.deepseek.com/v1/chat/completions"
-model = "deepseek-reasoner"
-temperature = 0.3
-timeout = 120
-
-# RecipeQA database configuration
-[recipeqa.database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-
-# Reasoning module configuration
-[reasoning_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-table = "daily_experiment"
-
-[reasoning_output_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-table = "MIRecipe"
-
-[reasoning_llm]
-base_url = "http://localhost:8000"
-dashscope_api_key = "sk-YOUR_API_KEY_HERE"
-dashscope_model = "qwen-plus"
-temperature = 0.7
-timeout = 120
-
-[reasoning_generation]
-total_runs = 15
-max_workers = 10
-
-# Generating module configuration
+# Generating module input database configuration
 [generating_database]
 host = "127.0.0.1"
 port = 3306
@@ -96,6 +53,7 @@ password = "your_password"
 database = "exp_data"
 charset = "utf8mb4"
 
+# Generating module output database configuration
 [generating_output_database]
 host = "127.0.0.1"
 port = 3306
@@ -104,6 +62,7 @@ password = "your_password"
 database = "exp_data"
 charset = "utf8mb4"
 
+# Generating module LLM configuration
 [generating_llm]
 base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 dashscope_api_key = "sk-YOUR_API_KEY_HERE"
@@ -114,25 +73,51 @@ deepseek_model = "deepseek-reasoner"
 temperature = 0.7
 timeout = 120
 
+# Generating module generation configuration
 [generating_generation]
 total_runs = 15
 max_workers = 10
 
-# Learning module configuration
-[learning_database]
+# RecipeQA LLM configuration
+[recipeqa_llm]
+base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+dashscope_api_key = "sk-YOUR_API_KEY_HERE"
+dashscope_model = "qwen-plus"
+temperature = 0.4
+timeout = 60
+
+# Reasoning module input database configuration
+[reasoning_database]
 host = "127.0.0.1"
 port = 3306
 user = "root"
 password = "your_password"
 database = "exp_data"
 charset = "utf8mb4"
+table = "experiments_data_daily"
 
-[learning_llm]
-model = "qwen-plus"
-base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-api_key = "sk-YOUR_API_KEY_HERE"
-max_tokens = 4096
-temperature = 0.0
+# Reasoning module output database configuration
+[reasoning_output_database]
+host = "127.0.0.1"
+port = 3306
+user = "root"
+password = "your_password"
+database = "exp_data"
+charset = "utf8mb4"
+table = "report_optimised"
+
+# Reasoning module LLM configuration
+[reasoning_llm]
+base_url = "http://localhost:8000"
+dashscope_api_key = "sk-YOUR_API_KEY_HERE"
+dashscope_model = "qwen-plus"
+temperature = 0.7
+timeout = 120
+
+# Reasoning module generation configuration
+[reasoning_generation]
+total_runs = 15
+max_workers = 10
 
 # Evaluation module LLM configuration
 [evaluation_llm]
@@ -177,7 +162,7 @@ recipe_custom = [
     "recipe_integrity",
     "formula_rationality",
     "parameter_rationality",
-    "experimental_validation"
+    "recipe_recommendation"
 ]
 mechanism_custom = [
     "domain_knowledge",
@@ -210,9 +195,10 @@ Your task:
 - Respond ONLY with a single valid JSON object, with no markdown and no extra text.
 """
 
-# Local LLM configuration (for internal deployment)
-[local_llm]
-base_url = "http://localhost:8000"
-model = "your-local-model-name"
-temperature = 0.7
+# DeepSeek configuration
+[deepseek]
+api_key = "sk-YOUR_DEEPSEEK_API_KEY_HERE"
+base_url = "https://api.deepseek.com/v1/chat/completions"
+model = "deepseek-reasoner"
+temperature = 0.3
 timeout = 120
