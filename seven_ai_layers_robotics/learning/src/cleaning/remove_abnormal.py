@@ -179,11 +179,11 @@ def remove_abnormal(input_path: str, output_path: str) -> None:
         range_stats[range_name] = mask.sum()
     
     # === 5. Print statistics ===
-    print("✅ Filtering Statistics:")
-    print(f"📊 Original dataset rows: {original_rows}")
-    print(f"✅ Valid samples after filtering: {filtered_rows}")
-    print(f"❌ Removed samples: {removed_rows}")
-    print("\n📈 Samples by No range:")
+    print(" Filtering Statistics:")
+    print(f" Original dataset rows: {original_rows}")
+    print(f" Valid samples after filtering: {filtered_rows}")
+    print(f" Removed samples: {removed_rows}")
+    print("\n Samples by No range:")
     
     for range_name, count in range_stats.items():
         # Format range name for better readability
@@ -195,6 +195,6 @@ def remove_abnormal(input_path: str, output_path: str) -> None:
     
     # === 7. Save results ===
     df_filtered.to_csv(output_path, index=False)
-    print(f"\n💾 Filtered data saved to: {output_path}")
+    print(f"\n Filtered data saved to: {output_path}")
 
 

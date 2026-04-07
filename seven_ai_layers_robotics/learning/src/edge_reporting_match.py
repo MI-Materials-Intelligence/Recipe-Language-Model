@@ -24,7 +24,7 @@ try:
         'charset': config.learning_database.charset,
     }
 except Exception as e:
-    print(f"⚠️ WARNING: Failed to load config, using empty database configuration. Error: {e}")
+    print(f"WARNING: Failed to load config, using empty database configuration. Error: {e}")
     DB_CONFIG = {
         'host': '',
         'port': 3306,
@@ -45,7 +45,7 @@ try:
     EXTRACTOR_AVAILABLE = True
 except ImportError as e:
     EXTRACTOR_AVAILABLE = False
-    print(f"⚠️ WARNING: Unable to import EdgeReportExtractor, data extraction functionality will be unavailable. Error: {e}")
+    print(f"WARNING: Unable to import EdgeReportExtractor, data extraction functionality will be unavailable. Error: {e}")
 
 # ==============================
 # Core class definition
@@ -101,11 +101,11 @@ class EdgeReportPipeline:
             target_table = "experiments_cleaned_data"
             self.data_extractor.extract_and_process(src_table, target_table, self.data_dir)
 
-            print("\n🎉 Full workflow completed successfully!")
+            print("\nFull workflow completed successfully!")
             return True
 
         except Exception as e:
-            print(f"🛑 Workflow interrupted: {e}")
+            print(f"Workflow interrupted: {e}")
             return False
 
 
@@ -115,10 +115,10 @@ class EdgeReportPipeline:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("📊 Edge Report Data Automated Processing Pipeline")
+    print("Edge Report Data Automated Processing Pipeline")
     print("=" * 60)
-    print(f"📁 Working Directory: {WORK_DIR}")
-    print(f"🗄️  Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+    print(f"Working Directory: {WORK_DIR}")
+    print(f"Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
     print("=" * 60)
 
     # Initialize and execute
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     success = pipeline.run_full_process(src_table="experiments_data", target_table="experiments_cleaned_data")
 
     if not success:
-        print("\n❌ Workflow execution failed, please check logs.")
+        print("\nWorkflow execution failed, please check logs.")
         sys.exit(1)
     else:
-        print("\n✅ All tasks completed!")
+        print("\nAll tasks completed!")

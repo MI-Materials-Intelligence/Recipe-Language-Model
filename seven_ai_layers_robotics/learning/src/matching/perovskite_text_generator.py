@@ -237,7 +237,7 @@ sam_formula_segments_single = [
     "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",  
 ]
 
-# SAM材料和配方描述（SAM Formula Segments, 15条）- 双SAM
+
 sam_formula_segments_dual = [
     "Two SAM materials of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) as SAMs were carried out to improve layer formation and refine the film’s interfacial structure.",
@@ -342,7 +342,7 @@ additive_formula_segments_single = [
 
     ]
 
-# 添加剂材料和配方描述（Additive Formula Segments, 15条）- 双添加剂
+
 additive_formula_segments_dual = [
 "{formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were incorporated as additives.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added to the perovskite solution as additives.",
@@ -412,7 +412,7 @@ additive_formula_segments_triple = [
 
     ]
 
-# 工艺步骤描述（Process Segments, 15条）
+
 process_segments = [
 "Spin-coating was conducted in two stages: {spin1_speed} rpm for {spin1_time} s, then {spin2_speed} rpm for {spin2_time} s.",
     "A sequential spin-coating procedure was employed, first at {spin1_speed} rpm for {spin1_time} s, followed by {spin2_speed} rpm for {spin2_time} s.",
@@ -496,7 +496,7 @@ process_segments = [
 
     ]
 
-# 抗溶剂滴加（Antisolvent Segments, 15条）
+
 antisolvent_segments = [
     "During the second spin-coating step, {antisolvent_volume} µL of antisolvent was introduced at last {antisolvent_timing} s.",
     "At last ({antisolvent_timing} s) during the second stage, {antisolvent_volume} µL of antisolvent was gently dispensed to improve crystallization.",
@@ -602,7 +602,7 @@ antisolvent_segments = [
 
     ]
 
-# 退火步骤（Anneal Segments, 15条）
+
 anneal_segments = [
 "The resulting films were then annealed at {anneal_temp} °C for {anneal_time} min.",
     "Subsequent thermal treatment was carried out at {anneal_temp} °C for {anneal_time} min to finalize the perovskite crystal structure.",
@@ -677,7 +677,7 @@ anneal_segments = [
 
     ]
 
-# instruction 模板（Instruction Templates, 15条）
+
 instruction_templates = [
     "Recommend a set of perovskite solar cell preparation schemes with a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², including materials information and process parameters.",
     "Propose fabrication procedures for perovskite solar cells achieving a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², detailing the materials and methods used.",
@@ -737,7 +737,7 @@ instruction_templates = [
 #     ]
 
 
-# 钝化层材料和工艺描述（Passivation Segments, 15条）
+
 passivation_material_segments_single = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL) was incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL) was spin-coated onto the sample surface as a passivation layer.",
@@ -976,7 +976,7 @@ passivation_anneal_segments = [
 
     ]
 
-# 固定指令文本
+
 instruction_variants = [
     "Please help me design a perovskite device fabrication scheme that integrates multiple additives, several SAMs, and multiple passivators, along with the complete materials and process parameters required.",
     "Help me create a detailed perovskite solar cell manufacturing plan that incorporates multiple additives, a variety of SAMs, and several passivators, with full material specifications and processing steps.",
