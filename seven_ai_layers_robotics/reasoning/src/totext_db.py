@@ -1401,7 +1401,7 @@ def get_all_rows_from_db(config: Dict[str, Any]) -> pd.DataFrame:
     query = f"SELECT * FROM `{table}`;"
     df = pd.read_sql(query, engine)
     if df.empty:
-        print("⚠️ Warning: Table is empty")
+        print("Warning: Table is empty")
     return df
 
 
@@ -1411,13 +1411,13 @@ def main():
     try:
         row = get_random_row_from_db(DB_CONFIG)
         row.index = row.index.str.strip()
-        print("✅ Random row from database:\n")
+        print("Random row from database:\n")
         print(row)
         output_text = row_to_text(row)
-        print("✅ Generated descriptive text:\n")
+        print("Generated descriptive text:\n")
         print(output_text)
     except Exception as e:
-        print("❌ Error:", e)
+        print("Error:", e)
 
 if __name__ == '__main__':
     main()

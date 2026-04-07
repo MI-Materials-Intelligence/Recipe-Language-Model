@@ -569,9 +569,9 @@ class PerovskiteReportGenerator:
             cursor = conn.cursor()
             cursor.execute(sql, values)
             conn.commit()
-            print("✅ Successfully inserted JSON data to database")
+            print(" Successfully inserted JSON data to database")
         except Exception as e:
-            print("❌ Insert failed:", e)
+            print(" Insert failed:", e)
         finally:
             if conn:
                 conn.close()
@@ -605,11 +605,11 @@ class PerovskiteReportGenerator:
             
             # Export to CSV
             df.to_csv(csv_path, index=False, encoding='utf-8-sig')
-            print(f"✅ Successfully exported {len(df)} records to CSV: {csv_path}")
+            print(f" Successfully exported {len(df)} records to CSV: {csv_path}")
             return str(csv_path)
             
         except Exception as e:
-            print(f"❌ CSV export failed: {e}")
+            print(f" CSV export failed: {e}")
             traceback.print_exc()
             return ""
 
@@ -627,49 +627,49 @@ class PerovskiteReportGenerator:
         """
     def run_all(self, total_runs=5, max_workers=5):
         """
-        读取数据库所有数据，并对每一条数据生成 total_runs 次报告
+        
         """
         try:
-            # 1. 获取所有数据
+            
             print("📥 Fetching all data from database...")
             all_data_df = get_all_rows_from_db(self.db_config)
             total_rows = len(all_data_df)
-            print(f"✅ Successfully fetched {total_rows} rows from database.")
+            print(f"Successfully fetched {total_rows} rows from database.")
 
             if total_rows == 0:
-                print("❌ No data found to process.")
+                print(" No data found to process.")
                 return
 
             global_success_count = 0
             global_total_expected = total_rows * total_runs
 
-            # 2. 遍历每一行数据
+            
             for idx, row in all_data_df.iterrows():
-                # 数据预处理
+                
                 row.index = row.index.str.strip()
                 sample_id = row.get("sample_id")
                 
-                # 兼容处理：如果没有 sample_id，尝试使用索引或其他唯一标识
+               
                 if sample_id is None:
                     sample_id = f"row_{idx}" 
-                    print(f"⚠️ Row {idx+1}/{total_rows} missing sample_id, using {sample_id}")
+                    print(f"Row {idx+1}/{total_rows} missing sample_id, using {sample_id}")
                 
-                print(f"\n🚀 Processing Row {idx+1}/{total_rows} (sample_id={sample_id})")
+                print(f"\nProcessing Row {idx+1}/{total_rows} (sample_id={sample_id})")
 
                 try:
-                    # 预处理：每条数据只执行一次文本生成和字典转换
+                    
                     output_text = row_to_text(row)
                     control_recipe_value = self._row_to_standard_dict(row)
                     
-                    # 调试打印
-                    # print(f"   ✅ Generated description text: {output_text[:50]}...")
+                    
+                    
 
-                    # 3. 内层并发：对当前这条数据生成 total_runs 次报告
+                    
                     def _generate_and_insert(trial_idx: int) -> bool:
                         try:
-                            # 线程标识
+                            
                             # tid = threading.get_ident()
-                            print(f"   🔄 [Trial {trial_idx+1}/{total_runs}] Generating...")
+                            print(f"   [Trial {trial_idx+1}/{total_runs}] Generating...")
                             
                             reasoning_output, control_recipe_text, question, recommend_value, mechanism, mechanism_reasoning = \
                                 self._process_single_text(output_text)
@@ -685,13 +685,13 @@ class PerovskiteReportGenerator:
                                 mechanism=mechanism,
                                 mechanism_reasoning=mechanism_reasoning
                             )
-                            # print(f"   ✅ Trial {trial_idx+1} inserted.")
+                            # print(f"   Trial {trial_idx+1} inserted.")
                             return True
                         except Exception as e:
-                            print(f"   ⚠️ Trial {trial_idx+1} failed: {e}")
+                            print(f"   Trial {trial_idx+1} failed: {e}")
                             return False
 
-                    # 执行当前行的并发任务
+                    
                     with futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
                         futures_list = [
                             executor.submit(_generate_and_insert, i) for i in range(total_runs)
@@ -702,28 +702,28 @@ class PerovskiteReportGenerator:
 
                     success_count = sum(results)
                     global_success_count += success_count
-                    print(f"   🎉 Row {idx+1} Completed: {success_count}/{total_runs} successes.")
+                    print(f" Row {idx+1} Completed: {success_count}/{total_runs} successes.")
 
                 except Exception as row_err:
-                    print(f"   ❌ Row {idx+1} (sample_id={sample_id}) processing failed: {row_err}")
+                    print(f" Row {idx+1} (sample_id={sample_id}) processing failed: {row_err}")
                     traceback.print_exc()
-                    # 继续处理下一行，不中断整个程序
+                    
                     continue
 
             print("\n" + "="*50)
-            print(f"🏁 All Done!")
-            print(f"📊 Total Rows: {total_rows}")
-            print(f"📊 Total Expected Runs: {global_total_expected}")
-            print(f"✅ Total Successful Outputs: {global_success_count}")
-            print(f"📉 Success Rate: {global_success_count/global_total_expected:.2%}")
+            print(f"All Done!")
+            print(f"Total Rows: {total_rows}")
+            print(f"Total Expected Runs: {global_total_expected}")
+            print(f"Total Successful Outputs: {global_success_count}")
+            print(f"Success Rate: {global_success_count/global_total_expected:.2%}")
             print("="*50)
             
             # Export output database to CSV
-            print("\n📤 Exporting results to CSV...")
+            print("\nExporting results to CSV...")
             self._export_output_to_csv()
 
         except Exception as e:
-            print("❌ run_all execution failed:", e)
+            print(" run_all execution failed:", e)
             traceback.print_exc()
 
 
@@ -749,13 +749,13 @@ class PerovskiteReportGenerator:
             sample_id = row.get("sample_id")
             if sample_id is None:
                 raise ValueError("Row does not contain sample_id field")
-            print(f"✅ Successfully read one original data (sample_id={sample_id})")
+            print(f"Successfully read one original data (sample_id={sample_id})")
 
             # Preprocessing: execute only once
             output_text = row_to_text(row)
             control_recipe_value = self._row_to_standard_dict(row)
             print(
-                "✅ Generated description text:",
+                "Generated description text:",
                 output_text[:100] + "..."
                 if len(output_text) > 100
                 else output_text,
@@ -765,7 +765,7 @@ class PerovskiteReportGenerator:
             def _generate_and_insert(trial_idx: int) -> bool:
                 try:
                     print(
-                        f"🔄 [Thread {threading.get_ident()}] Generating trial {trial_idx+1}/{total_runs}..."
+                        f"[Thread {threading.get_ident()}] Generating trial {trial_idx+1}/{total_runs}..."
                     )
                     reasoning_output, control_recipe_text, question, recommend_value, mechanism, mechanism_reasoning = \
                         self._process_single_text(output_text)
@@ -781,10 +781,10 @@ class PerovskiteReportGenerator:
                         mechanism=mechanism,
                         mechanism_reasoning=mechanism_reasoning
                     )
-                    print(f"✅ Trial {trial_idx+1} result successfully inserted to database")
+                    print(f"Trial {trial_idx+1} result successfully inserted to database")
                     return True
                 except Exception as e:
-                    print(f"⚠️ Trial {trial_idx+1} generation failed: {e}")
+                    print(f"Trial {trial_idx+1} generation failed: {e}")
                     return False
 
             # Execute concurrently using ThreadPoolExecutor
@@ -798,15 +798,15 @@ class PerovskiteReportGenerator:
 
             success_count = sum(results)
             print(
-                f"🎉 Completed: 1 input → {success_count}/{total_runs} outputs successfully generated and stored"
+                f"Completed: 1 input → {success_count}/{total_runs} outputs successfully generated and stored"
             )
             
             # Export output database to CSV
-            print("\n📤 Exporting results to CSV...")
+            print("\nExporting results to CSV...")
             self._export_output_to_csv()
 
         except Exception as e:
-            print("❌ run_once execution failed:", e)
+            print("run_once execution failed:", e)
             import traceback
 
             traceback.print_exc()
