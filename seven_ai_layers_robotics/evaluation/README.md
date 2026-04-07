@@ -20,15 +20,16 @@ Evaluation/
     ├── mechanistic_reasoning/          # Mechanistic reasoning evaluation
     │   └── mechanistic_reasoning.py
     ├── recipe_recommendation/          # Recipe recommendation evaluation
-    │   ├── predictor/
-    │   │   ├── main_predictor.py
-    │   │   ├── predictor_ff.py
-    │   │   ├── predictor_jsc.py
-    │   │   ├── predictor_pce.py
-    │   │   └── predictor_voc.py
-    │   └── recipe_recommendation.py
-    ├── MIRecipeEvaluator.py            # Unified evaluator interface
-    └── __init__.py
+    │   ├── __init__.py
+    │   ├── recipe_recommendation.py
+    │   └── predictor/
+    │       ├── main_predictor.py
+    │       ├── predictor_ff.py
+    │       ├── predictor_jsc.py
+    │       ├── predictor_pce.py
+    │       └── predictor_voc.py
+    ├── __init__.py
+    └── MIRecipeEvaluator.py            # Unified evaluator interface
 ```
 ## Input Demo
 
@@ -43,28 +44,37 @@ Evaluation/
 ## Output Demo
 
 ```json
-{"score": {"overall": 0.76, "Mechanistic_Reasoning": 0.36, "Recipe_Recommendation": 0.40}}}}}
+{"score": {"overall": 0.76, "Mechanistic_Reasoning": 0.36, "Recipe_Recommendation": 0.40}}
 ```
 
 ## Basic Usage
 
-1. **Initialize Database**  
-   Run the SQL script to create tables:
+> **Note**: If the database has been initialized or the environment configured by other layers, skip the corresponding steps.
+
+1. **Environment Setup**  
+   Create and activate virtual environment:
    ```bash
-   mysql -u <user> -p <database> < schema.sql
+   conda create -n rlm python=3.9 -y
+   conda activate rlm
+   pip install -r requirements.txt
    ```
 
-2. **Configure Settings**  
-   Edit `config.toml` with your database and path details.
-
-3. **Run Program**  
+2. **Initialize Database**  
+   Run SQL script to create tables (skip if already executed by other layers). Input data comes from the Reasoning layer generated reports.
    ```bash
-   conda activate rlm
-   python main.py
+   cd seven_ai_layers_robotics && mysql -u <user> -p <database> < schema.sql
+   ```
+
+3. **Configure Settings**  
+   Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
+
+4. **Run Program**  
+   ```bash
+   python main.py evaluation
    ```
 
 ### Key Modules for Executing Task
 
-- **MIRecipeEvaluator.py**: Unified evaluation module for recipe recommendation and mechanistic reasoning. 
-- **recipe_recommendation/predictor/**: Predictive modules for device-performance metrics, including PCE, Voc, Jsc, and FF. 
+- **MIRecipeEvaluator.py**: Unified evaluation module for recipe recommendation and mechanistic reasoning.
+- **recipe_recommendation/predictor/**: Predictive modules for device-performance metrics (PCE, Voc, Jsc, FF).
 - **mechanistic_reasoning/mechanistic_reasoning.py**: Evaluation modules for mechanistic reasoning analysis.
