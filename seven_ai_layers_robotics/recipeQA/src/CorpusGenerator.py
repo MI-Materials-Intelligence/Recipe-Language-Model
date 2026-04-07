@@ -9,7 +9,7 @@ import tomllib
 # ===== Config Loader =====
 def _load_recipeqa_config() -> Dict[str, Any]:
     """Load RecipeQA configuration from config.toml.
-    
+
     Returns:
         Dictionary containing configuration with database and LLM settings.
     """
@@ -17,21 +17,21 @@ def _load_recipeqa_config() -> Dict[str, Any]:
         # Project root: current file is in .../RecipeQA/src/
         # Path levels: src -> RecipeQA -> RLM -> tool -> app -> OpenManus (5 levels up to workspace root)
         project_root = Path(__file__).resolve().parent.parent  # RecipeQA
-        
+
         # Try multiple possible config locations
         possible_paths = [
             project_root.parent.parent / "config.toml",  # Workspace root
             project_root.parent.parent / "config" / "config.toml",  # Workspace/config/
             project_root / "config.toml",  # RecipeQA/
         ]
-        
+
         for config_path in possible_paths:
             if config_path.exists():
                 print(f"[INFO] Loaded config from: {config_path}")
                 with config_path.open("rb") as f:
                     config = tomllib.load(f)
                 return config
-        
+
         print(f"[WARN] No config file found, using default values")
         return {}
     except Exception as e:
@@ -80,13 +80,13 @@ class CorpusGenerator:
 
         # Load configuration ONCE using centralized loader
         full_config = _load_recipeqa_config()
-        
+
         # Extract database config with priority: recipeqa.database > database > default
         self.db_config = (
             full_config.get("recipeqa", {}).get("database", {}) or
             full_config.get("database", {})
         )
-        
+
         # If still no configuration, use default values
         if not self.db_config:
             self.db_config = {
@@ -97,7 +97,7 @@ class CorpusGenerator:
                 'database': '',
                 'charset': 'utf8mb4'
             }
-        
+
         print(f"[INFO] Database config loaded: {self.db_config.get('host', 'localhost')}:{self.db_config.get('port', 3306)}/{self.db_config.get('database', 'N/A')}")
 
     async def generate_optimized_async(self, config: Optional[Dict[str, Any]] = None) -> str:
@@ -127,11 +127,9 @@ class CorpusGenerator:
                 dist_save_root = config.get("dist_save_root", dist_save_root)
                 dataset_path = config.get("dataset_path", dataset_path)
 
-            # 0. Rebuild mechanism library from database
             print(f"[INFO] Rebuilding mechanism library from database...")
             rebuild_mechanism_from_db(mechanism_dir, self.db_config)
-            
-            # 1. Get tasks
+
             print(dist_save_root)
             all_record_ids = optimized_get_tasks(
                 expert_data_root=mechanism_dir,
@@ -141,25 +139,11 @@ class CorpusGenerator:
             )
             print(dist_save_root)
 
-            # if not all_record_ids:
-            #     msg = "[INFO] No tasks with status=0 for optimized corpus"
-            #     print(msg)
-            #     return msg
-
-            # 2. Read tasks
             tasks = read_json_file(task_save_path)
             print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
 
-            # 3. Async generation (direct await, don't use asyncio.run)
             success_ids = await optimized_request_llm(tasks, dist_save_root)
 
-            # 4. Batch update status
-            # batch_update_status(self.db_config, success_ids, status=1)
-            # failed_ids = [rid for rid in all_record_ids if rid not in success_ids]
-            # if failed_ids:
-            #     batch_update_status(self.db_config, failed_ids, status=3)
-
-            # 5. Build dataset
             dist_files = read_files_by_extension(dist_save_root, extensions=[".json"])
             print(f"[INFO] dist files: {len(dist_files)}")
 
@@ -199,39 +183,11 @@ class CorpusGenerator:
                 task_save_path = config.get("task_save_path", task_save_path)
                 dist_save_root = config.get("dist_save_root", dist_save_root)
                 dataset_path = config.get("dataset_path", dataset_path)
-            
-            
-            # 0. Rebuild mechanism library from database
+
             print(f"[INFO] Rebuilding mechanism library from database...")
             single_rebuild_mechanism(mechanism_dir, self.db_config)
-            
-            # # 1. Get tasks
-            # all_record_ids = single_get_tasks(
-            #     expert_data_root=mechanism_dir,
-            #     save_path=task_save_path,
-            #     num_thres=100,
-            #     db_config=self.db_config
-            # )
 
-            # if not all_record_ids:
-            #     msg = "[INFO] No tasks with status=0 for single corpus"
-            #     print(msg)
-            #     return msg
 
-            # # 2. Read tasks
-            # tasks = single_read_json(task_save_path)
-            # print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
-
-            # # 3. Async generation (direct await, don't use asyncio.run)
-            # success_ids = await single_request_llm(tasks, dist_save_root)
-
-            # # 4. Batch update status
-            # batch_update_status(self.db_config, success_ids, status=1)
-            # failed_ids = [rid for rid in all_record_ids if rid not in success_ids]
-            # if failed_ids:
-            #     batch_update_status(self.db_config, failed_ids, status=3)
-
-            # 5. Build dataset
             dist_files = single_read_files(dist_save_root, extensions=[".json"])
             print(f"[INFO] dist files: {len(dist_files)}")
 
@@ -334,12 +290,12 @@ def generate_corpora(
     config: Optional[Dict[str, Any]] = None
 ) -> str:
     """Convenience function to generate specified type of corpus.
-    
+
     Args:
         corpora_type: Corpus type ("optimized", "single", or "all"). Default is "all".
         workspace_root: Workspace root directory. Default is None (auto-detect).
         config: Optional configuration dictionary. Default is None.
-        
+
     Returns:
         Generation result message.
     """
