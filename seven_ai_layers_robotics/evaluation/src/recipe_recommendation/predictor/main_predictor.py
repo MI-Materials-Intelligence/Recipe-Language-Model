@@ -1,8 +1,8 @@
-from flask import request, jsonify, Blueprint
+from flask import Blueprint, jsonify, request
 
-from recipe_recommendation.predictor.predictor_pce import get_pce
 from recipe_recommendation.predictor.predictor_ff import get_ff
 from recipe_recommendation.predictor.predictor_jsc import get_jsc
+from recipe_recommendation.predictor.predictor_pce import get_pce
 from recipe_recommendation.predictor.predictor_voc import get_voc
 
 main_predictor_bp = Blueprint('main_predictor', __name__)
@@ -29,16 +29,14 @@ def to_string(data: dict) -> dict:
 
 
 def get_prediction(data: dict) -> dict:
-    '''
-    Predict PCE/FF/Voc/Jsc.
+    """Predict PCE/FF/Voc/Jsc.
 
     Args:
         data: Recipe.
 
     Returns:
         PCE/FF/Voc/Jsc prediction.
-    '''
-
+    """
     data = data.copy()
     data = to_string(data)
 
