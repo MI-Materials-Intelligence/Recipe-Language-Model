@@ -71,23 +71,20 @@ class CorpusGenerator:
             workspace_root: Workspace root directory, default is RecipeQA directory
         """
         if workspace_root is None:
-            # Default to use the project root directory where current file is located (RecipeQA)
             self.workspace_root = osp.dirname(osp.dirname(osp.abspath(__file__)))
         else:
             self.workspace_root = workspace_root
 
         self.data_dir = osp.join(self.workspace_root, "data")
 
-        # Load configuration ONCE using centralized loader
         full_config = _load_recipeqa_config()
 
-        # Extract database config with priority: recipeqa.database > database > default
         self.db_config = (
             full_config.get("recipeqa", {}).get("database", {}) or
             full_config.get("database", {})
         )
 
-        # If still no configuration, use default values
+
         if not self.db_config:
             self.db_config = {
                 'host': '',

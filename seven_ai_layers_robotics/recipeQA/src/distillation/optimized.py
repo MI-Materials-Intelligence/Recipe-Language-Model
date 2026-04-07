@@ -41,7 +41,7 @@ def _load_recipeqa_config() -> Dict[str, Any]:
 BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # RecipeQA
 DATA_DIR: str = os.path.join(BASE_DIR, "data")  # RecipeQA/data
 
-# Lazy-loaded global variables
+
 RECIPEQA_CONFIG: Dict[str, Any] = {}
 LLM_CONFIG: Dict[str, Any] = {}
 MAX_CONCURRENT_REQUESTS: int = 5
