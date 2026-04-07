@@ -298,7 +298,7 @@ def rebuild_mechanism_from_db(
             except Exception as e:
                 print(f"[ERROR] failed to write {md_path}: {e}")
 
-        print(f"\n✅ Rebuilt {written_count} markdown files into '{output_root}'")
+        print(f"\nRebuilt {written_count} markdown files into '{output_root}'")
         print(f"[INFO] Total records processed: {len(rows)}")
         print(f"[INFO] Total files written: {written_count}")
 
@@ -405,7 +405,7 @@ def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], s
         if parent in ("sam", "additive", "passivator"):
             type_key: Optional[str] = parent     # 'sam' / 'additive' / 'passivator'
         else:
-            type_key = None                      # 其它目录或根目录
+            type_key = None                      
 
         map_key = (type_key, key)
         if map_key in mapping and mapping[map_key] != path:
@@ -441,7 +441,7 @@ def extract_material_names_from_filename(base: str) -> List[str]:
     # Unify arrows
     s = s.replace("→", "->").replace("➡", "->").replace("=>", "->")
 
-    # ✅ Unify action words
+    # Unify action words
     ACTION_WORDS = (
         r"adding|removing|add|remove|"
         r"replacing|replace|replaced|"
@@ -459,7 +459,7 @@ def extract_material_names_from_filename(base: str) -> List[str]:
         # Remove prefix action words: Adding/Removing/Increasing/Decreasing...
         t = re.sub(rf'^(?:{ACTION_WORDS})\s+', "", t, flags=re.IGNORECASE).strip()
 
-        # ✅ Remove suffix action words: PEABr Decreasing / PMACl Increasing
+        # Remove suffix action words: PEABr Decreasing / PMACl Increasing
         t = re.sub(rf'\s+(?:{ACTION_WORDS})$', "", t, flags=re.IGNORECASE).strip()
 
         # Remove parentheses content (concentration/units often in parentheses)
@@ -494,7 +494,7 @@ def extract_material_names_from_filename(base: str) -> List[str]:
         tok = _clean_token(m.group(2))
         return [tok] if tok else [_clean_token(s)]
 
-    # ✅ 2.5) Handle "PEABr_ Decreasing / PMACl_ Increasing"
+    #  2.5) Handle "PEABr_ Decreasing / PMACl_ Increasing"
     # Only split when action word is clearly after "_", to avoid misinterpreting complex names
     m = re.match(rf'^(.*?)\s*_\s*({ACTION_WORDS})\b', s, flags=re.IGNORECASE)
     if m:
@@ -728,12 +728,12 @@ async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None
 
     os.makedirs(save_root, exist_ok=True)
     
-    # ✅ Skip if output file already exists
+    # Skip if output file already exists
     if osp.exists(save_path):
         print(f"[SKIP] Output already exists: {osp.abspath(save_path)}")
         return
 
-    # ✅ Load expert_data at runtime from md files (saves 90% JSON space)
+    # Load expert_data at runtime from md files (saves 90% JSON space)
     material_names = item.get("primary_materials", [])
     material_type = item.get("material_type")  # 'sam' / 'additive' / 'passivator' / None
     
@@ -839,7 +839,7 @@ async def request_llm(data: List[Dict[str, Any]], save_root: str, expert_data_ro
     print(f"[PATH] dist: {osp.abspath(save_root)}")
     os.makedirs(save_root, exist_ok=True)
     
-    # ✅ Build md knowledge map for runtime retrieval
+    # Build md knowledge map for runtime retrieval
     md_map = {}
     if expert_data_root and osp.isdir(expert_data_root):
         md_map = build_md_knowledge_map(expert_data_root)
@@ -1024,7 +1024,7 @@ def get_tasks_from_db(
             sid1 = _pure_id(meta.get("Sample_ID_1") or rec["sample_id_1"])
             sid2 = _pure_id(meta.get("Sample_ID_2") or rec["sample_id_2"])
 
-            # ✅ Key: Use json_filename instead of base_name
+            # Key: Use json_filename instead of base_name
             base_name = rec["json_filename"]  # Already removed .json
 
             if is_formula_folder and mat_type in ("sam", "additive", "passivator"):
@@ -1047,7 +1047,7 @@ def get_tasks_from_db(
                 "match_file": f"{base_name}.json",
                 "primary_materials": material_names,
                 "material_type": mat_type,  # ✅ For runtime md retrieval
-                # ❌ Removed: expert_data (saves ~90% space)
+                # Removed: expert_data (saves ~90% space)
             })
 
         # Optional: Sample by category (original logic samples per JSON file, now can sample by category or globally)
@@ -1107,7 +1107,7 @@ def main():
 
     tasks = read_json_file(task_save_path)
     print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
-    # ✅ Pass expert_data_root for runtime md loading
+    # Pass expert_data_root for runtime md loading
     asyncio.run(request_llm(tasks, dist_save_root, MECHANISM_DIR))
 
     dist_files = read_files_by_extension(dist_save_root, extensions=[".json"])

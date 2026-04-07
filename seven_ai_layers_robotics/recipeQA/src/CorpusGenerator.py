@@ -275,11 +275,11 @@ class CorpusGenerator:
         summary += f"{'='*60}\n"
         for name, result in results:
             if isinstance(result, Exception):
-                summary += f"❌ {name}: Error - {str(result)}\n"
+                summary += f"{name}: Error - {str(result)}\n"
             elif "successfully" in result.lower():
-                summary += f"✅ {name}: {result}\n"
+                summary += f"{name}: {result}\n"
             else:
-                summary += f"⚠️  {name}: {result}\n"
+                summary += f"{name}: {result}\n"
         summary += f"{'='*60}\n"
         summary += f"Total: {success_count}/{total_count} successful\n"
 

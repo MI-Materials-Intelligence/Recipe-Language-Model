@@ -58,7 +58,7 @@ def backfill_hash():
     """)
     rows = cursor.fetchall()
 
-    print(f"🔧 Number of records requiring hash backfill: {len(rows)}")
+    print(f"Number of records requiring hash backfill: {len(rows)}")
 
     update_sql = """
         UPDATE characterisation_match
@@ -75,7 +75,7 @@ def backfill_hash():
     cursor.close()
     conn.close()
 
-    print("✅ Historical data hash backfill completed")
+    print("Historical data hash backfill completed")
 
 if __name__ == "__main__":
     backfill_hash()

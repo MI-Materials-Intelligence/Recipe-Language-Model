@@ -106,7 +106,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # ⚠️ Currently you explicitly said: only take from SAM
+    # Currently you explicitly said: only take from SAM
     for key in ("Additive",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -169,7 +169,7 @@ def run_add_report(
     main()
 
     if verbose:
-        print("✅ Running add pair to report finished.")
+        print("Running add pair to report finished.")
 
 
 # ========== 1. General LLM Call Encapsulation ==========
@@ -510,7 +510,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
     cursor.close()
     conn.close()
 
-    print(f"📥 Read {factor_type} type pending record count: {len(rows)}")
+    print(f"Read {factor_type} type pending record count: {len(rows)}")
     return rows
 
 def db_row_to_item(row: dict) -> dict:
@@ -564,7 +564,7 @@ def main() -> None:
     REPORT_JSONL_PATH = output_dir / "reports.jsonl"
 
 
-    # ✅ Ensure directories exist
+    # Ensure directories exist
     for p in [
         OUTPUT_PATH,
         OUTPUT_JSONL_PATH,
@@ -579,7 +579,7 @@ def main() -> None:
     # ===== 2. Read all entries in json =====
     db_rows = load_pending_items(factor_type="Additive")
     if not db_rows:
-        print("✅ Currently no records with status=pending, exiting directly")
+        print("Currently no records with status=pending, exiting directly")
         return
     items = [(row["id"], db_row_to_item(row)) for row in db_rows]
     # ===== 3. Generate SFT records & report one by one =====
@@ -729,7 +729,7 @@ def main() -> None:
                 fout_report.flush()
                 update_status(pair_id, "done")
             except Exception as e:
-                print(f"❌ id={pair_id} processing failed: {e}")
+                print(f"id={pair_id} processing failed: {e}")
                 update_status(pair_id, "error")
 
 

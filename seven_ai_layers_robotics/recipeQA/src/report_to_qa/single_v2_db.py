@@ -594,7 +594,7 @@ def rebuild_mechanism_from_db(output_root: str, db_config: dict, table_name: str
             md_path = os.path.join(target_dir, f"{material_key}.md")
             with open(md_path, "w", encoding="utf-8") as f:
                 f.write(content)
-        print(f"\n✅ Rebuilt {len(rows)} markdown files into '{output_root}'")
+        print(f"\nRebuilt {len(rows)} markdown files into '{output_root}'")
     except Error as e:
         print(f"[ERROR] database error: {e}")
     finally:

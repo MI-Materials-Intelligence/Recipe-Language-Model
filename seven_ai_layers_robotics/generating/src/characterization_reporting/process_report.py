@@ -65,7 +65,7 @@ def run_process_report(
     main()
 
     if verbose:
-        print("✅ Running process pair to report finished.")
+        print("Running process pair to report finished.")
 
 
 # Category: Constants
@@ -282,7 +282,7 @@ def db_row_to_item(row: dict) -> dict:
         "sample_id_2_date": row.get("sample_id_2_date"),
     }
 
-    # ⚠️ Only one of the four regulation factor types will match
+    #  Only one of the four regulation factor types will match
     if row.get("sam"):
         item["SAM"] = json.loads(row["sam"]) if isinstance(row["sam"], str) else row["sam"]
 
@@ -440,7 +440,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # ⚠️ Currently you explicitly said: only extract from SAM
+    #  Currently you explicitly said: only extract from SAM
     for key in ("Process",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -518,7 +518,7 @@ def main() -> None:
     # report output
     REPORT_JSON_PATH = output_dir / "reports.json"
     REPORT_JSONL_PATH = output_dir / "reports.jsonl"
-    # ✅ Ensure directories exist
+    #  Ensure directories exist
     for p in [
         OUTPUT_PATH,
         OUTPUT_JSONL_PATH,
@@ -535,7 +535,7 @@ def main() -> None:
     # db_rows = load_pending_items(limit=1, factor_type="Process")
     db_rows = load_pending_items(factor_type="Process")
     if not db_rows:
-        print("✅ No status=pending records currently, exiting directly")
+        print("No status=pending records currently, exiting directly")
         return
 
     # Convert to your familiar item structure
@@ -688,7 +688,7 @@ def main() -> None:
                 fout_report.flush()
                 update_status(pair_id, "done")
             except Exception as e:
-                print(f"❌ id={pair_id} processing failed: {e}")
+                print(f"id={pair_id} processing failed: {e}")
                 update_status(pair_id, "error")
                 # ===== 4. Save results (complete JSON array format) =====
             save_sft_records(records, OUTPUT_PATH)

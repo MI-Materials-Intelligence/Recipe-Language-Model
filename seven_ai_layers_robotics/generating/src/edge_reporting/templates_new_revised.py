@@ -63,78 +63,78 @@ def get_intro_segment(pce, ff, voc, jsc, prepared_term="was fabricated"):
         "By interlinking experimental conditions with device architecture, a perovskite solar cell {prepared_term}, affirming a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
         "Through iterative refinements in substrate preparation, solution concentration, and coating protocols, this perovskite device {prepared_term}, echoing a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
         "Systematic parameter adjustments underlie the fabrication of a perovskite cell that {prepared_term}, capturing how controlled conditions influence a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
-        "The combined treatment featured a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².", # 20250411文献模板
-        "Consequently, the device resulted in device efficiency of {pce}%, together with an enhanced fill factor (FF) of {ff}%, short-circuit current density of {jsc} mA/cm²and open circuit voltage (VOC) of {voc} V.",# 20250411文献模板
-        "The PCE reached for the device was {pce}%, with a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%." , # 20250411文献模板
-        "With this engineering, the resulting PSCs obtained a PCE of {pce}%, a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , # 20250411文献模板
-        "The control device displays a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%, turning out a moderate PCE of {pce}%." , # # 20250411文献模板
-        "The device shows the highest PCE of {pce}% with negligible hysteresis, a VOC of {voc} V, a JSC of {jsc} mA/cm² and a FF of {ff}%." , # 20250411文献模板
-        " The device achieves a notably enhanced PCE of {pce}%, corresponding to a JSC of {jsc} mA/cm², a VOC of {voc} V, and an FF of {ff}%. " , # 20250411文献模板
-        "The PSCs exhibited a superior PCE of {pce}% (JSC: {jsc} mA/cm², VOC: {voc} V, FF: {ff}%).",  # 20250411文献模板
-        "The target device achieved a champion PCE of {pce}% (VOC: {voc} V, JSC: {jsc} mA/cm², FF: {ff}%)."  # 20250411文献模板
-        "The target PSCs achieved an average power conversion efficiency (PCE) of {pce}% with a short-circuit current density (JSC) of {jsc} mA/cm², an open-circuit voltage (VOC) of {voc} V and a fill factor (FF) of {ff}%." , # 20250411文献模板
-        "The best performance, which showed {pce}% certificated efficiency with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%." , # 20250411文献模板
-        "The PSCs achieved a champion power conversion efficiency (PCE) of {pce}% under an active area of 0.09 cm², with a VOC value of {voc} V, an FF value of {ff}%, and a current density (JSC) of {jsc} mA/cm².", # 20250411文献模板
-        "The PCE devices reached {pce}% and featured a VOC of {voc} V, FF of {ff}%, and short-circuit current density (JSC) of {jsc} mA/cm².",  # 20250411文献模板
-        "The inverted devices achieved optimal PCEs of {pce}%, a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  # 20250411文献模板
-        "The resulting hybrid SAMs-modified PSC achieve a champion PCE of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , # 20250411文献模板
-        "PSCs based on additives achieved a PCE of {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  # 20250411文献模板
-        "A higher PCE of {pce}% of the target device is achieved, where JSC, VOC and FF are {jsc} mA/cm², {voc} V and {ff}%, respectively.",  # 20250411文献模板
-        "The champion device fabricated by perovskite film showed a PCE of {pce}% with open-circuit voltage (VOC) of {voc} V, short current density (JSC) of {jsc} mA/cm², and a fill factor (FF) of {ff}%.", # 20250411文献模板
-        "Remarkably, it achieved an impressive PCE of {pce}% with a high VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",  # 20250424文献模板
-        "The performance parameters (PCE, open-circuit voltage (VOC), short-circuit current density (JSC) and fill factor (FF)) of the control PSCs are significantly improved ({pce}%, {voc} V, {jsc} mA/cm², and {ff}%)." , # 20250424文献模板
-        "The device achieved a remarkable PCE of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",  # 20250424文献模板
-        "The device demonstrated a champion efficiency of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%."  # 20250424文献模板
-        "The device achieved a champion PCE of {pce}% with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",  # 20250424文献模板
-        "The solar cells showed a champion PCE of {pce}% with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%." , # 20250424文献模板
-        "A champion PCE of {pce}% with a JSC of {jsc} mA/cm², a VOC of {voc} V, and a FF of {ff}% was achieved with optimized perovskite layer prepared with non-stoichiometric precursor solution (NSPS)." , # 20250424文献模板
-        "The device exhibited a PCE of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , # 20250424文献模板
-        "The champion device showed a PCE of {pce}%, with JSC of {jsc} mA/cm², FF of {ff}%, and VOC of {voc} V." , # 20250424文献模板
-        "The resulting hybrid SAMs-modified PSC achieve a champion PCE of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , # 20250424文献模板
-        "PSCs based on additives achieved a PCE of {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  # 20250424文献模板
-        "With the improved uniformity of SAM, the SAM-based devices showed a maximum PCE of {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  # 20250424文献模板
-        "The inverted devices based on perovskite achieved optimal PCEs of {pce}%, a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  # 20250424文献模板
-        "The control device displays a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%, tuning out a PCE of {pce}%.",  # 20250424文献模板
-        "The PSCs achieved a quasi-steady-state PCE of {pce}% (VOC: {voc} V, JSC: {jsc} mA/cm², FF: {ff}%).",  # 20250424文献模板
-        "The inverted PSCs achieved a champion PCE of {pce}% with an open-circuit voltage (VOC) of {voc} V, short-circuit current density (JSC) of {jsc} mA/cm², and fill factor (FF) of {ff}%.",  # 20250424文献模板
-        "The champion device showed a JSC of {jsc} mA/cm², a VOC of {voc} V, and a FF of {ff}%, resulting in a PCE of {pce}%.",  # 20250424文献模板
-        "The champion target devices showed a JSC of {jsc} mA/cm², a VOC of {voc} V, and a FF of {ff}%, resulting in a PCE of {pce}%.", # 20250424文献模板
-        "The device showed the highest certified PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%."  # 20250424文献模板
-        "The device shows a maximum PCE of {pce}%, with an open-circuit voltage (VOC) of {voc} V, a short-circuit current density (JSC) of {jsc} mA/cm², and a fill factor (FF) of {ff}%.",# 20250424文献模板
-        "PSCs with (111)-preferred crystallographic orientation displayed a remarkable PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",# 20250424文献模板
-        "The target PSCs achieved an average power conversion efficiency (PCE) of {pce}% with a short-circuit current density (JSC) of {jsc} mA/cm², an open-circuit voltage (VOC) of {voc} V, and a fill factor (FF) of {ff}%.",# 20250424文献模板
-        "The best performance device showed a {pce}% certificated efficiency with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%.",# 20250424文献模板
-        "The PSCs achieved a champion power conversion efficiency (PCE) of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².", # 20250424文献模板
-        "The PCE of devices reached {pce}%, featuring VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  # 20250424文献模板
-        "The devices exhibited an increased PCE from {pce}% to {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",# 20250424文献模板
-        "The champion device offers a high PCE of {pce}% for the reverse scan (JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%).",# 20250424文献模板
-        "A higher PCE of {pce}% is achieved with JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%.",  # 20250424文献模板
-        "The PCE for the device reached {pce}%, with a JSC of {jsc} mA/cm², a VOC of {voc} V and a FF of {ff}%.",  # 20250424文献模板
-        "PSC with device efficiency (PCE) of {pce}%, VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}% was obtained.",# 20250424文献模板
-        "This resulted in improved performance with a PCE beyond {pce}%, a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%.",# 20250424文献模板
-        "The fabricated device resulted in a PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.", # 20250424文献模板
-        "The certified PCE was determined to be {pce}% with JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%.",# 20250424文献模板
-        "A PCE of {pce}% with a VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}% was obtained.",  # 20250424文献模板
-        "The PSCs demonstrated improved PCE of {pce}% (with FF of {ff}%, VOC of {voc} V, and JSC of {jsc} mA/cm²).", # 20250424文献模板
-        "The PSCs demonstrated a champion PCE of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.", # 20250424文献模板
-        "The PCE of the device was increased to {pce}% with an FF of {ff}%, VOC of {voc} V and JSC of {jsc} mA/cm².",# 20250424文献模板
-        "The champion PCE of the device can be further improved to {pce}% (VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%).",# 20250424文献模板
-        "PSCs with a PCE of {pce}%, a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}% are demonstrated.",# 20250424文献模板
-        "A significantly higher JSC of {jsc} mA/cm² is obtained while preserving VOC of {voc} V and FF of {ff}%, resulting in the highest PCE of {pce}% at reverse scan.",# 20250424文献模板
-        "The current density-voltage (J-V) characteristics show that the target PSCs delivered a PCE of {pce}%, with an elevated VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}%.",# 20250424文献模板
-        "The cells showed an increase in VOC to {voc} V, accompanied by a slight increase in FF to {ff}% and JSC to {jsc} mA/cm², resulting in a peak PCE of {pce}%.",# 20250424文献模板
-        "The device shows the highest PCE of {pce}% with a VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}%.",# 20250424文献模板
-        "In contrast, the device achieves a notably enhanced PCE of {pce}%, with a JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%.", # 20250424文献模板
-        "The PSCs exhibited a superior PCE of {pce}% (JSC: {jsc} mA/cm², VOC: {voc} V, FF: {ff}%).",  # 20250424文献模板
-        "The PSC device gives the highest PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.", # 20250424文献模板
-        "The device achieved an impressive PCE of {pce}% with an open-circuit voltage of {voc} V, short-circuit current density of {jsc} mA/cm², and fill factor of {ff}%.", # 20250424文献模板
-        "The champion device achieved a remarkable power conversion efficiency (PCE) of {pce}%, with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%, outperforming devices modified with other SAMs.",# 20250424文献模板
-        "The PSCs show a champion PCE of {pce}% with VOC of {voc} V, JSC of {jsc} mA/cm² and FF of {ff}%.",  # 20250424文献模板
-        "The solar cells showed a drastically enhanced VOC, which led to a maximum efficiency of {pce}% (with FF of {ff}%, JSC of {jsc} mA/cm², and VOC of {voc} V).",# 20250424文献模板
-        "The champion device achieves an outstanding PCE of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%, marking a significant improvement over the control device.",# 20250424文献模板
-        "The device achieves a champion PCE of {pce}% with an open-circuit voltage (VOC) of {voc} V, a short-circuit current (JSC) of {jsc} mA/cm², and a fill factor (FF) of {ff}%.",# 20250424文献模板
-        "The device displayed a champion PCE of {pce}%, with a VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}%.",# 20250424文献模板
-        "The PSCs displayed a significantly enhanced PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",# 20250424文献模板
+        "The combined treatment featured a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².", 
+        "Consequently, the device resulted in device efficiency of {pce}%, together with an enhanced fill factor (FF) of {ff}%, short-circuit current density of {jsc} mA/cm²and open circuit voltage (VOC) of {voc} V.",
+        "The PCE reached for the device was {pce}%, with a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%." , 
+        "With this engineering, the resulting PSCs obtained a PCE of {pce}%, a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , 
+        "The control device displays a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%, turning out a moderate PCE of {pce}%." , # 
+        "The device shows the highest PCE of {pce}% with negligible hysteresis, a VOC of {voc} V, a JSC of {jsc} mA/cm² and a FF of {ff}%." , 
+        " The device achieves a notably enhanced PCE of {pce}%, corresponding to a JSC of {jsc} mA/cm², a VOC of {voc} V, and an FF of {ff}%. " , 
+        "The PSCs exhibited a superior PCE of {pce}% (JSC: {jsc} mA/cm², VOC: {voc} V, FF: {ff}%).",  
+        "The target device achieved a champion PCE of {pce}% (VOC: {voc} V, JSC: {jsc} mA/cm², FF: {ff}%)."  
+        "The target PSCs achieved an average power conversion efficiency (PCE) of {pce}% with a short-circuit current density (JSC) of {jsc} mA/cm², an open-circuit voltage (VOC) of {voc} V and a fill factor (FF) of {ff}%." , 
+        "The best performance, which showed {pce}% certificated efficiency with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%." , 
+        "The PSCs achieved a champion power conversion efficiency (PCE) of {pce}% under an active area of 0.09 cm², with a VOC value of {voc} V, an FF value of {ff}%, and a current density (JSC) of {jsc} mA/cm².", 
+        "The PCE devices reached {pce}% and featured a VOC of {voc} V, FF of {ff}%, and short-circuit current density (JSC) of {jsc} mA/cm².",  
+        "The inverted devices achieved optimal PCEs of {pce}%, a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  
+        "The resulting hybrid SAMs-modified PSC achieve a champion PCE of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , 
+        "PSCs based on additives achieved a PCE of {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  
+        "A higher PCE of {pce}% of the target device is achieved, where JSC, VOC and FF are {jsc} mA/cm², {voc} V and {ff}%, respectively.",  
+        "The champion device fabricated by perovskite film showed a PCE of {pce}% with open-circuit voltage (VOC) of {voc} V, short current density (JSC) of {jsc} mA/cm², and a fill factor (FF) of {ff}%.", 
+        "Remarkably, it achieved an impressive PCE of {pce}% with a high VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",  
+        "The performance parameters (PCE, open-circuit voltage (VOC), short-circuit current density (JSC) and fill factor (FF)) of the control PSCs are significantly improved ({pce}%, {voc} V, {jsc} mA/cm², and {ff}%)." , 
+        "The device achieved a remarkable PCE of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",  
+        "The device demonstrated a champion efficiency of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%."  
+        "The device achieved a champion PCE of {pce}% with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",  
+        "The solar cells showed a champion PCE of {pce}% with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%." , 
+        "A champion PCE of {pce}% with a JSC of {jsc} mA/cm², a VOC of {voc} V, and a FF of {ff}% was achieved with optimized perovskite layer prepared with non-stoichiometric precursor solution (NSPS)." , 
+        "The device exhibited a PCE of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , 
+        "The champion device showed a PCE of {pce}%, with JSC of {jsc} mA/cm², FF of {ff}%, and VOC of {voc} V." , 
+        "The resulting hybrid SAMs-modified PSC achieve a champion PCE of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm²." , 
+        "PSCs based on additives achieved a PCE of {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  
+        "With the improved uniformity of SAM, the SAM-based devices showed a maximum PCE of {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  
+        "The inverted devices based on perovskite achieved optimal PCEs of {pce}%, a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  
+        "The control device displays a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%, tuning out a PCE of {pce}%.",  
+        "The PSCs achieved a quasi-steady-state PCE of {pce}% (VOC: {voc} V, JSC: {jsc} mA/cm², FF: {ff}%).",  
+        "The inverted PSCs achieved a champion PCE of {pce}% with an open-circuit voltage (VOC) of {voc} V, short-circuit current density (JSC) of {jsc} mA/cm², and fill factor (FF) of {ff}%.",  
+        "The champion device showed a JSC of {jsc} mA/cm², a VOC of {voc} V, and a FF of {ff}%, resulting in a PCE of {pce}%.",  
+        "The champion target devices showed a JSC of {jsc} mA/cm², a VOC of {voc} V, and a FF of {ff}%, resulting in a PCE of {pce}%.", 
+        "The device showed the highest certified PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%."  
+        "The device shows a maximum PCE of {pce}%, with an open-circuit voltage (VOC) of {voc} V, a short-circuit current density (JSC) of {jsc} mA/cm², and a fill factor (FF) of {ff}%.",
+        "PSCs with (111)-preferred crystallographic orientation displayed a remarkable PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",
+        "The target PSCs achieved an average power conversion efficiency (PCE) of {pce}% with a short-circuit current density (JSC) of {jsc} mA/cm², an open-circuit voltage (VOC) of {voc} V, and a fill factor (FF) of {ff}%.",
+        "The best performance device showed a {pce}% certificated efficiency with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%.",
+        "The PSCs achieved a champion power conversion efficiency (PCE) of {pce}%, with VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².", 
+        "The PCE of devices reached {pce}%, featuring VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",  
+        "The devices exhibited an increased PCE from {pce}% to {pce}%, with a VOC of {voc} V, FF of {ff}%, and JSC of {jsc} mA/cm².",
+        "The champion device offers a high PCE of {pce}% for the reverse scan (JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%).",
+        "A higher PCE of {pce}% is achieved with JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%.",  
+        "The PCE for the device reached {pce}%, with a JSC of {jsc} mA/cm², a VOC of {voc} V and a FF of {ff}%.",  
+        "PSC with device efficiency (PCE) of {pce}%, VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}% was obtained.",
+        "This resulted in improved performance with a PCE beyond {pce}%, a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}%.",
+        "The fabricated device resulted in a PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.", 
+        "The certified PCE was determined to be {pce}% with JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%.",
+        "A PCE of {pce}% with a VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}% was obtained.",  
+        "The PSCs demonstrated improved PCE of {pce}% (with FF of {ff}%, VOC of {voc} V, and JSC of {jsc} mA/cm²).", 
+        "The PSCs demonstrated a champion PCE of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.", 
+        "The PCE of the device was increased to {pce}% with an FF of {ff}%, VOC of {voc} V and JSC of {jsc} mA/cm².",
+        "The champion PCE of the device can be further improved to {pce}% (VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%).",
+        "PSCs with a PCE of {pce}%, a JSC of {jsc} mA/cm², a VOC of {voc} V and an FF of {ff}% are demonstrated.",
+        "A significantly higher JSC of {jsc} mA/cm² is obtained while preserving VOC of {voc} V and FF of {ff}%, resulting in the highest PCE of {pce}% at reverse scan.",
+        "The current density-voltage (J-V) characteristics show that the target PSCs delivered a PCE of {pce}%, with an elevated VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}%.",
+        "The cells showed an increase in VOC to {voc} V, accompanied by a slight increase in FF to {ff}% and JSC to {jsc} mA/cm², resulting in a peak PCE of {pce}%.",
+        "The device shows the highest PCE of {pce}% with a VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}%.",
+        "In contrast, the device achieves a notably enhanced PCE of {pce}%, with a JSC of {jsc} mA/cm², VOC of {voc} V, and FF of {ff}%.", 
+        "The PSCs exhibited a superior PCE of {pce}% (JSC: {jsc} mA/cm², VOC: {voc} V, FF: {ff}%).",  
+        "The PSC device gives the highest PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.", 
+        "The device achieved an impressive PCE of {pce}% with an open-circuit voltage of {voc} V, short-circuit current density of {jsc} mA/cm², and fill factor of {ff}%.", 
+        "The champion device achieved a remarkable power conversion efficiency (PCE) of {pce}%, with a VOC of {voc} V, a JSC of {jsc} mA/cm², and a FF of {ff}%, outperforming devices modified with other SAMs.",
+        "The PSCs show a champion PCE of {pce}% with VOC of {voc} V, JSC of {jsc} mA/cm² and FF of {ff}%.",  
+        "The solar cells showed a drastically enhanced VOC, which led to a maximum efficiency of {pce}% (with FF of {ff}%, JSC of {jsc} mA/cm², and VOC of {voc} V).",
+        "The champion device achieves an outstanding PCE of {pce}%, with a VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%, marking a significant improvement over the control device.",
+        "The device achieves a champion PCE of {pce}% with an open-circuit voltage (VOC) of {voc} V, a short-circuit current (JSC) of {jsc} mA/cm², and a fill factor (FF) of {ff}%.",
+        "The device displayed a champion PCE of {pce}%, with a VOC of {voc} V, a JSC of {jsc} mA/cm², and an FF of {ff}%.",
+        "The PSCs displayed a significantly enhanced PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",
 
     ]
     template = random.choice(intro_segments)
@@ -158,58 +158,58 @@ perovskite_formula_segments = [
     "The process involved first dissolving {formula_pvk} at {concentration_pvk} mol/L to create the primary perovskite solution.",
     "A stable precursor mixture was achieved by taking a {formula_pvk} solution ({concentration_pvk} mol/L) as the base.",
     "Commencing with a {formula_pvk} solution at {concentration_pvk} mol/L, the perovskite precursor was meticulously formulated.",
-    "The composition of perovskite is {concentration_pvk} mol/L {formula_pvk}.", # 20250411文献模板
-    "The {formula_pvk} ({concentration_pvk} mol/L) perovskite precursor solution was prepared.", # 20250411文献模板
-    "The perovskite composition is {formula_pvk}, and the initial stock perovskite solution is {concentration_pvk} mol/L.", # 20250411文献模板
-    "The perovskite precursor is {formula_pvk}.", # 20250424文献模板
-    "The {concentration_pvk} mol/L perovskite precursor solution with a chemical formula of {formula_pvk}.", # 20250411文献模板
-    "The perovskite precursor solutions were prepared by dissolving {concentration_pvk} mol/L {formula_pvk}.", # 20250411文献模板
-    "{concentration_pvk} mol/L {formula_pvk} perovskite precursors were prepared.", # 20250411文献模板
-    "For the perovskite composition {formula_pvk}, {concentration_pvk} mol/L perovskite precursor solution was prepared.", # 20250411文献模板
-    "The {concentration_pvk} mol/L perovskite solution ({formula_pvk}) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films.", # 20250411文献模板
-    "The perovskite precursor solution ({formula_pvk}) was prepared with a concentration of {concentration_pvk} mol/L in a mixed anhydrous solvent of DMF/DMSO (4/1, v/v).", # 20250411文献模板
-    "The perovskite ({formula_pvk}) solution was prepared with a concentration of {concentration_pvk} mol/L in mixed solvent of DMF and DMSO.", # 20250411文献模板
-    "Then, perovskite precursor solution ({concentration_pvk} mol/L) was prepared at the stoichiometric ratio of {formula_pvk}.", # 20250411文献模板
-    "A {concentration_pvk} mol/L perovskite precursor solution was constructed by mixing FAI, PbI2, methylammonium iodide and caesium iodide in DMF: DMSO mixed solvent with the chemical formula of {formula_pvk}.",  # 20250424文献模板
-    "For the inorganic perovskite layers, {concentration_pvk} mol/L {formula_pvk} inorganic perovskite precursor solution was prepared in DMF/DMSO solvent.",  # 20250424文献模板
-    "The perovskite precursor solution was prepared with a concentration of {concentration_pvk} mol/L using PbI2 and MAI dissolved in a mixed DMF/DMSO solvent.",  # 20250424文献模板
-    "The perovskite ({formula_pvk}) precursor solution was prepared with a concentration of {concentration_pvk} mol/L in a mixed solvent of DMF and DMSO.",  # 20250424文献模板
-    "The mixed perovskite ({formula_pvk}) precursor solution was prepared with a total concentration of {concentration_pvk} mol/L in DMF/DMSO co-solvent.",  # 20250424文献模板
-    "The perovskite precursor solution was prepared based on the perovskite composition of {formula_pvk} in DMF/DMSO solvent (total concentration of {concentration_pvk} mol/L).",  # 20250424文献模板
-    "The perovskite precursor solution ({concentration_pvk} mol/L) was prepared in a solvent mixture of DMF and DMSO according to the formula of {formula_pvk}.",  # 20250424文献模板
-    "The perovskite solution ({concentration_pvk} mol/L) was made according to the composition of {formula_pvk} in a mixed solvent of DMF/DMSO.",  # 20250424文献模板
-    "The perovskite precursor solution ({formula_pvk}) was prepared with a concentration of {concentration_pvk} mol/L in a mixed anhydrous solvent of DMF/DMSO.",  # 20250424文献模板
-    "The perovskite ({formula_pvk}) solution was prepared with a concentration of {concentration_pvk} mol/L in mixed solvent of DMF and DMSO.",  # 20250424文献模板
-    "The {concentration_pvk} mol/L perovskite solution ({formula_pvk}) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films.",  # 20250424文献模板
-    "For the perovskite composition {formula_pvk}, {concentration_pvk} mol/L perovskite precursor solution was prepared.",  # 20250424文献模板
-    "The precursor solutions for all {formula_pvk} films were prepared by dissolving equimolar concentrations ({concentration_pvk} mol/L).",  # 20250424文献模板
-    "The perovskite precursor solution ({concentration_pvk} mol/L, {formula_pvk}) was prepared.",  # 20250424文献模板
-    "{concentration_pvk} mol/L perovskite precursor solutions were prepared with the chemical formula of {formula_pvk}.",  # 20250424文献模板
-    "For the perovskite film, {concentration_pvk} mol/L precursor solution was prepared according to the chemical formula of {formula_pvk}.",  # 20250424文献模板
-    "The {formula_pvk} precursor solution ({concentration_pvk} mol/L) was prepared in the mixed solvent of DMF and DMSO.",  # 20250424文献模板
-    "The perovskite precursor solution ({concentration_pvk} mol/L) was prepared in mixed solvents of DMF and DMSO according to chemical formula of {formula_pvk}.",  # 20250424文献模板
-    "The perovskite precursor solution ({concentration_pvk} mol/L) composed of a formula of {formula_pvk}.",  # 20250424文献模板
-    "The perovskite solution ({concentration_pvk} mol/L) was prepared according to chemical formula of {formula_pvk}.",  # 20250424文献模板
-    "The {formula_pvk} perovskite film was prepared with a concentration of {concentration_pvk} mol/L.",  # 20250424文献模板
-    "The {concentration_pvk} mol/L perovskite precursor solution with a chemical formula of {formula_pvk} was prepared.",  # 20250424文献模板
-    "The perovskite precursor solutions were prepared using {concentration_pvk} mol/L {formula_pvk}.",  # 20250424文献模板
-    "{concentration_pvk} mol/L {formula_pvk} perovskite precursors were prepared.",  # 20250424文献模板
-    "For the preparation of perovskite precursor solution, {concentration_pvk} mol/L {formula_pvk} perovskite precursor was prepared in DMF:DMSO (4:1 volume ratio, v:v) mixed solvent.",  # 20250424文献模板
-    "Perovskite precursor solution ({concentration_pvk} mol/L) was prepared based on the stoichiometric ratio of {formula_pvk}.",  # 20250424文献模板
-    "The {formula_pvk} perovskite precursor ({concentration_pvk} mol/L) was spin-coated onto the substrate.",  # 20250424文献模板
-    "The {formula_pvk} ({concentration_pvk} mol/L) perovskite precursor solution was prepared.",  # 20250424文献模板
-    "{formula_pvk} was prepared at a concentration of {concentration_pvk} mol/L.",  # 20250424文献模板
-    "The perovskite composition was {formula_pvk}, and the initial stock perovskite solution was {concentration_pvk} mol/L.",  # 20250424文献模板
-    "The composition of perovskite is {concentration_pvk} mol/L {formula_pvk}.",  # 20250424文献模板
-    "The perovskite solution, {concentration_pvk} mol/L {formula_pvk} was prepared.",  # 20250424文献模板
-    "The composition of the {concentration_pvk} mol/L perovskite film is {formula_pvk}.",  # 20250424文献模板
-    "The perovskite composition of {formula_pvk} was prepared with a concentration of {concentration_pvk} mol/L.",  # 20250424文献模板
-    "The perovskite precursor solution with a molar concentration of {concentration_pvk} mol/L was prepared according to the formula of {formula_pvk}.",  # 20250424文献模板
-    "The composition of the {concentration_pvk} mol/L perovskite film is {formula_pvk}.",  # 20250424文献模板
-    "A {concentration_pvk} mol/L {formula_pvk} precursor solution was similarly prepared using a mixture of DMF and DMSO.",  # 20250424文献模板
-    "{concentration_pvk} mol/L perovskite precursor solution with the composition of {formula_pvk} was prepared.",  # 20250424文献模板
-    "For the {formula_pvk}, {concentration_pvk} mol/L perovskite precursor solution was prepared.",  # 20250424文献模板
-    "For perovskite film, the solution concentration of {formula_pvk} was {concentration_pvk} mol/L.",  # 20250424文献模板
+    "The composition of perovskite is {concentration_pvk} mol/L {formula_pvk}.", 
+    "The {formula_pvk} ({concentration_pvk} mol/L) perovskite precursor solution was prepared.", 
+    "The perovskite composition is {formula_pvk}, and the initial stock perovskite solution is {concentration_pvk} mol/L.", 
+    "The perovskite precursor is {formula_pvk}.", 
+    "The {concentration_pvk} mol/L perovskite precursor solution with a chemical formula of {formula_pvk}.", 
+    "The perovskite precursor solutions were prepared by dissolving {concentration_pvk} mol/L {formula_pvk}.", 
+    "{concentration_pvk} mol/L {formula_pvk} perovskite precursors were prepared.", 
+    "For the perovskite composition {formula_pvk}, {concentration_pvk} mol/L perovskite precursor solution was prepared.", 
+    "The {concentration_pvk} mol/L perovskite solution ({formula_pvk}) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films.", 
+    "The perovskite precursor solution ({formula_pvk}) was prepared with a concentration of {concentration_pvk} mol/L in a mixed anhydrous solvent of DMF/DMSO (4/1, v/v).", 
+    "The perovskite ({formula_pvk}) solution was prepared with a concentration of {concentration_pvk} mol/L in mixed solvent of DMF and DMSO.", 
+    "Then, perovskite precursor solution ({concentration_pvk} mol/L) was prepared at the stoichiometric ratio of {formula_pvk}.", 
+    "A {concentration_pvk} mol/L perovskite precursor solution was constructed by mixing FAI, PbI2, methylammonium iodide and caesium iodide in DMF: DMSO mixed solvent with the chemical formula of {formula_pvk}.",  
+    "For the inorganic perovskite layers, {concentration_pvk} mol/L {formula_pvk} inorganic perovskite precursor solution was prepared in DMF/DMSO solvent.",  
+    "The perovskite precursor solution was prepared with a concentration of {concentration_pvk} mol/L using PbI2 and MAI dissolved in a mixed DMF/DMSO solvent.",  
+    "The perovskite ({formula_pvk}) precursor solution was prepared with a concentration of {concentration_pvk} mol/L in a mixed solvent of DMF and DMSO.",  
+    "The mixed perovskite ({formula_pvk}) precursor solution was prepared with a total concentration of {concentration_pvk} mol/L in DMF/DMSO co-solvent.",  
+    "The perovskite precursor solution was prepared based on the perovskite composition of {formula_pvk} in DMF/DMSO solvent (total concentration of {concentration_pvk} mol/L).",  
+    "The perovskite precursor solution ({concentration_pvk} mol/L) was prepared in a solvent mixture of DMF and DMSO according to the formula of {formula_pvk}.",  
+    "The perovskite solution ({concentration_pvk} mol/L) was made according to the composition of {formula_pvk} in a mixed solvent of DMF/DMSO.",  
+    "The perovskite precursor solution ({formula_pvk}) was prepared with a concentration of {concentration_pvk} mol/L in a mixed anhydrous solvent of DMF/DMSO.",  
+    "The perovskite ({formula_pvk}) solution was prepared with a concentration of {concentration_pvk} mol/L in mixed solvent of DMF and DMSO.",  
+    "The {concentration_pvk} mol/L perovskite solution ({formula_pvk}) was prepared, shaken overnight to fully dissolve, and then used to prepare perovskite films.",  
+    "For the perovskite composition {formula_pvk}, {concentration_pvk} mol/L perovskite precursor solution was prepared.",  
+    "The precursor solutions for all {formula_pvk} films were prepared by dissolving equimolar concentrations ({concentration_pvk} mol/L).",  
+    "The perovskite precursor solution ({concentration_pvk} mol/L, {formula_pvk}) was prepared.",  
+    "{concentration_pvk} mol/L perovskite precursor solutions were prepared with the chemical formula of {formula_pvk}.",  
+    "For the perovskite film, {concentration_pvk} mol/L precursor solution was prepared according to the chemical formula of {formula_pvk}.",  
+    "The {formula_pvk} precursor solution ({concentration_pvk} mol/L) was prepared in the mixed solvent of DMF and DMSO.",  
+    "The perovskite precursor solution ({concentration_pvk} mol/L) was prepared in mixed solvents of DMF and DMSO according to chemical formula of {formula_pvk}.",  
+    "The perovskite precursor solution ({concentration_pvk} mol/L) composed of a formula of {formula_pvk}.",  
+    "The perovskite solution ({concentration_pvk} mol/L) was prepared according to chemical formula of {formula_pvk}.",  
+    "The {formula_pvk} perovskite film was prepared with a concentration of {concentration_pvk} mol/L.",  
+    "The {concentration_pvk} mol/L perovskite precursor solution with a chemical formula of {formula_pvk} was prepared.",  
+    "The perovskite precursor solutions were prepared using {concentration_pvk} mol/L {formula_pvk}.",  
+    "{concentration_pvk} mol/L {formula_pvk} perovskite precursors were prepared.",  
+    "For the preparation of perovskite precursor solution, {concentration_pvk} mol/L {formula_pvk} perovskite precursor was prepared in DMF:DMSO (4:1 volume ratio, v:v) mixed solvent.",  
+    "Perovskite precursor solution ({concentration_pvk} mol/L) was prepared based on the stoichiometric ratio of {formula_pvk}.",  
+    "The {formula_pvk} perovskite precursor ({concentration_pvk} mol/L) was spin-coated onto the substrate.",  
+    "The {formula_pvk} ({concentration_pvk} mol/L) perovskite precursor solution was prepared.",  
+    "{formula_pvk} was prepared at a concentration of {concentration_pvk} mol/L.",  
+    "The perovskite composition was {formula_pvk}, and the initial stock perovskite solution was {concentration_pvk} mol/L.",  
+    "The composition of perovskite is {concentration_pvk} mol/L {formula_pvk}.",  
+    "The perovskite solution, {concentration_pvk} mol/L {formula_pvk} was prepared.",  
+    "The composition of the {concentration_pvk} mol/L perovskite film is {formula_pvk}.",  
+    "The perovskite composition of {formula_pvk} was prepared with a concentration of {concentration_pvk} mol/L.",  
+    "The perovskite precursor solution with a molar concentration of {concentration_pvk} mol/L was prepared according to the formula of {formula_pvk}.",  
+    "The composition of the {concentration_pvk} mol/L perovskite film is {formula_pvk}.",  
+    "A {concentration_pvk} mol/L {formula_pvk} precursor solution was similarly prepared using a mixture of DMF and DMSO.",  
+    "{concentration_pvk} mol/L perovskite precursor solution with the composition of {formula_pvk} was prepared.",  
+    "For the {formula_pvk}, {concentration_pvk} mol/L perovskite precursor solution was prepared.",  
+    "For perovskite film, the solution concentration of {formula_pvk} was {concentration_pvk} mol/L.",  
 
 ]
 
@@ -232,14 +232,14 @@ sam_formula_segments_single = [
     "A SAM consisting of {formula_sam1} ({concentration_sam1} mg/mL) was incorporated to achieve a more uniform and well-ordered perovskite interface.",  # 15
     "The SAM consisting of {formula_sam1} ({concentration_sam1} mg/mL) was subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",  # 16
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) as a SAM enhanced interface layer formation and refined the film’s interfacial structure.",  # 17
-    "For the SAM solution, {formula_sam1} ({concentration_sam1} mg/mL) was added to the previous solution.",  # 18  # 20250411文献模板
-    "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",  # 19 # 20250411文献模板
-    "{concentration_sam1} mg/mL of {formula_sam1} was added.",  # 20 # 20250411文献模板
-    "A SAM solution consisting of {formula_sam1} ({concentration_sam1} mg/mL) in solvent was prepared.",  # 21 # 20250411文献模板
-    "The optimal SAM was prepared by using {formula_sam1} ({concentration_sam1} mg/mL).",  # 22 # 20250411文献模板
-    "The sample of {formula_sam1} was fabricated with a concentration of {concentration_sam1} mg/mL.",  # 23  # 20250424文献模板
-    "Different concentrations of {formula_sam1} were added into the perovskite precursor solution for modification.",  # 24  # 20250424文献模板
-    "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",  # 25  # 20250424文献模板
+    "For the SAM solution, {formula_sam1} ({concentration_sam1} mg/mL) was added to the previous solution.",  # 18  
+    "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",  # 19 
+    "{concentration_sam1} mg/mL of {formula_sam1} was added.",  # 20 
+    "A SAM solution consisting of {formula_sam1} ({concentration_sam1} mg/mL) in solvent was prepared.",  # 21 
+    "The optimal SAM was prepared by using {formula_sam1} ({concentration_sam1} mg/mL).",  # 22 
+    "The sample of {formula_sam1} was fabricated with a concentration of {concentration_sam1} mg/mL.",  # 23  
+    "Different concentrations of {formula_sam1} were added into the perovskite precursor solution for modification.",  # 24  
+    "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",  # 25  
 ]
 
 sam_formula_segments_dual = [
@@ -260,13 +260,13 @@ sam_formula_segments_dual = [
     "SAMs consisting of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were incorporated to achieve a more uniform and well-ordered perovskite interface.",  # 15
     "SAMs consisting of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",  # 16
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) as SAMs enabled the improvement in interface layer formation, further refining the film’s interfacial structure.",  # 17
-    "For the SAM solution, {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were added to the previous solution.",  # 18  # 20250411文献模板
-    "The {formula_sam1} and {formula_sam2} solution were prepared with a concentration of {concentration_sam1} mg/mL and {concentration_sam2} mg/mL.",  # 19 # 20250411文献模板
-    "{concentration_sam1} mg/mL of {formula_sam1} and {concentration_sam2} mg/mL of {formula_sam2} were added.",  # 20 # 20250411文献模板
-    "Mixed SAMs solution, consisting of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) in ethanol were prepared.",  # 21 # 20250411文献模板
-    "The optimal hybrid SAMs were prepared by mixing {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL).",  # 22 # 20250411文献模板
-    "The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",  # 23  # 20250424文献模板
-    "The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",  # 24  # 20250424文献模板
+    "For the SAM solution, {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were added to the previous solution.",  # 18  
+    "The {formula_sam1} and {formula_sam2} solution were prepared with a concentration of {concentration_sam1} mg/mL and {concentration_sam2} mg/mL.",  # 19 
+    "{concentration_sam1} mg/mL of {formula_sam1} and {concentration_sam2} mg/mL of {formula_sam2} were added.",  # 20 
+    "Mixed SAMs solution, consisting of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) in ethanol were prepared.",  # 21 
+    "The optimal hybrid SAMs were prepared by mixing {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL).",  # 22 
+    "The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",  # 23  
+    "The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",  # 24  
 ]
 
 sam_formula_segments_triple = [
@@ -291,15 +291,15 @@ sam_formula_segments_triple = [
 ]
 
 sam_formula_spin_segments_single = [
-    "The sample of {formula_sam1} was fabricated by spin coating the {formula_sam1} solution with a concentration of {concentration_sam1} mg/mL.", # 1  # 20250411文献模板
-    "The hole transport layer (HTL) was fabricated using the SAM solution of {formula_sam1}. The {formula_sam1} concentration is {concentration_sam1} mg/mL.",  # 2  # 20250411文献模板
-    "A SAM solution ({concentration_sam1} mg/mL {formula_sam1}) was applied to the FTO glass substrates by spin-coating.",  # 3  # 20250411文献模板
+    "The sample of {formula_sam1} was fabricated by spin coating the {formula_sam1} solution with a concentration of {concentration_sam1} mg/mL.", # 1  
+    "The hole transport layer (HTL) was fabricated using the SAM solution of {formula_sam1}. The {formula_sam1} concentration is {concentration_sam1} mg/mL.",  # 2  
+    "A SAM solution ({concentration_sam1} mg/mL {formula_sam1}) was applied to the FTO glass substrates by spin-coating.",  # 3  
 ]
 
 sam_formula_spin_segments_dual = [
-    "While the sample of {formula_sam1} and {formula_sam2} were fabricated by spin coating {formula_sam1} and {formula_sam2} solution with concentration of {concentration_sam1} mg/mL and {concentration_sam2} mg/mL.",  # 1  # 20250411文献模板
-    "The hole transport layer (HTL) was fabricated by using the mixed SAM solution of {formula_sam1} and {formula_sam2}. The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",  # 2 # 20250411文献模板
-    "A mixed SAMs solution ({concentration_sam1} mg/mL {formula_sam2} and {concentration_sam2} mg/mL) were applied to the FTO glass substrates by spin-coating.",  # 3  # 20250411文献模板
+    "While the sample of {formula_sam1} and {formula_sam2} were fabricated by spin coating {formula_sam1} and {formula_sam2} solution with concentration of {concentration_sam1} mg/mL and {concentration_sam2} mg/mL.",  # 1  
+    "The hole transport layer (HTL) was fabricated by using the mixed SAM solution of {formula_sam1} and {formula_sam2}. The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",  # 2 
+    "A mixed SAMs solution ({concentration_sam1} mg/mL {formula_sam2} and {concentration_sam2} mg/mL) were applied to the FTO glass substrates by spin-coating.",  # 3  
 ]
 
 sam_formula_spin_segments_triple = [
@@ -311,7 +311,7 @@ sam_spin_anneal_segments = [
     "In details, SAM solution was spin-coated on the substrate at {spin_speed_sam} rpm for {spin_time_sam} s, and annealed at {anneal_temp_sam} °C for {anneal_time_sam} min.",
 ]
 
-# 添加剂材料和配方描述（Additive Formula Segments）
+
 additive_formula_segments_single = [
     "{formula_add1} ({concentration_add1} mg/mL) was incorporated as an additive.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL) was added to the perovskite solution as an additive.",
@@ -336,24 +336,24 @@ additive_formula_segments_single = [
     "The perovskite solution was prepared with {formula_add1} in the molar ratio of {concentration_add1} mg/mL, dissolved in the prepared solution.",
     "An equal amount of {formula_add1} ({concentration_add1} mg/mL) was dissolved in dimethylformamide (DMF) and dimethyl sulfoxide (DMSO) with a 4:1 volume ratio.",
     "An equal amount of {formula_add1} ({concentration_add1} mg/mL) was dissolved in DMF and DMSO with an 4:1 volume ratio.",
-    "For the modified solution, {formula_add1} ({concentration_add1} mg/mL) was added to the previous solution.",  # 20250411文献模板
-    "To prepare the precursor solution with {formula_add1} ({concentration_add1} mg/mL), the additive was added to the precursor solution.",  # 20250411文献模板
-    "For the additive-treated cells, {formula_add1} ({concentration_add1} mg/mL) was added into the perovskite precursor solution.",  # 20250411文献模板
-    "{concentration_add1} mg/mL {formula_add1} was then added as additive into the precursor solution.",  # 20250424文献模板
-    "{formula_add1} additive was added into the precursor solution at a concentration of {concentration_add1} mg/mL.",  # 20250424文献模板
-    "{formula_add1} was added into the perovskite solution as additive with a concentration of {concentration_add1} mg/mL.",  # 20250424文献模板
-    "The optimum amount of {formula_add1} added into the precursor solution was {concentration_add1} mg/mL.",  # 20250424文献模板
-    "{formula_add1} with concentration {concentration_add1} mg/mL was added into the perovskite solution.",  # 20250424文献模板
-    "Then {concentration_add1} mg/mL {formula_add1} was added to the perovskite precursor solution and stirred for 2 h.",  # 20250424文献模板
-    "For the target perovskite, {concentration_add1} mg/mL {formula_add1} was added to the precursor solution, and it was ensured that it's well mixed with the precursor.",  # 20250424文献模板
-    "{concentration_add1} mg/mL {formula_add1} was added in the solution to improve the film morphology.",  # 20250424文献模板
-    "The {formula_add1} was dissolved in the perovskite solution obtained with the molar ratio {concentration_add1} mg/mL.",  # 20250424文献模板
-    "{concentration_add1} mg/mL {formula_add1} was added to the perovskite precursor solution and stirred for 2 h.",  # 20250424文献模板
-    "{concentration_add1} mg/mL {formula_add1} was added into the mixed perovskite solution.",  # 20250424文献模板
-    "For the modified solution, {concentration_add1} mg/mL {formula_add1} was added to the precursor solution.",  # 20250424文献模板
-    "{concentration_add1} mg/mL of {formula_add1} was added.",  # 20250424文献模板
-    "{formula_add1} ({concentration_add1} mg/mL) was added into the perovskite precursor solution.",  # 20250424文献模板
-    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL), the additive was added to the precursor solution." , # 20250424文献模板
+    "For the modified solution, {formula_add1} ({concentration_add1} mg/mL) was added to the previous solution.",  
+    "To prepare the precursor solution with {formula_add1} ({concentration_add1} mg/mL), the additive was added to the precursor solution.",  
+    "For the additive-treated cells, {formula_add1} ({concentration_add1} mg/mL) was added into the perovskite precursor solution.",  
+    "{concentration_add1} mg/mL {formula_add1} was then added as additive into the precursor solution.",  
+    "{formula_add1} additive was added into the precursor solution at a concentration of {concentration_add1} mg/mL.",  
+    "{formula_add1} was added into the perovskite solution as additive with a concentration of {concentration_add1} mg/mL.",  
+    "The optimum amount of {formula_add1} added into the precursor solution was {concentration_add1} mg/mL.",  
+    "{formula_add1} with concentration {concentration_add1} mg/mL was added into the perovskite solution.",  
+    "Then {concentration_add1} mg/mL {formula_add1} was added to the perovskite precursor solution and stirred for 2 h.",  
+    "For the target perovskite, {concentration_add1} mg/mL {formula_add1} was added to the precursor solution, and it was ensured that it's well mixed with the precursor.",  
+    "{concentration_add1} mg/mL {formula_add1} was added in the solution to improve the film morphology.",  
+    "The {formula_add1} was dissolved in the perovskite solution obtained with the molar ratio {concentration_add1} mg/mL.",  
+    "{concentration_add1} mg/mL {formula_add1} was added to the perovskite precursor solution and stirred for 2 h.",  
+    "{concentration_add1} mg/mL {formula_add1} was added into the mixed perovskite solution.",  
+    "For the modified solution, {concentration_add1} mg/mL {formula_add1} was added to the precursor solution.",  
+    "{concentration_add1} mg/mL of {formula_add1} was added.",  
+    "{formula_add1} ({concentration_add1} mg/mL) was added into the perovskite precursor solution.",  
+    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL), the additive was added to the precursor solution." , 
 ]
 
 additive_formula_segments_dual = [
@@ -379,12 +379,12 @@ additive_formula_segments_dual = [
     "To fabricate high-quality perovskite films, {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added to the perovskite precursor solution.",
     "{formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added into both precursor solutions as additives.",
     "The perovskite solution was a mixture of {formula_add1} and {formula_add2} in the molar ratio of {concentration_add1} mg/mL and {concentration_add2} mg/mL, respectively, dissolved in the prepared solution.",
-    "For the modified solution, {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added to the previous solution.",  # 20250411文献模板
-    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL), the additives were added to the precursor solution.",  # 20250411文献模板
-    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL), the additives were added to the precursor solution.", # 20250411文献模板
-    "For the additives treated cells, the {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added into the perovskite precursor solution.", # 20250411文献模板
-    "Then, around {concentration_add1} mg/mL of {formula_add1} and {concentration_add2} mg/mL of {formula_add2} were also added into the mixed perovskite solution.",  # 20250424文献模板
-    "For the additives treated cells, the {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added into the perovskite precursor solution.",  # 20250424文献模板
+    "For the modified solution, {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added to the previous solution.",  
+    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL), the additives were added to the precursor solution.",  
+    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL), the additives were added to the precursor solution.", 
+    "For the additives treated cells, the {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added into the perovskite precursor solution.", 
+    "Then, around {concentration_add1} mg/mL of {formula_add1} and {concentration_add2} mg/mL of {formula_add2} were also added into the mixed perovskite solution.",  
+    "For the additives treated cells, the {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added into the perovskite precursor solution.",  
 ]
 
 additive_formula_segments_triple = [
@@ -406,8 +406,8 @@ additive_formula_segments_triple = [
     "The perovskite precursor solution is prepared by mixing {concentration_add1} mg/mL of {formula_add1}, {concentration_add2} mg/mL of {formula_add2}, and {concentration_add3} mg/mL of {formula_add3} additives in the solvent.",
     "To fabricate high-quality perovskite films, {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were added to the perovskite precursor solution.",
     "{formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were added into both precursor solutions as additives.",
-    "For the modified solution, {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were added to the previous solution.",  # 20250411文献模板
-    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL), the additives were added to the precursor solution.",  # 20250411文献模板
+    "For the modified solution, {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were added to the previous solution.",  
+    "To prepare the precursor solutions with {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL), the additives were added to the precursor solution.",  
 ]
 
 # Passivation Segments
@@ -439,15 +439,15 @@ passivation_material_segments_single = [
     "A passivation layer of {formula_passivator1} ({concentration_passivator1} mg/mL) was deposited by spin-coating to improve surface quality.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL) was coated onto the perovskite surface.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL) was deposited onto the perovskite film.",
-    "For the surface passivation layer, {formula_passivator1} was dissolved in IPA at a concentration of {concentration_passivator1} mg/mL.",  # 20250411文献模板
-    "{concentration_passivator1} mg/mL {formula_passivator1} was spin-coated onto the perovskite film.",  # 20250411文献模板
-    "{formula_passivator1} as passivation layer was prepared at a concentration of {concentration_passivator1} mg/mL in IPA solution.",  # 20250424文献模板
-    "{formula_passivator1} ({concentration_passivator1} mg/mL) was introduced as a passivation layer prepared in an IPA mixed solution.",  # 20250424文献模板
-    "{concentration_passivator1} mg/mL {formula_passivator1} in isopropyl alcohol was prepared as a passivating layer.",  # 20250424文献模板
-    "For the interfacial passivation layer, {formula_passivator1} with the concentration of {concentration_passivator1} mg/mL in IPA was used.",  # 20250424文献模板
-    "{concentration_passivator1} {formula_passivator1} mg/mL was spin-coated onto the perovskite film.",  # 20250424文献模板
-    "Later, the {concentration_passivator1} mg/mL {formula_passivator1} (in IPA) was evenly spread on the surface of the perovskite film.",  # 20250424文献模板
-    "For the surface passivation layer, {formula_passivator1} was dissolved in IPA at a concentration of {concentration_passivator1} mg/mL.",  # 20250424文献模板
+    "For the surface passivation layer, {formula_passivator1} was dissolved in IPA at a concentration of {concentration_passivator1} mg/mL.",  
+    "{concentration_passivator1} mg/mL {formula_passivator1} was spin-coated onto the perovskite film.",  
+    "{formula_passivator1} as passivation layer was prepared at a concentration of {concentration_passivator1} mg/mL in IPA solution.",  
+    "{formula_passivator1} ({concentration_passivator1} mg/mL) was introduced as a passivation layer prepared in an IPA mixed solution.",  
+    "{concentration_passivator1} mg/mL {formula_passivator1} in isopropyl alcohol was prepared as a passivating layer.",  
+    "For the interfacial passivation layer, {formula_passivator1} with the concentration of {concentration_passivator1} mg/mL in IPA was used.",  
+    "{concentration_passivator1} {formula_passivator1} mg/mL was spin-coated onto the perovskite film.",  
+    "Later, the {concentration_passivator1} mg/mL {formula_passivator1} (in IPA) was evenly spread on the surface of the perovskite film.",  
+    "For the surface passivation layer, {formula_passivator1} was dissolved in IPA at a concentration of {concentration_passivator1} mg/mL.",  
 
     ]
 
@@ -478,10 +478,10 @@ passivation_material_segments_dual = [
     "A passivation layer composed of {formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) was deposited by spin-coating to improve surface quality.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were coated onto the perovskite surface.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were deposited onto the perovskite film.",
-    "For the surface treatment of perovskite films, chalcogen-concave molecular stock solutions of {formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were spin-coated on the perovskite film",  # 20250424文献模板
-    "For the surface passivation layer, {formula_passivator1} and {formula_passivator2} were dissolved in IPA at a concentration of {concentration_passivator1} mg/mL and {concentration_passivator2} mg/mL.",  # 20250411文献模板
-    "For the interfacial passivation layer, {formula_passivator1} and {formula_passivator2} with the concentration of {concentration_passivator1} mg/mL and {concentration_passivator2} mg/mL were used.", # 20250411文献模板
-    "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were introduced as a passivation layer.", # 20250411文献模板
+    "For the surface treatment of perovskite films, chalcogen-concave molecular stock solutions of {formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were spin-coated on the perovskite film",  
+    "For the surface passivation layer, {formula_passivator1} and {formula_passivator2} were dissolved in IPA at a concentration of {concentration_passivator1} mg/mL and {concentration_passivator2} mg/mL.",  
+    "For the interfacial passivation layer, {formula_passivator1} and {formula_passivator2} with the concentration of {concentration_passivator1} mg/mL and {concentration_passivator2} mg/mL were used.", 
+    "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were introduced as a passivation layer.", 
     ]
 
 passivation_material_segments_triple = [
@@ -513,7 +513,7 @@ passivation_material_segments_triple = [
     "A passivation layer of {formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) was deposited by spin-coating to improve surface quality.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were coated onto the perovskite surface.",
     "{formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were deposited onto the perovskite film.",
-    "For the surface treatment of perovskite films, chalcogen-concave molecular stock solutions of {formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were spin-coated onto the perovskite film.",  # 20250411文献模板
+    "For the surface treatment of perovskite films, chalcogen-concave molecular stock solutions of {formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were spin-coated onto the perovskite film.",  
 ]
 
 
@@ -534,70 +534,70 @@ process_segments = [
     "The film formation relied on a two-phase spin cycle: {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, optimizing thickness uniformity.",
     "Implementing a stepwise spin scheme, the layer was first spun at {spin1_speed} rpm ({spin1_time} s) and then at {spin2_speed} rpm ({spin2_time} s), improving surface coverage.",
     "To establish a stable perovskite film, the substrate was spun at {spin1_speed} rpm for {spin1_time} s, then at {spin2_speed} rpm for {spin2_time} s, ensuring even layer formation.",
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250411文献模板
-    "The perovskite precursor was spin-coated onto the substrates with a two-stage program at {spin1_speed} rpm for {spin1_time} s, and {spin2_speed} rpm for {spin2_time} s, respectively.", # 20250411文献模板
-    "Specifically, the perovskite precursor solution was first spun at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite precursor was spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "For perovskite film fabrication, the perovskite precursor was spin-coated on the as-prepared substrates at {spin1_speed} rpm for {spin1_time} s, subsequently at {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite precursor solutions were spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "Then the filtered perovskite precursor was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite film was deposited by spin-coating with {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite solution was spin-coated in two steps, namely {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite precursor solution was deposited on the substrate via a two-step spin coating process; first, the solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The precursor solution was spin-coated onto the substrate surface at {spin1_speed} rpm for {spin1_time} s, then accelerated to {spin2_speed} rpm and maintained at this speed for {spin2_time} s.", # 20250411文献模板
-    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "For the perovskite deposition process, the perovskite films were deposited using a two-step spin-coating process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.", # 20250411文献模板
-    "The perovskite solution was spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s, respectively.", # 20250411文献模板
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The precursor solution was spin-coated in a two-step process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.", # 20250411文献模板
-    "The perovskite precursor solutions were spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.", # 20250411文献模板
-    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and then {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite precursor solution was then spin-coated at {spin1_speed} rpm for {spin1_time} s followed by an additional spin at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The prepared precursor solution was spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The precursor solution was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and then {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The precursor solution was deposited on the substrate and spin-coated with a two-step spin-coating procedure: {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite precursor solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite layer was deposited via a two-step spin-coating procedure with {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solution was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "For the perovskite films, the spin-coating process was divided into a consecutive two-step procedure: the spin rate of the first step was {spin1_speed} rpm for {spin1_time} s, and that of the second step was {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite layer was spin-coated with a two-step recipe, first at {spin1_speed} rpm for {spin1_time} s followed by {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solution was deposited on the substrate by two consecutive spin-coating steps of {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s, subsequently at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The spin coating procedure was done in ambient air by a consecutive two-step spin-coating process, with the first step at {spin1_speed} rpm for {spin1_time} s and the second step at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solution was deposited on the substrate and spun cast at {spin1_speed} rpm for {spin1_time} s followed by {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "For the perovskite film fabrication, the substrate was spun at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "Then, the prepared precursor solution was spin-coated onto the ITO substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite film was deposited by spin-coating onto the substrate using a two-step spin-coating process, first at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The precursor solution was deposited on the substrate and spun cast at {spin1_speed} rpm for {spin1_time} s, followed by {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite was deposited via a two-step spin-coating procedure with {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite precursor solution was then spin-coated onto a substrate at {spin1_speed} rpm for {spin1_time} s followed by an additional spin at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "Afterwards, the perovskite precursor solution was deposited on the substrate via a two-step spin coating process; first, the solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The precursor solution was spin-coated onto the substrate surface at {spin1_speed} rpm for {spin1_time} s, then accelerated to {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "For the perovskite deposition process, the perovskite solutions were deposited using a two-step spin-coating process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s (acceleration rate 500 rpm/s) and {spin2_speed} rpm for {spin2_time} s (acceleration rate 1000 rpm/s), respectively.",  # 20250424文献模板
-    "The as-prepared perovskite precursor was spin-coated onto the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "The precursor solution was spin-coated in a two-step process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "The perovskite precursor solutions were spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "Specifically, the perovskite precursor solution was first deposited at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "The perovskite precursor solution was dripped onto the substrate, and a two-step spin-coating procedure was applied. The first step was carried out at {spin1_speed} rpm, followed by {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite was deposited via a two-step spin-coating procedure, first at {spin1_speed} rpm for {spin1_time} s and finally at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite precursor was spin-coated onto the substrates with a two-stage program at {spin1_speed} rpm for {spin1_time} s, and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "The precursor solution was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The prepared precursor solution was spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  # 20250424文献模板
-    "For perovskite film fabrication, the perovskite precursor was spin-coated on the as-prepared substrates at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite precursor solutions were spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite film was deposited by spin-coating at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite solution was deposited in two steps, first at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "For the perovskite layer, the prepared perovskite solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite film was deposited by spin-coating at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "The perovskite precursor solution was spin-coated at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
-    "For the fabrication of perovskite films, the perovskite solutions were spin-coated onto the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  # 20250424文献模板
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The perovskite precursor was spin-coated onto the substrates with a two-stage program at {spin1_speed} rpm for {spin1_time} s, and {spin2_speed} rpm for {spin2_time} s, respectively.", 
+    "Specifically, the perovskite precursor solution was first spun at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite precursor was spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "For perovskite film fabrication, the perovskite precursor was spin-coated on the as-prepared substrates at {spin1_speed} rpm for {spin1_time} s, subsequently at {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite precursor solutions were spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "Then the filtered perovskite precursor was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite film was deposited by spin-coating with {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite solution was spin-coated in two steps, namely {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite precursor solution was deposited on the substrate via a two-step spin coating process; first, the solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.", 
+    "The precursor solution was spin-coated onto the substrate surface at {spin1_speed} rpm for {spin1_time} s, then accelerated to {spin2_speed} rpm and maintained at this speed for {spin2_time} s.", 
+    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "For the perovskite deposition process, the perovskite films were deposited using a two-step spin-coating process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.", 
+    "The perovskite solution was spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s, respectively.", 
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.", 
+    "The precursor solution was spin-coated in a two-step process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.", 
+    "The perovskite precursor solutions were spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.", 
+    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and then {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite precursor solution was then spin-coated at {spin1_speed} rpm for {spin1_time} s followed by an additional spin at {spin2_speed} rpm for {spin2_time} s.",  
+    "The prepared precursor solution was spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The precursor solution was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and then {spin2_speed} rpm for {spin2_time} s.",  
+    "The precursor solution was deposited on the substrate and spin-coated with a two-step spin-coating procedure: {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite precursor solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite layer was deposited via a two-step spin-coating procedure with {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solution was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "For the perovskite films, the spin-coating process was divided into a consecutive two-step procedure: the spin rate of the first step was {spin1_speed} rpm for {spin1_time} s, and that of the second step was {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite layer was spin-coated with a two-step recipe, first at {spin1_speed} rpm for {spin1_time} s followed by {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solution was deposited on the substrate by two consecutive spin-coating steps of {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s, subsequently at {spin2_speed} rpm for {spin2_time} s.",  
+    "The spin coating procedure was done in ambient air by a consecutive two-step spin-coating process, with the first step at {spin1_speed} rpm for {spin1_time} s and the second step at {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solution was deposited on the substrate and spun cast at {spin1_speed} rpm for {spin1_time} s followed by {spin2_speed} rpm for {spin2_time} s.",  
+    "For the perovskite film fabrication, the substrate was spun at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "Then, the prepared precursor solution was spin-coated onto the ITO substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite film was deposited by spin-coating onto the substrate using a two-step spin-coating process, first at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "The precursor solution was deposited on the substrate and spun cast at {spin1_speed} rpm for {spin1_time} s, followed by {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite was deposited via a two-step spin-coating procedure with {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite precursor solution was then spin-coated onto a substrate at {spin1_speed} rpm for {spin1_time} s followed by an additional spin at {spin2_speed} rpm for {spin2_time} s.",  
+    "Afterwards, the perovskite precursor solution was deposited on the substrate via a two-step spin coating process; first, the solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "The precursor solution was spin-coated onto the substrate surface at {spin1_speed} rpm for {spin1_time} s, then accelerated to {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solutions were spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "For the perovskite deposition process, the perovskite solutions were deposited using a two-step spin-coating process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s (acceleration rate 500 rpm/s) and {spin2_speed} rpm for {spin2_time} s (acceleration rate 1000 rpm/s), respectively.",  
+    "The as-prepared perovskite precursor was spin-coated onto the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The precursor solution was spin-coated in a two-step process at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The perovskite precursor solutions were spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "Specifically, the perovskite precursor solution was first deposited at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The perovskite precursor solution was dripped onto the substrate, and a two-step spin-coating procedure was applied. The first step was carried out at {spin1_speed} rpm, followed by {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite was deposited via a two-step spin-coating procedure, first at {spin1_speed} rpm for {spin1_time} s and finally at {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite precursor was spin-coated onto the substrates with a two-stage program at {spin1_speed} rpm for {spin1_time} s, and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "The precursor solution was spin-coated on the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The prepared precursor solution was spin-coated onto the substrate at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solutions were spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s, respectively.",  
+    "For perovskite film fabrication, the perovskite precursor was spin-coated on the as-prepared substrates at {spin1_speed} rpm for {spin1_time} s and at {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite precursor solutions were spin-coated on the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite film was deposited by spin-coating at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite solution was deposited in two steps, first at {spin1_speed} rpm for {spin1_time} s and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "For the perovskite layer, the prepared perovskite solution was spin-coated at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite film was deposited by spin-coating at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
+    "The perovskite precursor solution was spin-coated at {spin1_speed} rpm for {spin1_time} s, and then at {spin2_speed} rpm for {spin2_time} s.",  
+    "For the fabrication of perovskite films, the perovskite solutions were spin-coated onto the substrates at {spin1_speed} rpm for {spin1_time} s and {spin2_speed} rpm for {spin2_time} s.",  
 ]
 
 # Antisolvent Segments
@@ -615,65 +615,65 @@ antisolvent_segments = [
     "At last {antisolvent_timing} s, the injection of {antisolvent_volume} µL antisolvent aided in reducing defect density within the perovskite layer.",
     "A gentle antisolvent drop of {antisolvent_volume} µL at last {antisolvent_timing} s guided the perovskite crystals into a more ideal arrangement.",
     "The addition of {antisolvent_volume} µL antisolvent at last {antisolvent_timing} s proved instrumental in achieving uniform film thickness and grain distribution.",
-    "During the second step, antisolvent CB ({antisolvent_volume} µL) was dropped at the middle of the spinning substrate {antisolvent_timing} s prior to the end of the spinning.", # 20250411文献模板
-    "During the spin-coating process, {antisolvent_volume} µL of CB was dropped on the perovskite at {antisolvent_timing} s, prior to the end of the second procedure.", # 20250411文献模板
-    "{antisolvent_volume} µL CB was dropped on the perovskite film at {antisolvent_timing} s before the end of the program.", # 20250411文献模板
-    "{antisolvent_volume} µL of CB as antisolvent was dripped onto the substrate quickly at the last {antisolvent_timing} s during the second spinning step.", # 20250411文献模板
-    "At the last {antisolvent_timing} s, {antisolvent_volume} µL of chlorobenzene solution was dropped on the perovskite.", # 20250411文献模板
-    "Then, with {antisolvent_timing} s of spin time remaining, chlorobenzene ({antisolvent_volume} µL) was dispensed onto the middle of the substrate.", # 20250411文献模板
-    "At {antisolvent_timing} s before the end of the spin-coating procedure, {antisolvent_volume} µL CB was dropped onto the substrates.", # 20250411文献模板
-    "During the last {antisolvent_timing} s of the second step, {antisolvent_volume} µL of chlorobenzene (CB) was added as the antisolvent.", # 20250411文献模板
-    "CB ({antisolvent_volume} µL) was dropped on the film at {antisolvent_timing} s before the end of the spinning.", # 20250411文献模板
-    "A total of {antisolvent_volume} µL of CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.", # 20250411文献模板
-    "{antisolvent_volume} µL chlorobenzene as antisolvent was dropped {antisolvent_timing} s before the end of the spin-coating procedure.", # 20250411文献模板
-    "During the last {antisolvent_timing} s of the second step, the anti-solvent ({antisolvent_volume} µL of chlorobenzene) was dropped in the center at a constant rate", # 20250411文献模板
-    "During the second step, {antisolvent_volume} µL of chlorobenzene was dropped on the spinning substrate {antisolvent_timing} s before the end of the process.", # 20250411文献模板
-    "During the second spin coating step, {antisolvent_volume} µL CB was dripped onto the perovskite film at {antisolvent_timing} s before ending the program.", # 20250411文献模板
-    "During the last {antisolvent_timing} s of the second step, the anti-solvent ({antisolvent_volume} µL of CB) was dropped in the center of the substrate.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dripped onto the center of film at {antisolvent_timing} s before the end of the spin-coating procedure.",  # 20250424文献模板
-    "During the second spin coating step, {antisolvent_volume} µL of CB was deposited onto the perovskite film {antisolvent_timing} seconds before the program ended.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB as the antisolvent was dripped on the film at {antisolvent_timing} s before the end of the last procedure.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dropped onto the substrate at the last {antisolvent_timing} s of the spin-coating, resulting in the formation of dark brown films.",  # 20250424文献模板
-    "Then, {antisolvent_volume} µL CB was dropped onto the substrate during the second spin-coating step at the last {antisolvent_timing} s of the spin-coating.",  # 20250424文献模板
-    "During the spin-coating process, {antisolvent_volume} µL of CB as anti-solvent was quickly dropped onto the samples at the last time of {antisolvent_timing} s.",  # 20250424文献模板
-    "{antisolvent_volume} µL of antisolvent was dripped on the spinning substrate at the last {antisolvent_timing} s of the second spin-coating step.",  # 20250424文献模板
-    "{antisolvent_volume} µL chlorobenzene as antisolvent was dropped {antisolvent_timing} s before the end of the spin-coating procedure.",  # 20250424文献模板
-    "During the last {antisolvent_timing} s of the second step, the anti-solvent ({antisolvent_volume} µL of chlorobenzene) was dropped in the center.",  # 20250424文献模板
-    "Anti-solvent ({antisolvent_volume} µL) was dropped on the film at {antisolvent_timing} s before the end of the spinning.",  # 20250424文献模板
-    "At {antisolvent_timing} s before the end of the second step, {antisolvent_volume} µL of CB was drop-coated to treat the perovskite films.",  # 20250424文献模板
-    "At the last {antisolvent_timing} s, {antisolvent_volume} µL of anti-solvent was rapidly dropped on top of the spinning substrate.",  # 20250424文献模板
-    "During the second spin-coating step, {antisolvent_volume} µL of CB was quickly poured onto the substrate at the last {antisolvent_timing}.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  # 20250424文献模板
-    "During the last step, {antisolvent_volume} µL of chlorobenzene was dropped on the film at last {antisolvent_timing} s.",  # 20250424文献模板
-    "In the second step, {antisolvent_volume} µL CB was dropped onto the substrate during the last {antisolvent_timing} s of the spinning.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dropped onto the substrate during the last {antisolvent_timing} s of the spinning, resulting in the formation of dark brown films.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  # 20250424文献模板
-    "During the second spin coating step, {antisolvent_volume} µL of CB was deposited onto the perovskite film {antisolvent_timing} s before the program ended.",  # 20250424文献模板
-    "A total of {antisolvent_volume} µL of CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  # 20250424文献模板
-    "At {antisolvent_timing} s before the end of the spin-coating procedure, {antisolvent_volume} µL CB was dropped onto the substrates.",  # 20250424文献模板
-    "During the last {antisolvent_timing} s of the second step, {antisolvent_volume} µL CB was dropped as antisolvent.",  # 20250424文献模板
-    "At {antisolvent_timing} s before the end of the spinning program, {antisolvent_volume} µL of antisolvent was dripped onto the center of the film during the second step.",  # 20250424文献模板
-    "During the second step, {antisolvent_volume} µL of chlorobenzene was dropped on the spinning substrate {antisolvent_timing} s before the end of the process.",  # 20250424文献模板
-    "{antisolvent_volume} µL of chlorobenzene was quickly poured to extract the mixed solvents at the last of {antisolvent_timing} s.",  # 20250424文献模板
-    "During the second spin coating step, {antisolvent_volume} µL CB was dripped onto the perovskite film at {antisolvent_timing} s before ending the program.",  # 20250424文献模板
-    "During the second step, antisolvent CB ({antisolvent_volume} µL) was dropped at the middle of the spinning substrate {antisolvent_timing} s prior to the end of the spinning.",  # 20250424文献模板
-    "During the spin-coating process, {antisolvent_volume} µL of CB was dropped on the perovskite {antisolvent_timing} s prior to the end of the second procedure.",  # 20250424文献模板
-    "{antisolvent_volume} µL anti-solvent was quickly dripped at the {antisolvent_timing} s before the end of spin coating step.",  # 20250424文献模板
-    "During the second spin coating step, {antisolvent_volume} µL of CB was deposited onto the perovskite film {antisolvent_timing} s before the program ended.",  # 20250424文献模板
-    "During the second step, CB as antisolvent ({antisolvent_volume} µL) was dropped at the middle of the spinning substrate {antisolvent_timing} s prior to the end of the spinning.",  # 20250424文献模板
-    "During the last {antisolvent_timing} s of the second step, {antisolvent_volume} µL CB was dropped as antisolvent.",  # 20250424文献模板
-    "Antisolvent ({antisolvent_volume} µL) was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dropped on the perovskite film at {antisolvent_timing} s before the end of the program.",  # 20250424文献模板
-    "At the last {antisolvent_timing} s, {antisolvent_volume} µL of CB solution was dropped on the perovskite.",  # 20250424文献模板
-    "With {antisolvent_timing} s of spin time remaining, CB ({antisolvent_volume} µL) was dispensed onto the middle of the substrate.",  # 20250424文献模板
-    "When the countdown was {antisolvent_timing} s, {antisolvent_volume} µL CB serving as antisolvent was dropped onto the substrates.",  # 20250424文献模板
-    "{antisolvent_volume} µL CB was dropped {antisolvent_timing} s before the end of the procedure.",  # 20250424文献模板
-    "According to the antisolvent method, {antisolvent_volume} µL of antisolvent was dropped on the film {antisolvent_timing} s before the end of the program.",  # 20250424文献模板
-    "During the spin-coating, {antisolvent_volume} µL CB solution was dripped at {antisolvent_timing} s before the end of the spin-coating process.",  # 20250424文献模板
-    "{antisolvent_volume} µL of antisolvent was dropped on the film {antisolvent_timing} s before the end of the program.",  # 20250424文献模板
-    "CB ({antisolvent_volume} µL) was dropped at the center of the spinning substrate approximately {antisolvent_timing} s before the end of the spin coating procedure.",  # 20250424文献模板
-    "During the spin-coating process, {antisolvent_volume} µL of CB antisolvent was quickly dripped onto the centre of the perovskite film {antisolvent_timing} s before the end of the process.",  # 20250424文献模板
-    "During the second step, {antisolvent_volume} µL of CB as anti-solvent was quickly dripped onto the centre of the perovskite film {antisolvent_timing} s before the end of the spin-coating process.",  # 20250424文献模板
+    "During the second step, antisolvent CB ({antisolvent_volume} µL) was dropped at the middle of the spinning substrate {antisolvent_timing} s prior to the end of the spinning.", 
+    "During the spin-coating process, {antisolvent_volume} µL of CB was dropped on the perovskite at {antisolvent_timing} s, prior to the end of the second procedure.", 
+    "{antisolvent_volume} µL CB was dropped on the perovskite film at {antisolvent_timing} s before the end of the program.", 
+    "{antisolvent_volume} µL of CB as antisolvent was dripped onto the substrate quickly at the last {antisolvent_timing} s during the second spinning step.", 
+    "At the last {antisolvent_timing} s, {antisolvent_volume} µL of chlorobenzene solution was dropped on the perovskite.", 
+    "Then, with {antisolvent_timing} s of spin time remaining, chlorobenzene ({antisolvent_volume} µL) was dispensed onto the middle of the substrate.", 
+    "At {antisolvent_timing} s before the end of the spin-coating procedure, {antisolvent_volume} µL CB was dropped onto the substrates.", 
+    "During the last {antisolvent_timing} s of the second step, {antisolvent_volume} µL of chlorobenzene (CB) was added as the antisolvent.", 
+    "CB ({antisolvent_volume} µL) was dropped on the film at {antisolvent_timing} s before the end of the spinning.", 
+    "A total of {antisolvent_volume} µL of CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.", 
+    "{antisolvent_volume} µL chlorobenzene as antisolvent was dropped {antisolvent_timing} s before the end of the spin-coating procedure.", 
+    "During the last {antisolvent_timing} s of the second step, the anti-solvent ({antisolvent_volume} µL of chlorobenzene) was dropped in the center at a constant rate", 
+    "During the second step, {antisolvent_volume} µL of chlorobenzene was dropped on the spinning substrate {antisolvent_timing} s before the end of the process.", 
+    "During the second spin coating step, {antisolvent_volume} µL CB was dripped onto the perovskite film at {antisolvent_timing} s before ending the program.", 
+    "During the last {antisolvent_timing} s of the second step, the anti-solvent ({antisolvent_volume} µL of CB) was dropped in the center of the substrate.",  
+    "{antisolvent_volume} µL CB was dripped onto the center of film at {antisolvent_timing} s before the end of the spin-coating procedure.",  
+    "During the second spin coating step, {antisolvent_volume} µL of CB was deposited onto the perovskite film {antisolvent_timing} seconds before the program ended.",  
+    "{antisolvent_volume} µL CB as the antisolvent was dripped on the film at {antisolvent_timing} s before the end of the last procedure.",  
+    "{antisolvent_volume} µL CB was dropped onto the substrate at the last {antisolvent_timing} s of the spin-coating, resulting in the formation of dark brown films.",  
+    "Then, {antisolvent_volume} µL CB was dropped onto the substrate during the second spin-coating step at the last {antisolvent_timing} s of the spin-coating.",  
+    "During the spin-coating process, {antisolvent_volume} µL of CB as anti-solvent was quickly dropped onto the samples at the last time of {antisolvent_timing} s.",  
+    "{antisolvent_volume} µL of antisolvent was dripped on the spinning substrate at the last {antisolvent_timing} s of the second spin-coating step.",  
+    "{antisolvent_volume} µL chlorobenzene as antisolvent was dropped {antisolvent_timing} s before the end of the spin-coating procedure.",  
+    "During the last {antisolvent_timing} s of the second step, the anti-solvent ({antisolvent_volume} µL of chlorobenzene) was dropped in the center.",  
+    "Anti-solvent ({antisolvent_volume} µL) was dropped on the film at {antisolvent_timing} s before the end of the spinning.",  
+    "At {antisolvent_timing} s before the end of the second step, {antisolvent_volume} µL of CB was drop-coated to treat the perovskite films.",  
+    "At the last {antisolvent_timing} s, {antisolvent_volume} µL of anti-solvent was rapidly dropped on top of the spinning substrate.",  
+    "During the second spin-coating step, {antisolvent_volume} µL of CB was quickly poured onto the substrate at the last {antisolvent_timing}.",  
+    "{antisolvent_volume} µL CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  
+    "During the last step, {antisolvent_volume} µL of chlorobenzene was dropped on the film at last {antisolvent_timing} s.",  
+    "In the second step, {antisolvent_volume} µL CB was dropped onto the substrate during the last {antisolvent_timing} s of the spinning.",  
+    "{antisolvent_volume} µL CB was dropped onto the substrate during the last {antisolvent_timing} s of the spinning, resulting in the formation of dark brown films.",  
+    "{antisolvent_volume} µL CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  
+    "During the second spin coating step, {antisolvent_volume} µL of CB was deposited onto the perovskite film {antisolvent_timing} s before the program ended.",  
+    "A total of {antisolvent_volume} µL of CB was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  
+    "At {antisolvent_timing} s before the end of the spin-coating procedure, {antisolvent_volume} µL CB was dropped onto the substrates.",  
+    "During the last {antisolvent_timing} s of the second step, {antisolvent_volume} µL CB was dropped as antisolvent.",  
+    "At {antisolvent_timing} s before the end of the spinning program, {antisolvent_volume} µL of antisolvent was dripped onto the center of the film during the second step.",  
+    "During the second step, {antisolvent_volume} µL of chlorobenzene was dropped on the spinning substrate {antisolvent_timing} s before the end of the process.",  
+    "{antisolvent_volume} µL of chlorobenzene was quickly poured to extract the mixed solvents at the last of {antisolvent_timing} s.",  
+    "During the second spin coating step, {antisolvent_volume} µL CB was dripped onto the perovskite film at {antisolvent_timing} s before ending the program.",  
+    "During the second step, antisolvent CB ({antisolvent_volume} µL) was dropped at the middle of the spinning substrate {antisolvent_timing} s prior to the end of the spinning.",  
+    "During the spin-coating process, {antisolvent_volume} µL of CB was dropped on the perovskite {antisolvent_timing} s prior to the end of the second procedure.",  
+    "{antisolvent_volume} µL anti-solvent was quickly dripped at the {antisolvent_timing} s before the end of spin coating step.",  
+    "During the second spin coating step, {antisolvent_volume} µL of CB was deposited onto the perovskite film {antisolvent_timing} s before the program ended.",  
+    "During the second step, CB as antisolvent ({antisolvent_volume} µL) was dropped at the middle of the spinning substrate {antisolvent_timing} s prior to the end of the spinning.",  
+    "During the last {antisolvent_timing} s of the second step, {antisolvent_volume} µL CB was dropped as antisolvent.",  
+    "Antisolvent ({antisolvent_volume} µL) was dripped onto the center of film at {antisolvent_timing} s before the end of spin-coating.",  
+    "{antisolvent_volume} µL CB was dropped on the perovskite film at {antisolvent_timing} s before the end of the program.",  
+    "At the last {antisolvent_timing} s, {antisolvent_volume} µL of CB solution was dropped on the perovskite.",  
+    "With {antisolvent_timing} s of spin time remaining, CB ({antisolvent_volume} µL) was dispensed onto the middle of the substrate.",  
+    "When the countdown was {antisolvent_timing} s, {antisolvent_volume} µL CB serving as antisolvent was dropped onto the substrates.",  
+    "{antisolvent_volume} µL CB was dropped {antisolvent_timing} s before the end of the procedure.",  
+    "According to the antisolvent method, {antisolvent_volume} µL of antisolvent was dropped on the film {antisolvent_timing} s before the end of the program.",  
+    "During the spin-coating, {antisolvent_volume} µL CB solution was dripped at {antisolvent_timing} s before the end of the spin-coating process.",  
+    "{antisolvent_volume} µL of antisolvent was dropped on the film {antisolvent_timing} s before the end of the program.",  
+    "CB ({antisolvent_volume} µL) was dropped at the center of the spinning substrate approximately {antisolvent_timing} s before the end of the spin coating procedure.",  
+    "During the spin-coating process, {antisolvent_volume} µL of CB antisolvent was quickly dripped onto the centre of the perovskite film {antisolvent_timing} s before the end of the process.",  
+    "During the second step, {antisolvent_volume} µL of CB as anti-solvent was quickly dripped onto the centre of the perovskite film {antisolvent_timing} s before the end of the spin-coating process.",  
 ]
 
 # Anneal Segments
@@ -690,55 +690,55 @@ anneal_segments = [
     "By subjecting the film to {anneal_temp} °C for {anneal_time} min, the perovskite lattice attained its ideal orientation.",
     "The perovskite layer was thermally conditioned at {anneal_temp} °C for {anneal_time} min, consolidating its morphology.",
     "The films were then annealed at {anneal_temp} °C for {anneal_time} min.",
-    "The perovskite sample was subsequently annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "The sample was then annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "The substrates were immediately transferred to the hotplate and annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "Afterwards, the perovskite film was annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "Then the film was annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "Heat-treatment was implemented with the substrates for {anneal_time} min at {anneal_temp} °C.", # 20250411文献模板
-    "Then, the film was annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "The as-coated film was then annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "The films were then annealed at {anneal_temp} °C for {anneal_time} min.",# 20250411文献模板
-    "The film was immediately annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "After the spin coating was completed, it was annealed on a hot stage at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "The substrates were sequentially heated at {anneal_temp} °C for {anneal_time} min for perovskite crystal formation.", # 20250411文献模板
-    "The perovskite film was annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "The wet film was annealed at {anneal_temp} °C for {anneal_time} min.", # 20250411文献模板
-    "Then, the precursor films were placed on a {anneal_temp} °C hotplate for {anneal_time} min.",  # 20250424文献模板
-    "The deposited perovskite films were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The resulting wet perovskite films were annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The film was subsequently annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The film was then annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "After spin-coating, the films were annealed on the hot plate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "After the whole spin-coating process, the substrate was annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The samples were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "Subsequently, the samples were annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The perovskite was annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "After the spin coating was completed, it was annealed on a hot stage at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The film was immediately annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The deposited perovskite films were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "Then the films were annealed at {anneal_temp} °C for {anneal_time} min to form the perovskite layer.",  # 20250424文献模板
-    "Then, the as-prepared perovskite films were transferred onto a hotplate and annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The films were dried inside an N2 environment on a hot plate at a temperature of {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "Subsequently, the as-deposited films were annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The films were then dried on a hot plate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "Next, the substrates were quickly transferred for annealing at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The substrate was immediately placed on a hotplate and annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The wet perovskite films were then transferred onto a hot plate and annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The films were then annealed on a hot plate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The deposited perovskite films were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The resulting wet perovskite films were annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The as-coated film was then annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The perovskite film was obtained by annealing at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The substrates were sequentially heated at {anneal_temp} °C for {anneal_time} min for perovskite crystal formation.",  # 20250424文献模板
-    "After the spin coating was completed, it was annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "Subsequently, the sample was annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The resulting wet perovskite films were annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "It was then heated at {anneal_temp} °C for {anneal_time} min, resulting in the formation of the perovskite thin films.",  # 20250424文献模板
-    "The substrates were immediately transferred to the hotplate and annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "The substrate was then transferred to a thermostatic heater and annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
-    "Then the substrate was annealed at {anneal_temp} °C for {anneal_time} min to form the perovskite layer.",  # 20250424文献模板
-    "The resulting perovskite film was then annealed at {anneal_temp} °C for {anneal_time} min.",  # 20250424文献模板
+    "The perovskite sample was subsequently annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "The sample was then annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "The substrates were immediately transferred to the hotplate and annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "Afterwards, the perovskite film was annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "Then the film was annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "Heat-treatment was implemented with the substrates for {anneal_time} min at {anneal_temp} °C.", 
+    "Then, the film was annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "The as-coated film was then annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "The films were then annealed at {anneal_temp} °C for {anneal_time} min.",
+    "The film was immediately annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "After the spin coating was completed, it was annealed on a hot stage at {anneal_temp} °C for {anneal_time} min.", 
+    "The substrates were sequentially heated at {anneal_temp} °C for {anneal_time} min for perovskite crystal formation.", 
+    "The perovskite film was annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "The wet film was annealed at {anneal_temp} °C for {anneal_time} min.", 
+    "Then, the precursor films were placed on a {anneal_temp} °C hotplate for {anneal_time} min.",  
+    "The deposited perovskite films were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  
+    "The resulting wet perovskite films were annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The film was subsequently annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The film was then annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "After spin-coating, the films were annealed on the hot plate at {anneal_temp} °C for {anneal_time} min.",  
+    "After the whole spin-coating process, the substrate was annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The samples were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  
+    "Subsequently, the samples were annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The perovskite was annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "After the spin coating was completed, it was annealed on a hot stage at {anneal_temp} °C for {anneal_time} min.",  
+    "The film was immediately annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The deposited perovskite films were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  
+    "Then the films were annealed at {anneal_temp} °C for {anneal_time} min to form the perovskite layer.",  
+    "Then, the as-prepared perovskite films were transferred onto a hotplate and annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The films were dried inside an N2 environment on a hot plate at a temperature of {anneal_temp} °C for {anneal_time} min.",  
+    "Subsequently, the as-deposited films were annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The films were then dried on a hot plate at {anneal_temp} °C for {anneal_time} min.",  
+    "Next, the substrates were quickly transferred for annealing at {anneal_temp} °C for {anneal_time} min.",  
+    "The substrate was immediately placed on a hotplate and annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The wet perovskite films were then transferred onto a hot plate and annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The films were then annealed on a hot plate at {anneal_temp} °C for {anneal_time} min.",  
+    "The deposited perovskite films were subsequently annealed on a hotplate at {anneal_temp} °C for {anneal_time} min.",  
+    "The resulting wet perovskite films were annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The as-coated film was then annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The perovskite film was obtained by annealing at {anneal_temp} °C for {anneal_time} min.",  
+    "The substrates were sequentially heated at {anneal_temp} °C for {anneal_time} min for perovskite crystal formation.",  
+    "After the spin coating was completed, it was annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "Subsequently, the sample was annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The resulting wet perovskite films were annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "It was then heated at {anneal_temp} °C for {anneal_time} min, resulting in the formation of the perovskite thin films.",  
+    "The substrates were immediately transferred to the hotplate and annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "The substrate was then transferred to a thermostatic heater and annealed at {anneal_temp} °C for {anneal_time} min.",  
+    "Then the substrate was annealed at {anneal_temp} °C for {anneal_time} min to form the perovskite layer.",  
+    "The resulting perovskite film was then annealed at {anneal_temp} °C for {anneal_time} min.",  
 ]
 
 passivation_spin_segments = [
@@ -757,42 +757,42 @@ passivation_spin_segments = [
     "Spin-coating was executed at {spin_speed_passivator} rpm for {spin_time_passivator} s to apply the passivation layer.",
     "For the passivation layer, spin-coating parameters were {spin_speed_passivator} rpm and {spin_time_passivator} s.",
     "The passivation layer was deposited via spin-coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.",
-    "The spin coating was performed at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "For the surface treatment of perovskite films, the passivators were spin-coated on the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "Then passivators were spin-coated onto the as-prepared perovskite films at a speed of {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "For passivator treatment, the passivators were spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "Then it was spin-coated on the cooled perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "For the surface passivation, passivators were spin-coated on perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "Then, the passivation solution was spin-coated on top of the as-prepared perovskite at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "After cooling to room temperature, passivators were deposited by spin-coating with {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "For the passivation treatment, passivators were spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "Afterwards, passivators were deposited on the perovskite film by spin-coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "Subsequently, the passivation solution was dropped on the annealed perovskite films during a spin-coating procedure at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "The passivation mixed solution was spin-coated on the perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "It was spin-coated on top of perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "It was then spin-coated on the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "It was deposited on the surface of the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "A passivation solution was deposited on the perovskite layer by spin coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "The passivation solution was dynamically spin-coated on the annealed perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", # 20250411文献模板
-    "The solution was spin-coated onto the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The solution was spin-coated onto the perovskite films at a speed of {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The surface treatment was finished by depositing passivation solution onto the perovskite film surface at a spin rate of {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "Then the passivation solution was spin-coated on the inorganic perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "Afterwards, the passivation solution was deposited on the perovskite film by spin-coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The passivation solution was deposited on the perovskite layer by spin coating at {spin_speed_passivator} rpm for {spin_time_passivator} s without further annealing.",  # 20250424文献模板
-    "For the surface treatment of perovskite films, the passivation solution was spin-coated on the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "Then the passivation solution was spin-coated onto the as-prepared perovskite films at a speed of {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "And then it was spin-coated on the cooled perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The passivation solution was spin-coated at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "For surface treatment, the passivation solution was spin-coated onto perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "Afterward, the obtained saturated solution, used as the passivating layer, was spin-coated on the film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "Next, the passivation solution was dynamically spin-coated onto the as-formed perovskite at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The passivation solution was spin-coated at {spin_speed_passivator} rpm for {spin_time_passivator} s on top of the perovskite film to form a passivation layer.",  # 20250424文献模板
-    "For the surface passivation, the passivation solution was spin-coated on perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "For the passivation treatment, the passivation solution was spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The passivation solution was spin-coated at {spin_speed_passivator} rpm for {spin_time_passivator} s onto the perovskite film.",  # 20250424文献模板
-    "Then, the surface treatment solution was spin-coated on the film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
-    "The passivation layers were sequentially spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  # 20250424文献模板
+    "The spin coating was performed at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "For the surface treatment of perovskite films, the passivators were spin-coated on the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "Then passivators were spin-coated onto the as-prepared perovskite films at a speed of {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "For passivator treatment, the passivators were spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "Then it was spin-coated on the cooled perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "For the surface passivation, passivators were spin-coated on perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "Then, the passivation solution was spin-coated on top of the as-prepared perovskite at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "After cooling to room temperature, passivators were deposited by spin-coating with {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "For the passivation treatment, passivators were spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "Afterwards, passivators were deposited on the perovskite film by spin-coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "Subsequently, the passivation solution was dropped on the annealed perovskite films during a spin-coating procedure at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "The passivation mixed solution was spin-coated on the perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "It was spin-coated on top of perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "It was then spin-coated on the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "It was deposited on the surface of the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "A passivation solution was deposited on the perovskite layer by spin coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "The passivation solution was dynamically spin-coated on the annealed perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.", 
+    "The solution was spin-coated onto the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The solution was spin-coated onto the perovskite films at a speed of {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The surface treatment was finished by depositing passivation solution onto the perovskite film surface at a spin rate of {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "Then the passivation solution was spin-coated on the inorganic perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "Afterwards, the passivation solution was deposited on the perovskite film by spin-coating at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The passivation solution was deposited on the perovskite layer by spin coating at {spin_speed_passivator} rpm for {spin_time_passivator} s without further annealing.",  
+    "For the surface treatment of perovskite films, the passivation solution was spin-coated on the perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "Then the passivation solution was spin-coated onto the as-prepared perovskite films at a speed of {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "And then it was spin-coated on the cooled perovskite films at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The passivation solution was spin-coated at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "For surface treatment, the passivation solution was spin-coated onto perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "Afterward, the obtained saturated solution, used as the passivating layer, was spin-coated on the film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "Next, the passivation solution was dynamically spin-coated onto the as-formed perovskite at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The passivation solution was spin-coated at {spin_speed_passivator} rpm for {spin_time_passivator} s on top of the perovskite film to form a passivation layer.",  
+    "For the surface passivation, the passivation solution was spin-coated on perovskite film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "For the passivation treatment, the passivation solution was spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The passivation solution was spin-coated at {spin_speed_passivator} rpm for {spin_time_passivator} s onto the perovskite film.",  
+    "Then, the surface treatment solution was spin-coated on the film at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
+    "The passivation layers were sequentially spin-coated on the perovskite surface at {spin_speed_passivator} rpm for {spin_time_passivator} s.",  
 ]
 
 passivation_drop_segments = [
@@ -810,7 +810,7 @@ passivation_drop_segments = [
     "At {passivator_timing} s, a drop of {passivator_volume} µL of passivator was introduced during spin-coating.",
     "The spin-coating process included the addition of {passivator_volume} µL of passivator at {passivator_timing} s.",
     "To improve passivation, {passivator_volume} µL of passivator was dropped at {passivator_timing} s during spin-coating.",
-    "During spin-coating, {passivator_volume} µL of passivator was drop-casted onto the sample at {passivator_timing} s.", # 20250411文献模板
+    "During spin-coating, {passivator_volume} µL of passivator was drop-casted onto the sample at {passivator_timing} s.", 
 
 ]
 
@@ -830,24 +830,24 @@ passivation_anneal_segments = [
     "To ensure optimal passivation, the layer was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",
     "The final step involved annealing the passivation layer at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",
     "To consolidate the passivation layer, annealing was performed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",
-    "Thermal treatment involved annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min to facilitate crystallization.", # 20250411文献模板
-    "The film was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "The films were subsequently dried at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "And followed by annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "Then annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "And then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "And then transferred to the hotplate and annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "And heated at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "Subsequently, the sample was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "Followed by annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "Then, it was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "Subsequently, the film was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", # 20250411文献模板
-    "It was then annealed on a hotplate at {anneal_temp_passivator} °C for {anneal_time_passivator} min to form the perovskite film.",  # 20250424文献模板
-    "Passivator solution was spin-coated and annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",  # 20250424文献模板
-    "Then, it was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",  # 20250424文献模板
-    "It was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min to remove the solvent residual.",  # 20250424文献模板
-    "Thermal treatment involved annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min to facilitate crystallization.",  # 20250424文献模板
-    "It was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min as a post-treatment for PSCs.",  # 20250424文献模板
+    "Thermal treatment involved annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min to facilitate crystallization.", 
+    "The film was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "The films were subsequently dried at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "And followed by annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "Then annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "And then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "And then transferred to the hotplate and annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "And heated at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "Subsequently, the sample was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "Followed by annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "Then, it was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "Subsequently, the film was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.", 
+    "It was then annealed on a hotplate at {anneal_temp_passivator} °C for {anneal_time_passivator} min to form the perovskite film.",  
+    "Passivator solution was spin-coated and annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",  
+    "Then, it was annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",  
+    "It was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min to remove the solvent residual.",  
+    "Thermal treatment involved annealing at {anneal_temp_passivator} °C for {anneal_time_passivator} min to facilitate crystallization.",  
+    "It was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min as a post-treatment for PSCs.",  
 
 ]
 

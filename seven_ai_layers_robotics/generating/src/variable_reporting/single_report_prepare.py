@@ -42,7 +42,7 @@ from seven_ai_layers_robotics.config import config
 
 
 # ============================================================================
-# 📦 Configuration Class (supports dict/JSON/default values)
+# Configuration Class (supports dict/JSON/default values)
 # ============================================================================
 
 @dataclass
@@ -247,7 +247,7 @@ def _pure_id(s: str) -> str:
 
 
 # ============================================================================
-# 🧠 Core Analyzer Class (external invocation entry point)
+# Core Analyzer Class (external invocation entry point)
 # ============================================================================
 
 class PerovskiteAnalyzer:
@@ -595,7 +595,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
                     f.write(content)
                 count += 1
 
-            print(f"\n✅ Rebuilt {count} markdown files into '{output_root}'")
+            print(f"\nRebuilt {count} markdown files into '{output_root}'")
             cursor.close()
             conn.close()
 
@@ -625,7 +625,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             return {"success": False, "reason": "no_pending_tasks"}
 
         all_ids = [t["record_id"] for t in tasks]
-        success_ids = await self.inference(tasks)  # ✅ Direct await
+        success_ids = await self.inference(tasks) 
 
         self.update_status(success_ids, status=1)
         failed_ids = [rid for rid in all_ids if rid not in success_ids]
@@ -693,7 +693,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         }
 
 # ============================================================================
-# 🚀 Command-line entry point (optional)
+#  Command-line entry point (optional)
 # ============================================================================
 
 def _parse_args():
@@ -708,7 +708,7 @@ def _parse_args():
 def main():
     """Simple and direct entry point - no parameters required"""
     print("=" * 60)
-    print("🔬 Perovskite Mechanism Analyzer")
+    print("Perovskite Mechanism Analyzer")
     print("=" * 60)
 
     # Direct instantiation and run
@@ -717,8 +717,8 @@ def main():
     # Execute full pipeline (rebuild knowledge base by default)
     result = analyzer.run(rebuild_knowledge=True)
 
-    print(f"\n✅ Pipeline completed!")
-    print(f"📊 Results:")
+    print(f"\nPipeline completed!")
+    print(f"Results:")
     print(f"   - Total tasks: {result.get('total_tasks', 0)}")
     print(f"   - Success: {result.get('success_count', 0)}")
     print(f"   - Failed: {result.get('failed_count', 0)}")

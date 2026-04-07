@@ -109,15 +109,15 @@ class VariableReportPipeline:
             # Step 1: Data preparation (mechanism analysis)
             if steps in ['all', 'prepare']:
                 print(f"\n{'='*60}")
-                print("📝 Starting data preparation (mechanism analysis)...")
+                print("Starting data preparation (mechanism analysis)...")
                 print(f"{'='*60}")
 
                 analyzer = PerovskiteAnalyzer()
                 result = analyzer.run(rebuild_knowledge=rebuild_knowledge)
 
                 if verbose:
-                    print(f"\n✅ Data preparation completed!")
-                    print(f"📊 Statistics:")
+                    print(f"\nData preparation completed!")
+                    print(f"Statistics:")
                     print(f"   - Total tasks: {result.get('total_tasks', 0)}")
                     print(f"   - Success count: {result.get('success_count', 0)}")
                     print(f"   - Failed count: {result.get('failed_count', 0)}")
@@ -125,21 +125,21 @@ class VariableReportPipeline:
                     print(f"   - Dataset path: {result.get('dataset_path', 'N/A')}")
 
                 if result.get('success') is False:
-                    print(f"\n⚠️ Data preparation stage failed: {result.get('reason', 'Unknown reason')}")
+                    print(f"\nData preparation stage failed: {result.get('reason', 'Unknown reason')}")
                     return False
 
             # Step 2: Report generation
             if steps in ['all', 'report']:
                 print(f"\n{'='*60}")
-                print("📝 Starting Variable report generation...")
+                print("Starting Variable report generation...")
                 print(f"{'='*60}")
 
                 generator = ReportGenerator()
                 stats = generator.run()
 
                 if verbose:
-                    print(f"\n✅ Report generation completed!")
-                    print(f"📊 Statistics:")
+                    print(f"\nReport generation completed!")
+                    print(f"Statistics:")
                     print(f"   - Total tasks: {stats.get('total', 0)}")
                     print(f"   - Matched: {stats.get('matched', 0)}")
                     print(f"   - Missing data: {stats.get('missing', 0)}")
@@ -149,7 +149,7 @@ class VariableReportPipeline:
             return True
 
         except Exception as e:
-            print(f"🛑 Process interrupted: {e}")
+            print(f"Process interrupted: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -161,7 +161,7 @@ class VariableReportPipeline:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("📊 Variable Report Pipeline")
+    print("Variable Report Pipeline")
     print("=" * 60)
 
     # Direct execution, no parameters required
@@ -169,8 +169,8 @@ if __name__ == "__main__":
     success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
 
     if not success:
-        print("\n❌ Pipeline failed!")
+        print("\nPipeline failed!")
         sys.exit(1)
     else:
-        print("\n✅ All tasks completed!")
+        print("\nAll tasks completed!")
         

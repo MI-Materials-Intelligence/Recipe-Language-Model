@@ -49,9 +49,9 @@ try:
     try:
         import edge_report_generator
         STEP_MODULES['step2'] = edge_report_generator
-        # print(f"✅ edge_report_generator imported successfully")
+        # print(f"edge_report_generator imported successfully")
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import edge_report_generator module. Error: {e}")
+        print(f"Warning: Unable to import edge_report_generator module. Error: {e}")
         import traceback
         traceback.print_exc()
 
@@ -60,7 +60,7 @@ try:
         import edge_mechanism_analyzer
         STEP_MODULES['step3'] = edge_mechanism_analyzer
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
+        print(f"Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
         import traceback
         traceback.print_exc()
 
@@ -68,7 +68,7 @@ try:
 
 except Exception as e:
     ARE_MODULES_AVAILABLE = False
-    print(f"⚠️ Warning: Unable to load step modules, some functionality will be unavailable. Error: {e}")
+    print(f"Warning: Unable to load step modules, some functionality will be unavailable. Error: {e}")
     import traceback
     traceback.print_exc()
 
@@ -156,7 +156,7 @@ class EdgeReportPipeline:
             raise ImportError("edge_report_generator module not found")
 
         if verbose:
-            print("📄 Step 2: Generating experimental description report")
+            print("Step 2: Generating experimental description report")
 
         s2 = STEP_MODULES['step2']
         s2.ensure_single_report_unique_index()
@@ -184,7 +184,7 @@ class EdgeReportPipeline:
             raise ImportError("edge_mechanism_analyzer module not found")
 
         if verbose:
-            print("🧠 Step 3: Calling DeepSeek to generate mechanism analysis")
+            print("Step 3: Calling DeepSeek to generate mechanism analysis")
 
         s3 = STEP_MODULES['step3']
         s3.main()
@@ -216,14 +216,14 @@ class EdgeReportPipeline:
                 elif step_name == 'step3':
                     self.run_step3(verbose=verbose)
                 else:
-                    print(f"⚠️ Skipping unknown step: {step_name}")
+                    print(f"Skipping unknown step: {step_name}")
 
             if verbose:
-                print("\n🎉 Entire process completed!")
+                print("\nEntire process completed!")
             return True
 
         except Exception as e:
-            print(f"🛑 Process interrupted: {e}")
+            print(f"Process interrupted: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -235,13 +235,13 @@ class EdgeReportPipeline:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("📊 Edge Report Automated Data Processing Pipeline")
+    print("Edge Report Automated Data Processing Pipeline")
     print("=" * 60)
-    print(f"📁 Working Directory: {WORK_DIR}")
-    print(f"🗄️  Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
-    print(f"📂 Data Output Directory: {DATA_DIR}")
+    print(f"Working Directory: {WORK_DIR}")
+    print(f"Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+    print(f"Data Output Directory: {DATA_DIR}")
     print("=" * 60)
-    print(f"📋 Available Step Modules: {list(STEP_MODULES.keys())}")
+    print(f"Available Step Modules: {list(STEP_MODULES.keys())}")
     print("=" * 60)
 
     # Initialize and execute
@@ -249,8 +249,8 @@ if __name__ == "__main__":
     success = pipeline.run(steps='all', verbose=True)
 
     if not success:
-        print("\n❌ Process execution failed, please check logs.")
+        print("\nProcess execution failed, please check logs.")
         sys.exit(1)
     else:
-        print("\n✅ All tasks completed!")
+        print("\nAll tasks completed!")
         
