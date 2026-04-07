@@ -9,36 +9,41 @@ In the optimization layer, the RLM to be optimised and preference pairs of posit
 
 ```
 Optimization/
-└── src/optimization_api/
-    ├── app/
-    │   ├── api/
-    │   │   └── endpoints.py
-    │   ├── models/
-    │   │   └── schemas.py
-    │   ├── services/
-    │   │   ├── auto_running.py
-    │   │   ├── config_template.py
-    │   │   └── prepare_training.py
-    │   ├── config.py
-    │   ├── main.py
-    │   └── utils.py
-    ├── examples/
-    │   ├── check_inference.py
-    │   ├── check_training.py
-    │   ├── prepare_training.py
-    │   ├── run_inference.py
-    │   ├── run_training.py
-    │   ├── test_config_example.yaml
-    │   ├── test_tmux.py
-    │   └── train_config_example.yaml
-    ├── train_meta_info/
-    │   ├── api_test.json
-    │   ├── api_test_new.json
-    │   ├── inference.yaml
-    │   └── qwena30_lora_dpo.yaml
-    ├── README.md
-    ├── example_config.yml
-    └── requirements.txt
+└── src/
+    ├── prepare_training.py
+    ├── run_training.py
+    └── optimization_api/
+        ├── app/
+        │   ├── __init__.py
+        │   ├── api/
+        │   │   └── endpoints.py
+        │   ├── models/
+        │   │   └── schemas.py
+        │   ├── services/
+        │   │   ├── __init__.py
+        │   │   ├── auto_running.py
+        │   │   ├── config_template.py
+        │   │   └── prepare_training.py
+        │   ├── config.py
+        │   ├── main.py
+        │   └── utils.py
+        ├── examples/
+        │   ├── check_inference.py
+        │   ├── check_training.py
+        │   ├── prepare_training.py
+        │   ├── run_inference.py
+        │   ├── run_training.py
+        │   ├── test_config_example.yaml
+        │   ├── test_tmux.py
+        │   └── train_config_example.yaml
+        ├── train_meta_info/
+        │   ├── api_test.json
+        │   ├── api_test_new.json
+        │   ├── inference.yaml
+        │   └── qwena30_lora_dpo.yaml
+        ├── README.md
+        ├── example_config.yml
+        └── requirements.txt
 ```
 
 ## Input Demo
@@ -56,25 +61,37 @@ Optimization/
 
 ## Basic Usage
 
-1. **Initialize Database**  
-   Run the SQL script to create tables:
-   ```bash
-   mysql -u <user> -p <database> < schema.sql
-   ```
+> **Note**: If the database has been initialized or the environment configured by other layers, skip the corresponding steps.
 
-2. **Configure Settings**  
-   Edit `config.toml` with your database and path details.
-
-3. **Run Program**  
+1. **Environment Setup**  
+   Create and activate virtual environment:
    ```bash
+   conda create -n rlm python=3.9 -y
    conda activate rlm
-   python main.py
+   pip install -r requirements.txt
    ```
 
+2. **Initialize Database**  
+   Run SQL script to create tables (skip if already executed by other layers).
+   ```bash
+   cd seven_ai_layers_robotics && mysql -u <user> -p <database> < schema.sql
+   ```
+
+3. **Configure Settings**  
+   Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
+
+4. **Deploy Service**  
+   Deploy the optimization_api service on the server first (refer to `src/optimization_api/README.md` for details).
+
+5. **Run Training**  
+   ```bash
+   cd seven_ai_layers_robotics/optimization/src/
+   python prepare_training.py     # Prepare training data
+   python run_training.py        # Run DPO training
+   ```
 
 ### Key Modules for Executing Task
 
-- **app/api/endpoints.py**: API endpoint definitions
-- **app/services/prepare_training.py**: DPO training data preparation
-- **app/services/auto_running.py**: Automated running services
-- **examples/**: Usage examples and test scripts
+- **prepare_training.py**: Prepare DPO training data
+- **run_training.py**: Execute DPO training
+- **optimization_api/**: DPO optimization API service

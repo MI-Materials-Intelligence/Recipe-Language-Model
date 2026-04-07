@@ -106,7 +106,7 @@ def start_and_wait_finetune(max_wait_minutes=60, check_interval=20):
     #         except KeyboardInterrupt:
     #             print("\n🛑 User interrupted.")
     #             return
-    #         start_time = time.time()  # 重置计时
+    #         start_time = time.time() 
 
     #     time.sleep(check_interval)
 

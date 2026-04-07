@@ -13,14 +13,14 @@ Key Atomic skills:
 ```
 RecipeQA/
 ├── data/
-│  
+│   
 └── src/
     ├── distillation/                   # Knowledge distillation module
     │   └── optimized.py                # Optimized corpus generation
     ├── report_to_qa/                   # Report to Q&A module
     │   └── single_v2_db.py             # Single-variable corpus generation v2
-    ├── corpus_coordinator.py           # Corpus coordinator (main entry)
-    └── __init__.py
+    ├── __init__.py
+    └── CorpusGenerator.py              # Corpus coordinator (main entry)
 ```
 
 ## Input Demo
@@ -68,24 +68,33 @@ RecipeQA/
 
 ## Basic Usage
 
-1. **Initialize Database**  
-   Run the SQL script to create tables:
+> **Note**: If the database has been initialized or the environment configured by other layers, skip the corresponding steps.
+
+1. **Environment Setup**  
+   Create and activate virtual environment:
    ```bash
-   mysql -u <user> -p <database> < schema.sql
+   conda create -n rlm python=3.9 -y
+   conda activate rlm
+   pip install -r requirements.txt
    ```
 
-2. **Configure Settings**  
-   Edit `config.toml` with your database and path details.
-
-3. **Run Program**  
+2. **Initialize Database**  
+   Run SQL script to create tables (skip if already executed by other layers). The input data (generated reports) is produced by the Generating layer.
    ```bash
-   conda activate rlm
-   python main.py
+   cd seven_ai_layers_robotics && mysql -u <user> -p <database> < schema.sql
+   ```
+
+3. **Configure Settings**  
+   Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
+
+4. **Run Program**  
+   ```bash
+   python main.py recipeqa
    ```
 
 ### Key Modules for Executing Task
 
-- **corpus_coordinator.py**: Unified corpus generation coordinator
+- **CorpusGenerator.py**: Unified corpus generation coordinator
 - **distillation/optimized.py**: Optimized recipe corpus generation
 - **report_to_qa/single_v2_db.py**: Single-variable corpus generation
 

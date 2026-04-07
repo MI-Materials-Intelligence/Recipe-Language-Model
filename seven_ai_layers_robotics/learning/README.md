@@ -16,17 +16,18 @@ Learning/
 ├── data/
 │   
 └── src/
-    ├── cleaning/                       # Data cleaning module
+    ├── cleaning/                       
     │   ├── __init__.py
     │   ├── preprocess.py               
     │   ├── remove_abnormal.py         
     │   └── utils.py                   
-    ├── extraction/                     # Data extraction module
+    ├── extraction/                     
     │   ├── __init__.py
     │   ├── data_extractor.py          
     │   └── edge_report_extractor.py    
-    ├── matching/                       # Data matching module
+    ├── matching/                       
     │   ├── __init__.py
+    │   ├── templates_lib
     │   ├── additive_xrd.py             
     │   ├── generating_single_var.py    
     │   ├── get_single_var_diff_class.py 
@@ -38,9 +39,9 @@ Learning/
     │   ├── characterisation_pl_sam.py                  
     │   └── single_var_matching_pipeline.py 
     ├── __init__.py
-    ├── characterisation_reporting_match.py    # Characterization report matching
-    ├── edge_reporting_match.py                # Edge report matching
-    └── variable_reporting_match.py            # Variable report matching
+    ├── characterisation_reporting_match.py    
+    ├── edge_reporting_match.py                
+    └── variable_reporting_match.py            
 ```
 
 ## Input Demo
@@ -112,21 +113,31 @@ Learning/
 
 ## Basic Usage
 
-1. **Initialize Database**  
-   Run the SQL script to create tables:
-   ```bash
-   mysql -u <user> -p <database> < schema.sql
-   ```
+> **Note**: If the database has been initialized or the environment configured by other layers, skip the corresponding steps.
 
-2. **Configure Settings**  
-   Edit `config.toml` with your database and path details.
-
-3. **Run Program**  
+1. **Environment Setup**  
+   Create and activate virtual environment:
    ```bash
+   conda create -n rlm python=3.9 -y
    conda activate rlm
-   python main.py
+   pip install -r requirements.txt
    ```
 
+2. **Initialize Database**  
+   Run SQL script to create tables (skip if already executed by other layers). Database already contains required initial data.
+   ```bash
+   cd seven_ai_layers_robotics && mysql -u <user> -p <database> < schema.sql
+   ```
+
+3. **Configure Settings**  
+   Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
+
+4. **Run Program**  
+   ```bash
+   python main.py learning --pipeline variable      # Variable data pipeline
+   python main.py learning --pipeline edge         # Edge report pipeline
+   python main.py learning --pipeline characterization  # Characterization pipeline
+   ```
 
 ### Key Modules for Executing Task
 

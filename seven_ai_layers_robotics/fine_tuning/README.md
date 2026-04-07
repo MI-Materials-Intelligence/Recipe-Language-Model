@@ -51,23 +51,37 @@ Fine_Tuning/
 
 ## Basic Usage
 
-1. **Initialize Database**  
-   Run the SQL script to create tables:
+> **Note**: If the database has been initialized or the environment configured by other layers, skip the corresponding steps.
+
+1. **Environment Setup**  
+   Create and activate virtual environment:
    ```bash
-   mysql -u <user> -p <database> < schema.sql
+   conda create -n rlm python=3.9 -y
+   conda activate rlm
+   pip install -r requirements.txt
    ```
 
-2. **Configure Settings**  
-   Edit `config.toml` with your database and path details.
-
-3. **Run Program**  
+2. **Initialize Database**  
+   Run SQL script to create tables (skip if already executed by other layers).
    ```bash
-   conda activate rlm
-   python main.py
+   cd seven_ai_layers_robotics && mysql -u <user> -p <database> < schema.sql
+   ```
+
+3. **Configure Settings**  
+   Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
+
+4. **Deploy Service**  
+   Deploy the llama-api-main service on the server first (refer to `llama-api-main/README.md` for details).
+
+5. **Run Training**  
+   ```bash
+   cd seven_ai_layers_robotics/fine_tuning/src/
+   python prepare_training.py     # Prepare training data
+   python run_training.py        # Run training
    ```
 
 ### Key Modules for Executing Task
 
-- **llama-api-main/app/api/endpoints.py**: API endpoint definitions
-- **llama-api-main/app/services/**: Training preparation and automation services
-- **test_fine_tuning.py**: End-to-end test script
+- **prepare_training.py**: Prepare training data
+- **run_training.py**: Execute training
+- **llama-api-main/**: LoRA fine-tuning API service

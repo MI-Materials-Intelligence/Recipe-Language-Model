@@ -14,8 +14,7 @@ Reasoning/
     ├── __init__.py
     ├── perovskite_report_generator.py    # Perovskite report generator
     ├── prompts.py                        # Prompt template library
-    ├── totext_db.py                      # Database text conversion tool
-    └── __init__.py
+    └── totext_db.py                      # Database text conversion tool
 ```
 
 ## Input Demo
@@ -53,23 +52,32 @@ Reasoning/
 
 ## Basic Usage
 
-1. **Initialize Database**  
-   Run the SQL script to create tables:
+> **Note**: If the database has been initialized or the environment configured by other layers, skip the corresponding steps.
+
+1. **Environment Setup**  
+   Create and activate virtual environment:
    ```bash
-   mysql -u <user> -p <database> < schema.sql
+   conda create -n rlm python=3.9 -y
+   conda activate rlm
+   pip install -r requirements.txt
    ```
 
-2. **Configure Settings**  
-   Edit `config.toml` with your database and path details.
-
-3. **Run Program**  
+2. **Initialize Database**  
+   Run SQL script to create tables (skip if already executed by other layers). Database already contains initial data in `experiments_data_daily` table.
    ```bash
-   conda activate rlm
-   python main.py
+   cd seven_ai_layers_robotics && mysql -u <user> -p <database> < schema.sql
+   ```
+
+3. **Configure Settings**  
+   Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
+
+4. **Run Program**  
+   ```bash
+   python main.py reasoning --total-runs 15 --max-workers 10
    ```
 
 ### Key Modules for Executing Task
 
 - **perovskite_report_generator.py**: Report generation for recommended recipes.
-- **prompts.py**: Prompt template management for report generation. 
+- **prompts.py**: Prompt template management for report generation.
 - **totext_db.py**: Natural-language conversion for database records.
