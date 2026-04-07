@@ -32,7 +32,7 @@ try:
         'charset': config.learning_database.charset,
     }
 except Exception as e:
-    print(f"⚠️ WARNING: Failed to load config, using empty database configuration. Error: {e}")
+    print(f"WARNING: Failed to load config, using empty database configuration. Error: {e}")
     DB_CONFIG = {
         'host': '',
         'port': 3306,
@@ -53,17 +53,17 @@ try:
     PIPELINE_AVAILABLE = True
 except ImportError as e:
     PIPELINE_AVAILABLE = False
-    print(f"⚠️ WARNING: Unable to import single_var_matching_pipeline, matching functionality will be unavailable. Error: {e}")
+    print(f"WARNING: Unable to import single_var_matching_pipeline, matching functionality will be unavailable. Error: {e}")
 except Exception as e:
     PIPELINE_AVAILABLE = False
-    print(f"⚠️ WARNING: Unable to load single_var_matching_pipeline, matching functionality will be unavailable. Error: {e}")
+    print(f"WARNING: Unable to load single_var_matching_pipeline, matching functionality will be unavailable. Error: {e}")
 
 try:
     from .extraction.data_extractor import DataExtractor
     EXTRACTOR_AVAILABLE = True
 except ImportError as e:
     EXTRACTOR_AVAILABLE = False
-    print(f"⚠️ WARNING: Unable to import DataExtractor, data extraction functionality will be unavailable. Error: {e}")
+    print(f"WARNING: Unable to import DataExtractor, data extraction functionality will be unavailable. Error: {e}")
 
 
 # ==============================
@@ -123,7 +123,7 @@ class RoboticDataPipeline:
             single_var_matching_pipeline(self.data_dir, xlsx_filename)
             return True
         except Exception as e:
-            print(f"❌ Pipeline execution failed: {e}")
+            print(f"Pipeline execution failed: {e}")
             return False
 
     # ==============================
@@ -228,7 +228,7 @@ class RoboticDataPipeline:
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
         except Exception as e:
-            print(f"❌ JSON parsing failed: {file_path} - {e}")
+            print(f"JSON parsing failed: {file_path} - {e}")
             return
         
         # Check if this is the new format (list of matched pairs)
@@ -285,7 +285,7 @@ class RoboticDataPipeline:
 
             print(f"📂 Starting to scan directory: {json_folder_path}")
             if not os.path.exists(json_folder_path):
-                print(f"⚠️ Directory does not exist: {json_folder_path}")
+                print(f"Directory does not exist: {json_folder_path}")
                 return stats
 
             for root, _, files in os.walk(json_folder_path):
@@ -298,9 +298,9 @@ class RoboticDataPipeline:
 
             conn.commit()
             print("\n" + "="*50)
-            print(f"✅ Scanning completed: {total_files} JSON files")
-            print(f"📊 Actually inserted new records: {stats['inserted']}")
-            print(f"⏭️  Skipped duplicate records: {stats['skipped']}")
+            print(f"Scanning completed: {total_files} JSON files")
+            print(f"Actually inserted new records: {stats['inserted']}")
+            print(f"⏭Skipped duplicate records: {stats['skipped']}")
             print("="*50)
 
             if do_cleanup:
@@ -309,11 +309,11 @@ class RoboticDataPipeline:
             return stats
 
         except Error as e:
-            print(f"❌ Database error: {e}")
+            print(f"Database error: {e}")
             if conn: conn.rollback()
             raise e
         except Exception as e:
-            print(f"💥 Other error: {e}")
+            print(f"Other error: {e}")
             if conn: conn.rollback()
             raise e
         finally:
@@ -333,10 +333,10 @@ class RoboticDataPipeline:
             try:
                 shutil.rmtree(fp_dir)
                 shutil.rmtree(fp_dir2)
-                deleted.append(f"📁 Deleted directory: {fp_dir}")
-                deleted.append(f"📁 Deleted directory: {fp_dir2}")
+                deleted.append(f"Deleted directory: {fp_dir}")
+                deleted.append(f"Deleted directory: {fp_dir2}")
             except Exception as e:
-                print(f"⚠️ Unable to delete directory: {e}")
+                print(f"Unable to delete directory: {e}")
 
         # Delete intermediate CSV files under data directory
         intermediate_csvs = [
@@ -352,19 +352,19 @@ class RoboticDataPipeline:
             if os.path.exists(csv_path):
                 try:
                     os.remove(csv_path)
-                    deleted.append(f"🗑️  Deleted file: {csv_path}")
+                    deleted.append(f"Deleted file: {csv_path}")
                 except Exception as e:
-                    print(f"⚠️ Unable to delete {csv_file}: {e}")
+                    print(f"Unable to delete {csv_file}: {e}")
 
         # Delete generated Excel files (if needed)
         # Note: Input xlsx files are not deleted here, only intermediate process files
 
         if deleted:
-            print("\n🧹 Cleanup completed:")
+            print("\nCleanup completed:")
             for msg in deleted:
                 print(f"  {msg}")
         else:
-            print("ℹ️ No intermediate files to clean up.")
+            print("No intermediate files to clean up.")
 
     def run_full_process(
         self, table_name: str, output_xlsx_name: Optional[str] = None
@@ -399,7 +399,7 @@ class RoboticDataPipeline:
             self.data_extractor.extract_and_convert(table_name, csv_file, xlsx_file)
 
             # Step 3: Pipeline - use CSV file instead of XLSX to avoid CRC-32 errors
-            print("\n📝 Using CSV format for matching pipeline to avoid Excel corruption issues...")
+            print("\nUsing CSV format for matching pipeline to avoid Excel corruption issues...")
             if not self.run_matching_pipeline("temp_export.csv"):
                 raise Exception("Pipeline execution failed")
 
@@ -408,7 +408,7 @@ class RoboticDataPipeline:
             # json_folder_date = os.path.join(self.data_dir, "fp", "date")
             json_folder_tasks = os.path.join(self.data_dir, "fp", "tasks")
             
-            print(f"\n📥 Starting to write JSON results to database...")
+            print(f"\nStarting to write JSON results to database...")
             total_stats = {'inserted': 0, 'skipped': 0}
             
             # First, scan date directory (original matched pairs)
@@ -418,7 +418,7 @@ class RoboticDataPipeline:
             #     total_stats['inserted'] += date_stats['inserted']
             #     total_stats['skipped'] += date_stats['skipped']
             # else:
-            #     print(f"   ⚠️ Date directory not found: {json_folder_date}")
+            #     print(f" Date directory not found: {json_folder_date}")
             
             # Then, scan tasks directory (classified by diff type)
             if os.path.exists(json_folder_tasks):
@@ -427,17 +427,17 @@ class RoboticDataPipeline:
                 total_stats['inserted'] += tasks_stats['inserted']
                 total_stats['skipped'] += tasks_stats['skipped']
             else:
-                print(f"   ⚠️ Tasks directory not found: {json_folder_tasks}")
+                print(f" Tasks directory not found: {json_folder_tasks}")
             
-            print(f"\n📊 Total inserted: {total_stats['inserted']}, skipped: {total_stats['skipped']}")
+            print(f"\nTotal inserted: {total_stats['inserted']}, skipped: {total_stats['skipped']}")
 
             self.cleanup_intermediate_files()
 
-            print("\n🎉 Full workflow completed successfully!")
+            print("\nFull workflow completed successfully!")
             return True
 
         except Exception as e:
-            print(f"🛑 Workflow interrupted: {e}")
+            print(f"Workflow interrupted: {e}")
             return False
 
 
@@ -447,17 +447,17 @@ class RoboticDataPipeline:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("🤖 Robotic Learning Data Automated Processing Pipeline")
+    print("Robotic Learning Data Automated Processing Pipeline")
     print("=" * 60)
-    print(f"📁 Working Directory: {WORK_DIR}")
-    print(f"🗄️  Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+    print(f"Working Directory: {WORK_DIR}")
+    print(f"Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
     print("=" * 60)
 
     # Get user input for table name
-    # table_name = input("\n📋 Please enter the database table name to process: ").strip()
+    # table_name = input("\n Please enter the database table name to process: ").strip()
 
     # if not table_name:
-    #     print("❌ Table name cannot be empty, exiting.")
+    #     print(" Table name cannot be empty, exiting.")
     #     sys.exit(1)
 
     # Initialize and execute
@@ -465,7 +465,7 @@ if __name__ == "__main__":
     success = pipeline.run_full_process(table_name="experiments_data")
 
     if not success:
-        print("\n❌ Workflow execution failed, please check logs.")
+        print("\nWorkflow execution failed, please check logs.")
         sys.exit(1)
     else:
-        print("\n✅ All tasks completed!")
+        print("\nAll tasks completed!")

@@ -103,7 +103,7 @@ def compute_pair_hash(record: dict) -> str:
         factor_type = "Process"
         factor_value = record.get("Process")
     else:
-        raise ValueError("❌ Control factor field not found")
+        raise ValueError("Control factor field not found")
 
     payload = {
         "sample_id_1": record.get("sample_id_1"),
@@ -182,9 +182,9 @@ def insert_records_incremental(
         cursor.executemany(sql, batch)
         conn.commit()
         print(
-            f"✅ {file_path} | "
-            f"尝试 {len(batch)} 条 | "
-            f"新增 {cursor.rowcount} 条"
+            f"{file_path} | "
+            f"Trying {len(batch)} records | "
+            f"Added {cursor.rowcount} records"
         )
 
     cursor.close()
@@ -200,7 +200,7 @@ def main() -> None:
         print("🔌 MySQL connected")
 
         for file_path in FILES:
-            print(f"\n📂 Processing: {file_path}")
+            print(f"\nProcessing: {file_path}")
             records = load_json_records(file_path)
             print(f"   ➜ {len(records)} records")
 
@@ -208,12 +208,12 @@ def main() -> None:
                 insert_records_incremental(conn, records, file_path)
 
     except Error as e:
-        print(f"❌ MySQL error: {e}")
+        print(f"MySQL error: {e}")
 
     finally:
         if conn and conn.is_connected():
             conn.close()
-            print("\n🔒 MySQL connection closed")
+            print("\nMySQL connection closed")
 
 
 # ==============================
@@ -229,7 +229,7 @@ def run(
     main()
 
     if verbose:
-        print("✅ Insert Characterization Pairs pipeline finished.")
+        print("Insert Characterization Pairs pipeline finished.")
 
 
 # ==============================

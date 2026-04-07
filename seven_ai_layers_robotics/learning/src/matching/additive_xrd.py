@@ -26,7 +26,7 @@ def run_additive_xrd(
     main()
 
     if verbose:
-        print("✅ Additive XRD pipeline finished.")
+        print("Additive XRD pipeline finished.")
 import sys
 import json
 import random
@@ -66,7 +66,7 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
         rows = cursor.fetchall()
 
         if not rows:
-            print(f"⚠️ Table `{table_name}` is empty.")
+            print(f"Table `{table_name}` is empty.")
             # Get column names
             cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
             columns_info = cursor.fetchall()
@@ -84,10 +84,10 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
                 writer.writerow(row)
 
         row_count = len(rows) if rows else 0
-        print(f"✅ Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
+        print(f"Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
 
     except Error as e:
-        print(f"❌ Export failed: {e}")
+        print(f"Export failed: {e}")
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
@@ -895,7 +895,6 @@ def ordered_union(a: List[str], b: List[str]) -> List[str]:
 
 
 # -------------------------
-# 6) Build JSON records (保持你要求的格式)
 # -------------------------
 def pairs_to_records(
     pairs_df: pd.DataFrame,
@@ -1018,7 +1017,7 @@ def main() -> None:
         pairs_formula_f.to_csv(stem.as_posix() + "_pairs_formula_filtered.csv", index=False, encoding="utf-8-sig")
         pairs_conc_f.to_csv(stem.as_posix() + "_pairs_conc_filtered.csv", index=False, encoding="utf-8-sig")
 
-    print("✅ Done.")
+    print("Done.")
     print("Output JSON:", output_json)
     print("Records:", len(records))
 
