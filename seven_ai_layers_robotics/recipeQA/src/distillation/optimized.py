@@ -299,6 +299,7 @@ def rebuild_mechanism_from_db(
                 print(f"[ERROR] failed to write {md_path}: {e}")
 
         print(f"\n Rebuilt {written_count} markdown files into '{output_root}'")
+        print(f"\nRebuilt {written_count} markdown files into '{output_root}'")
         print(f"[INFO] Total records processed: {len(rows)}")
         print(f"[INFO] Total files written: {written_count}")
 
@@ -405,7 +406,7 @@ def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], s
         if parent in ("sam", "additive", "passivator"):
             type_key: Optional[str] = parent     # 'sam' / 'additive' / 'passivator'
         else:
-            type_key = None                      # Other directories or root directory
+            type_key = None                      
 
         map_key = (type_key, key)
         if map_key in mapping and mapping[map_key] != path:
@@ -715,7 +716,7 @@ async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None
     save_path = osp.join(save_root, fn)
 
     os.makedirs(save_root, exist_ok=True)
-
+    
     # Skip if output file already exists
     if osp.exists(save_path):
         print(f"[SKIP] Output already exists: {osp.abspath(save_path)}")
@@ -830,7 +831,7 @@ async def request_llm(
 ) -> List[int]:
     print(f"[PATH] dist: {osp.abspath(save_root)}")
     os.makedirs(save_root, exist_ok=True)
-
+    
     # Build md knowledge map for runtime retrieval
     md_map = {}
     if expert_data_root and osp.isdir(expert_data_root):
@@ -1106,7 +1107,7 @@ def main():
 
     tasks = read_json_file(task_save_path)
     print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
-    #  Pass expert_data_root for runtime md loading
+    # Pass expert_data_root for runtime md loading
     asyncio.run(request_llm(tasks, dist_save_root, MECHANISM_DIR))
 
     dist_files = read_files_by_extension(dist_save_root, extensions=[".json"])

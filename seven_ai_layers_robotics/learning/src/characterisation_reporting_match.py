@@ -26,7 +26,7 @@ try:
         'charset': config.learning_database.charset,
     }
 except Exception as e:
-    print(f" WARNING: Failed to load config, using empty database configuration. Error: {e}")
+    print(f"WARNING: Failed to load config, using empty database configuration. Error: {e}")
     DB_CONFIG = {
         'host': '',
         'port': 3306,
@@ -56,7 +56,7 @@ try:
     INSERT_PAIRS_AVAILABLE = True
 
 except ImportError as e:
-    print(f" WARNING: Unable to import characterization data processing modules. Error: {e}")
+    print(f"WARNING: Unable to import characterization data processing modules. Error: {e}")
     characterisation_pl_sam_AVAILABLE = False
     characterisation_image_pvk_AVAILABLE = False
     ADDITIVE_XRD_AVAILABLE = False
@@ -123,12 +123,12 @@ class CharacterizationDataPipeline:
             run_characterisation_pl_sam(verbose=verbose)
 
             if verbose:
-                print("✅ PL SAM data processing completed\n")
+                print("PL SAM data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f" PL SAM processing failed: {e}")
+            print(f"PL SAM processing failed: {e}")
             return False
 
     def run_characterisation_image_pvk_pipeline(self, verbose: bool = True) -> bool:
@@ -146,12 +146,12 @@ class CharacterizationDataPipeline:
             run_characterisation_image_pvk(verbose=verbose)
 
             if verbose:
-                print("✅ Image Process data processing completed\n")
+                print("Image Process data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f" Image Process processing failed: {e}")
+            print(f"Image Process processing failed: {e}")
             return False
 
     def run_additive_xrd_pipeline(self, verbose: bool = True) -> bool:
@@ -169,12 +169,12 @@ class CharacterizationDataPipeline:
             run_additive_xrd(verbose=verbose)
 
             if verbose:
-                print("✅ Additive XRD data processing completed\n")
+                print("Additive XRD data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f" Additive XRD processing failed: {e}")
+            print(f"Additive XRD processing failed: {e}")
             return False
 
     def run_passivator_xrd_pipeline(self, verbose: bool = True) -> bool:
@@ -192,12 +192,12 @@ class CharacterizationDataPipeline:
             run_passivator_xrd(verbose=verbose)
 
             if verbose:
-                print("✅ Passivator XRD data processing completed\n")
+                print("Passivator XRD data processing completed\n")
 
             return True
 
         except Exception as e:
-            print(f" Passivator XRD processing failed: {e}")
+            print(f"Passivator XRD processing failed: {e}")
             return False
 
     def run_database_insertion(self, verbose: bool = True) -> bool:
@@ -215,12 +215,12 @@ class CharacterizationDataPipeline:
             insert_pairs(verbose=verbose)
 
             if verbose:
-                print("✅ Database insertion completed\n")
+                print("Database insertion completed\n")
 
             return True
 
         except Exception as e:
-            print(f" Database insertion failed: {e}")
+            print(f"Database insertion failed: {e}")
             return False
 
     def run_full_process(self) -> bool:
@@ -242,14 +242,14 @@ class CharacterizationDataPipeline:
 
             # Check if all steps succeeded
             if all(results.values()):
-                print("\n Full workflow completed successfully!")
+                print("\nFull workflow completed successfully!")
                 return True
             else:
-                print("\n Some tasks failed, please check logs.")
+                print("\nSome tasks failed, please check logs.")
                 return False
 
         except Exception as e:
-            print(f" Workflow interrupted: {e}")
+            print(f"Workflow interrupted: {e}")
             return False
 
     def run_all(self,
@@ -271,10 +271,10 @@ class CharacterizationDataPipeline:
         """
         if verbose:
             print("\n" + "="*80)
-            print(" Characterization Data Automated Processing Pipeline Starting")
+            print("Characterization Data Automated Processing Pipeline Starting")
             print("="*80)
-            print(f" Working Directory: {self.work_dir}")
-            print(f"  Database: {self.db_config['host']}:{self.db_config['port']}/{self.db_config['database']}")
+            print(f"Working Directory: {self.work_dir}")
+            print(f"Database: {self.db_config['host']}:{self.db_config['port']}/{self.db_config['database']}")
             print("="*80)
 
         results = {}
@@ -299,20 +299,20 @@ class CharacterizationDataPipeline:
         # Summary results
         if verbose:
             print("\n" + "="*80)
-            print(" Execution Results Summary")
+            print("Execution Results Summary")
             print("="*80)
 
             for step, success in results.items():
-                status = " Success" if success else " Failed"
+                status = "Success" if success else "Failed"
                 print(f"{status} - {step}")
 
             all_success = all(results.values())
             print("="*80)
 
             if all_success:
-                print(" All tasks completed!")
+                print("All tasks completed!")
             else:
-                print(" Some tasks failed, please check logs.")
+                print("Some tasks failed, please check logs.")
             print("="*80 + "\n")
 
         return results
@@ -326,10 +326,10 @@ class CharacterizationDataPipeline:
 
 if __name__ == "__main__":
     print("=" * 80)
-    print(" Characterization Data Automated Processing Pipeline")
+    print("Characterization Data Automated Processing Pipeline")
     print("=" * 80)
-    print(f" Working Directory: {WORK_DIR}")
-    print(f"  Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
+    print(f"Working Directory: {WORK_DIR}")
+    print(f"Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
     print("=" * 80)
 
     # Initialize and execute
@@ -337,7 +337,7 @@ if __name__ == "__main__":
     success = pipeline.run_full_process()
 
     if not success:
-        print("\n Workflow execution failed, please check logs.")
+        print("\nWorkflow execution failed, please check logs.")
         sys.exit(1)
     else:
-        print("\n All tasks completed!")
+        print("\nAll tasks completed!")

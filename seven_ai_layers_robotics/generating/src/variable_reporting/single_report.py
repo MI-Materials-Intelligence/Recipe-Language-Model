@@ -5,7 +5,7 @@ Generate structured scientific research reports (Abstract + Introduction + Resul
 
 Use DashScope OpenAI-compatible API to generate Abstract and Conclusion Table.
 
-✅ Single-file encapsulation | ✅ Externally callable | ✅ Sync/async compatible
+
 """
 
 import json
@@ -30,7 +30,7 @@ from seven_ai_layers_robotics.config import config
 
 
 # ============================================================================
-# 📋 Configuration Class (supports dict/code override)
+# Configuration Class (supports dict/code override)
 # ============================================================================
 
 @dataclass
@@ -80,7 +80,7 @@ class ReportConfig:
 
 
 # ============================================================================
-# 🔧 Utility Functions
+# Utility Functions
 # ============================================================================
 
 def read_json(p: Path) -> Any:
@@ -148,7 +148,7 @@ def build_answer_index_by_pair(answer_dir: Path) -> Dict[Tuple[str, str], str]:
 
 
 # ============================================================================
-# 🤖 DashScope LLM Wrapper
+# DashScope LLM Wrapper
 # ============================================================================
 
 class DashScopeLLM:
@@ -279,7 +279,7 @@ Start your answer with the header row:
 
 
 # ============================================================================
-# 📄 Report Builder
+# Report Builder
 # ============================================================================
 
 class ReportBuilder:
@@ -323,7 +323,7 @@ class ReportBuilder:
 
 
 # ============================================================================
-# 🚀 Main Entry Class (core for external calls)
+# Main Entry Class (core for external calls)
 # ============================================================================
 
 class ReportGenerator:
@@ -367,7 +367,7 @@ class ReportGenerator:
 
         for i, item in enumerate(task_data):
             if not isinstance(item, dict):
-                print(f"⚠️ Skip non-dict task item: index={i}")
+                print(f"Skip non-dict task item: index={i}")
                 stats["skipped"] += 1
                 continue
 
@@ -376,7 +376,7 @@ class ReportGenerator:
             id2 = extract_digits(meta.get("Sample_ID_2", ""))
 
             if not id1 or not id2:
-                print(f"⚠️ task index={i} cannot extract id1/id2")
+                print(f"task index={i} cannot extract id1/id2")
                 stats["missing"] += 1
                 continue
 
@@ -397,14 +397,14 @@ class ReportGenerator:
 
             if rd.strip():
                 stats["matched"] += 1
-                print(f"✅ {out_path.name}")
+                print(f"{out_path.name}")
             else:
                 stats["missing"] += 1
-                print(f"⚠️ {out_path.name} (no answer_part)")
+                print(f"{out_path.name} (no answer_part)")
 
         # Summary
-        print(f"\n📊 SUMMARY: total={stats['total']}, matched={stats['matched']}, missing={stats['missing']}, skipped={stats['skipped']}")
-        print(f"📁 Output: {out_dir.resolve()}")
+        print(f"\nSUMMARY: total={stats['total']}, matched={stats['matched']}, missing={stats['missing']}, skipped={stats['skipped']}")
+        print(f"Output: {out_dir.resolve()}")
         return stats
 
     def rebuild_from_answers(self, answer_folder: str, output_dir: str) -> int:
@@ -440,12 +440,12 @@ class ReportGenerator:
             write_json(out_dir / f"{id1}_{id2}.json", report)
             count += 1
 
-        print(f"📄 Rebuilt {count} reports from answers → {out_dir}")
+        print(f"Rebuilt {count} reports from answers → {out_dir}")
         return count
 
 
 # ============================================================================
-# 🖥️ Command-line Entry (optional)
+#  Command-line Entry (optional)
 # ============================================================================
 
 def _parse_args():

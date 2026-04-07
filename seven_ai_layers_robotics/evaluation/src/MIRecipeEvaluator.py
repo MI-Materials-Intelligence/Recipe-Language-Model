@@ -67,10 +67,10 @@ class MIRecipeEvaluator:
         try:
             sql = f"SELECT * FROM `{self.db_config['table']}` WHERE status = 0;"
             df = pd.read_sql(sql, self.engine)
-            print(f"📌 Total {len(df)} pending records loaded (status IS NULL).")
+            print(f"Total {len(df)} pending records loaded (status IS NULL).")
             return df.to_dict('records')
         except Exception as e:
-            print("❌ Failed to load database records:", e)
+            print("Failed to load database records:", e)
             return []
 
     def send_to_http_api(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -87,10 +87,10 @@ class MIRecipeEvaluator:
         try:
             response = requests.post(self.api_url, json=data, timeout=300)
             response.raise_for_status()
-            print(f"✅ Score API called successfully")
+            print(f"Score API called successfully")
             return response.json()
         except Exception as e:
-            print(f"❌ Failed to call score API: {e}")
+            print(f"Failed to call score API: {e}")
             return None
 
     def get_evaluation_score(self, db_record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -141,7 +141,7 @@ class MIRecipeEvaluator:
             optimize, control, to_evaluate, substance, ground, indicator_weight = get_required_params(eval_input)
             score_result = calculate_evaluation_custom(optimize, control, to_evaluate, substance, ground, indicator_weight)
 
-            print(f"✅ Local evaluation completed - predicted_pce: {predicted_pce}, overall_score: {score_result.get('score', {}).get('overall', None)}")
+            print(f"Local evaluation completed - predicted_pce: {predicted_pce}, overall_score: {score_result.get('score', {}).get('overall', None)}")
 
             return {
                 "index": db_record["index"],
@@ -149,7 +149,7 @@ class MIRecipeEvaluator:
                 "score": score_result
             }
         except Exception as e:
-            print("❌ Failed to get score:", e)
+            print(" Failed to get score:", e)
             import traceback
             traceback.print_exc()
             return None
@@ -184,10 +184,10 @@ class MIRecipeEvaluator:
                 )
                 conn.commit()
 
-            print(f"✅ Successfully updated Score, predicted_pce and status=1 for index={result['index']}")
+            print(f"Successfully updated Score, predicted_pce and status=1 for index={result['index']}")
             return True
         except Exception as e:
-            print(f"❌ Database update failed (index={result['index']}): {e}")
+            print(f"Database update failed (index={result['index']}): {e}")
             return False
 
     def run(self) -> None:
@@ -201,19 +201,19 @@ class MIRecipeEvaluator:
         """
         pending = self.load_pending_records()
         if not pending:
-            print("⚠️ No data to process (status IS NULL).")
+            print("No data to process (status IS NULL).")
             return
 
         # for db_record in pending[:1]:
         for db_record in pending:
             print("\n============================")
-            print(f"▶️ Starting to process index = {db_record['index']}")
+            print(f"Starting to process index = {db_record['index']}")
             print("============================")
 
             result = self.get_evaluation_score(db_record)
             self.update_score_to_db(result)
 
-        print("\n🎉 All records with status IS NULL have been processed!")
+        print("\nAll records with status IS NULL have been processed!")
 
 
 # ============================================================================

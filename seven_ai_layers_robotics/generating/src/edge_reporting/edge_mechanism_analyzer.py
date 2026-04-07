@@ -105,7 +105,7 @@ These steps MUST NOT appear in the output, but the final paragraph MUST REFLECT 
    - Collective synergy.
    Integrated naturally into the paragraph.
 
-🔥 5. **Characterization-Driven Mechanism Analysis (CONDITIONAL, MANDATORY IF PRESENT):**
+  5. **Characterization-Driven Mechanism Analysis (CONDITIONAL, MANDATORY IF PRESENT):**
 
    - If **image-derived characterization data** (e.g., film coverage metrics, grayscale intensity, defect density indicators, morphological uniformity descriptors extracted from optical/PL mapping images) is present:
        - Internally analyze thin-film continuity, defect distribution, crystallization uniformity, and their influence on charge transport pathways and non-radiative recombination.
@@ -123,7 +123,7 @@ These steps MUST NOT appear in the output, but the final paragraph MUST REFLECT 
    - If a characterization type is NOT present, it MUST NOT be mentioned.
 
 
-🔥 6. **STRICT ORDERING CONSTRAINT FOR FINAL PARAGRAPH (INTERNAL):**
+  6. **STRICT ORDERING CONSTRAINT FOR FINAL PARAGRAPH (INTERNAL):**
    - Characterization-driven mechanisms (Image/PL/XRD) MUST be placed:
      **AFTER passivation mechanisms and BEFORE performance metrics**
    - Performance metrics MUST appear at the very end of the paragraph.
@@ -292,7 +292,7 @@ def process_single_record(report_index, record_type, record_id, docx_path):
     json_obj = build_json_obj(exp_text, summary)
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(json_obj, f, ensure_ascii=False, indent=2)
-    print(f"✅ JSON generated: {json_path}")
+    print(f"JSON generated: {json_path}")
 
     # 6. Update status
     mark_as_done(report_index)
@@ -300,13 +300,13 @@ def process_single_record(report_index, record_type, record_id, docx_path):
 # ================== Main Process ==================
 
 def main():
-    print("🔍 Starting Stage 2: Processing records with status=1 in ...")
+    print(" Starting Stage 2: Processing records with status=1 in ...")
     records = fetch_pending_records()
     if not records:
         print("📭 No pending records")
         return
 
-    print(f"📥 Found {len(records)} pending records in total")
+    print(f"Found {len(records)} pending records in total")
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
         for rec in records:
@@ -324,7 +324,7 @@ def main():
                 fut.result()
                 print(f"[{i+1}/{len(records)}] Completed one record processing")
             except Exception as e:
-                print(f"❌ Processing failed: {e}")
+                print(f"Processing failed: {e}")
 
     print("🎉 Stage 2 completed!")
 

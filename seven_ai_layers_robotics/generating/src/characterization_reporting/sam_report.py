@@ -142,7 +142,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> li
     cursor.close()
     conn.close()
 
-    print(f"📥 Number of {factor_type} type pending records read: {len(rows)}")
+    print(f"Number of {factor_type} type pending records read: {len(rows)}")
     return rows
 
 
@@ -273,7 +273,7 @@ def run_sam_report(
     main()
 
     if verbose:
-        print("✅ Running sam pair to report finished.")
+        print("Running sam pair to report finished.")
 
 
 # =============================
@@ -292,7 +292,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # ⚠️ Currently you explicitly said: only extract from SAM
+    # Currently you explicitly said: only extract from SAM
     for key in ("SAM",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -550,7 +550,7 @@ def main() -> None:
     # report output
     REPORT_JSON_PATH = output_dir / "reports.json"
     REPORT_JSONL_PATH = output_dir / "reports.jsonl"
-    # ✅ Ensure directories exist
+    # Ensure directories exist
     for p in [
         OUTPUT_PATH,
         OUTPUT_JSONL_PATH,
@@ -566,7 +566,7 @@ def main() -> None:
     # db_rows = load_pending_items(limit=1, factor_type="SAM")
     db_rows = load_pending_items(factor_type="SAM")
     if not db_rows:
-        print("✅ No records with status=pending currently, exiting directly")
+        print("No records with status=pending currently, exiting directly")
         return
 
     # Convert to your familiar item structure
@@ -696,11 +696,11 @@ def main() -> None:
                 records.append(record)
                 reports.append(report)
 
-                # ✅ Success → update status
+                # Success → update status
                 update_status(pair_id, "done")
 
             except Exception as e:
-                print(f"❌ id={pair_id} processing failed: {e}")
+                print(f"id={pair_id} processing failed: {e}")
                 update_status(pair_id, "error")
 
     # ===== 10. Save complete JSON (array format) =====
@@ -708,7 +708,7 @@ def main() -> None:
     with open(REPORT_JSON_PATH, "w", encoding="utf-8-sig") as f:
         json.dump(reports, f, ensure_ascii=False, indent=4)
 
-    print(f"\n✅ Processing completed:")
+    print(f"\nProcessing completed:")
     print(f"   - SFT JSON array: {OUTPUT_PATH}")
     print(f"   - SFT JSONL: {OUTPUT_JSONL_PATH}")
     print(f"   - Report JSON array: {REPORT_JSON_PATH}")

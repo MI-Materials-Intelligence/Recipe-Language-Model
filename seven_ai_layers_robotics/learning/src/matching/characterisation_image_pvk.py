@@ -26,7 +26,7 @@ def run_characterisation_image_pvk(
     main()
 
     if verbose:
-        print("✅ Characterisation Image PVK pipeline finished.")
+        print("Characterisation Image PVK pipeline finished.")
 
 import sys
 import json
@@ -67,7 +67,7 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
         rows = cursor.fetchall()
 
         if not rows:
-            print(f"⚠️ Table `{table_name}` is empty.")
+            print(f"Table `{table_name}` is empty.")
             # Get column names
             cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
             columns_info = cursor.fetchall()
@@ -88,7 +88,7 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
         print(f"✅ Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
 
     except Error as e:
-        print(f"❌ Export failed: {e}")
+        print(f"Export failed: {e}")
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
@@ -476,17 +476,17 @@ def evaluate_pairs(
 # -------------------------
 def import_templates_lib():
     script_dir = Path(__file__).parent.resolve()
-    # 确保 matching 目录在 Python 路径中
+
     if str(script_dir) not in sys.path:
         sys.path.insert(0, str(script_dir))
 
-    # 强制重新加载 templates_lib 模块（可选）
+
     import importlib
     try:
         import templates_lib
         importlib.reload(templates_lib)
     except ImportError:
-        # 如果仍然失败，尝试直接添加 templates_lib 目录
+
         templates_lib_dir = script_dir / "templates_lib"
         if templates_lib_dir.exists() and str(templates_lib_dir) not in sys.path:
             sys.path.insert(0, str(templates_lib_dir))
@@ -795,12 +795,12 @@ def main() -> None:
     # out_path = Path(OUTPUT_JSON)
     # out_path.parent.mkdir(parents=True, exist_ok=True)
     script_dir = Path(__file__).parent.resolve()
-    # 所有输出都到 data 目录（与 src 平级）
+
     output_dir = script_dir.parent.parent / "data"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_csv = output_dir / OUTPUT_CSV
 
-    # JSON 输出也到 data 目录
+
     json_output_dir = output_dir / "characterisation_image_pvk"
     json_output_dir.mkdir(parents=True, exist_ok=True)
     output_json = json_output_dir / "characterisation_image_pvk_pairs.json"
@@ -927,7 +927,7 @@ def main() -> None:
 
     # ---- summary ----
 
-    print("✅ Done.")
+    print("Done.")
     print("Output JSON:", OUTPUT_JSON)
     print("Records:", summary["n_rows_main"])
 

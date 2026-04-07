@@ -222,7 +222,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
     cursor.close()
     conn.close()
 
-    print(f"📥 Loaded {factor_type} type pending records count: {len(rows)}")
+    print(f"Loaded {factor_type} type pending records count: {len(rows)}")
     return rows
 
 def db_row_to_item(row: dict) -> dict:
@@ -242,7 +242,7 @@ def db_row_to_item(row: dict) -> dict:
         "sample_id_2_date": row.get("sample_id_2_date"),
     }
 
-    # ⚠️ Only one of the four regulation factor types will match
+    #  Only one of the four regulation factor types will match
     if row.get("sam"):
         item["SAM"] = json.loads(row["sam"]) if isinstance(row["sam"], str) else row["sam"]
 
@@ -269,7 +269,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # ⚠️ Currently you explicitly say: only extract from SAM
+    #  Currently you explicitly say: only extract from SAM
     for key in ("Passivator",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -552,7 +552,7 @@ Start your answer with the header row:
         return record, report
 
     except Exception as e:
-        print(f"❌ ID={pair_id} processing failed: {e}")
+        print(f"ID={pair_id} processing failed: {e}")
         traceback.print_exc()
         update_status(pair_id, "error")
         return None, None
@@ -584,11 +584,11 @@ def main() -> None:
     # Load pending items
     db_rows = load_pending_items(factor_type="Passivator")
     if not db_rows:
-        print("✅ No pending records, exiting")
+        print("No pending records, exiting")
         return
 
     items = [(row["id"], db_row_to_item(row)) for row in db_rows]
-    print(f"🚀 Preparing to process {len(items)} records in parallel...")
+    print(f"Preparing to process {len(items)} records in parallel...")
 
     records = []
     reports = []
@@ -614,11 +614,11 @@ def main() -> None:
     with open(paths["report_json"], "w", encoding="utf-8-sig") as f:
         json.dump(reports, f, ensure_ascii=False, indent=4)
 
-    print(f"✅ All completed! Processed {len(records)} records in total")
-    print(f"📄 SFT JSON: {paths['sft_json']}")
-    print(f"📄 Report JSON: {paths['report_json']}")
-    print(f"📄 SFT JSONL: {paths['sft_jsonl']}")
-    print(f"📄 Report JSONL: {paths['report_jsonl']}")
+    print(f"All completed! Processed {len(records)} records in total")
+    print(f"SFT JSON: {paths['sft_json']}")
+    print(f"Report JSON: {paths['report_json']}")
+    print(f"SFT JSONL: {paths['sft_jsonl']}")
+    print(f"Report JSONL: {paths['report_jsonl']}")
 
 def run_pass_report(
     *,
@@ -647,7 +647,7 @@ def run_pass_report(
     main()
 
     if verbose:
-        print("✅ Running pass pair to report finished.")
+        print("Running pass pair to report finished.")
 
 if __name__ == "__main__":
     run_pass_report()
