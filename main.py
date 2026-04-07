@@ -55,25 +55,25 @@ def run_learning_pipeline(args):
     pipeline_type = args.pipeline.lower()
     
     if pipeline_type == 'variable':
-        print("\n🤖 Running Variable Learning Data Pipeline...")
+        print("\n Running Variable Learning Data Pipeline...")
         pipeline = RoboticDataPipeline()
         success = pipeline.run_full_process(table_name="experiments_data")
         return success
         
     elif pipeline_type == 'edge':
-        print("\n📊 Running Edge Report Pipeline...")
+        print("\n Running Edge Report Pipeline...")
         pipeline = EdgeReportPipeline()
         success = pipeline.run_full_process("experiments_data")
         return success
         
     elif pipeline_type == 'characterization':
-        print("\n🔬 Running Characterization Data Pipeline...")
+        print("\n Running Characterization Data Pipeline...")
         pipeline = CharacterizationDataPipeline()
         success = pipeline.run_full_process()
         return success
         
     else:
-        print(f"❌ Unknown learning pipeline type: {pipeline_type}")
+        print(f" Unknown learning pipeline type: {pipeline_type}")
         print("Available types:variable, edge, characterization")
         return False
 
@@ -83,35 +83,35 @@ def run_generating_pipeline(args):
     report_type = args.report.lower()
     
     if report_type == 'variable':
-        print("\n📝 Running Variable Report Pipeline...")
+        print("\n Running Variable Report Pipeline...")
         pipeline = VariableReportPipeline()
         success = pipeline.run(steps='all', rebuild_knowledge=args.rebuild_knowledge, verbose=True)
         print("VariableReportPipeline", success)
         return success
         
     elif report_type == 'characterisation':
-        print("\n📊 Running Characterisation Report Pipeline...")
+        print("\n Running Characterisation Report Pipeline...")
         pipeline = CharacterisationReportPipeline()
         success = pipeline.run(report_type='all', verbose=True)
         print("CharacterisationReportPipeline", success)
         return success
         
     elif report_type == 'edge':
-        print("\n📈 Running Edge Report Pipeline...")
+        print("\n Running Edge Report Pipeline...")
         pipeline = GeneratingEdgeReportPipeline()
         success = pipeline.run(steps='all', verbose=True)
         print("EdgeReportPipeline", success)
         return success
         
     else:
-        print(f"❌ Unknown generating report type: {report_type}")
+        print(f" Unknown generating report type: {report_type}")
         print("Available types: variable, characterisation, edge")
         return False
 
 
 def run_recipeqa(args):
     """Execute RecipeQA corpus generation"""
-    print("\n🧠 Running RecipeQA Corpus Generation...")
+    print("\n Running RecipeQA Corpus Generation...")
     generator = CorpusGenerator()
     
     try:
@@ -119,36 +119,36 @@ def run_recipeqa(args):
         print(result)
         return True
     except Exception as e:
-        print(f"❌ Error generating corpora: {e}")
+        print(f" Error generating corpora: {e}")
         return False
 
 
 def run_reasoning(args):
     """Execute reasoning module report generation"""
-    print("\n🤔 Running Perovskite Report Generator...")
+    print("\n Running Perovskite Report Generator...")
     
     try:
         generator = PerovskiteReportGenerator.from_config()
-        print("✓ Successfully loaded configuration from config.toml")
+        print("Successfully loaded configuration from config.toml")
         print("\nStarting report generation...")
         generator.run_all(total_runs=args.total_runs, max_workers=args.max_workers)
-        print("✓ Report generation completed")
+        print("Report generation completed")
         return True
     except Exception as e:
-        print(f"❌ Error in reasoning: {e}")
+        print(f"Error in reasoning: {e}")
         return False
 
 
 def run_evaluation(args):
     """Execute evaluation module"""
-    print("\n⚖️  Running MIRecipe Evaluation...")
+    print("\n Running MIRecipe Evaluation...")
     
     try:
         evaluator = MIRecipeEvaluator()
         evaluator.run()
         return True
     except Exception as e:
-        print(f"❌ Error in evaluation: {e}")
+        print(f"Error in evaluation: {e}")
         return False
 
 
@@ -227,7 +227,7 @@ Examples:
     # Execute the selected module
     if args.module is None:
         parser.print_help()
-        print("\n❌ Please specify a module to run (learning, generating, recipeqa, reasoning, or evaluation)")
+        print("\n Please specify a module to run (learning, generating, recipeqa, reasoning, or evaluation)")
         sys.exit(1)
     
     # Run the selected function
