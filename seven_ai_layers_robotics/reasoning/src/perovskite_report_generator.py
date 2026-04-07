@@ -1,18 +1,15 @@
 import json
-import os
 import re
 import sys
-import threading
 import traceback
 from concurrent import futures
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-# Add project root to Python path
 project_root = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(project_root))
 
-# Add Evaluation src directory to Python path for recipe_recommendation module
 evaluation_src = Path(__file__).resolve().parent.parent / "Evaluation" / "src"
 sys.path.insert(0, str(evaluation_src))
 
@@ -22,7 +19,12 @@ import requests
 from openai import OpenAI
 from seven_ai_layers_robotics.config import config
 from seven_ai_layers_robotics.reasoning.src.prompts import ReportPrompts
-from seven_ai_layers_robotics.reasoning.src.totext_db import get_random_row_from_db, row_to_text, get_all_rows_from_db
+from seven_ai_layers_robotics.reasoning.src.totext_db import (
+    get_all_rows_from_db,
+    get_random_row_from_db,
+    row_to_text,
+)
+
 
 class PerovskiteReportGenerator:
     """Perovskite solar cell report generator using large language models.
@@ -52,7 +54,6 @@ class PerovskiteReportGenerator:
             >>> generator = PerovskiteReportGenerator.from_config()
             >>> generator.run_once(total_runs=15)
         """
-        # Load configuration from app.config
         db_config = {
             'host': config.reasoning_database.host,
             'user': config.reasoning_database.user,
@@ -62,7 +63,6 @@ class PerovskiteReportGenerator:
             'table': config.reasoning_database.table
         }
 
-        # Extract output database config
         output_db_config = {
             'host': config.reasoning_output_database.host,
             'user': config.reasoning_output_database.user,
@@ -71,7 +71,6 @@ class PerovskiteReportGenerator:
             'port': config.reasoning_output_database.port,
         }
 
-        # Extract LLM config
         base_url = config.reasoning_llm.base_url
         dashscope_api_key = config.reasoning_llm.dashscope_api_key
 
@@ -121,7 +120,6 @@ class PerovskiteReportGenerator:
             'port': self.db_config['port'],
         }
 
-        # Field definitions
         self.expected_fields = expected_fields or [
             "Formula PVK",
             "Concentration PVK",
@@ -190,53 +188,40 @@ class PerovskiteReportGenerator:
         answer_content = ""
         remaining = text
 
-        # Extract THINK content (prefer standard closing tag)
         think_matches = re.findall(
             r"<think>(.*?)</think>", remaining, flags=re.DOTALL | re.IGNORECASE
         )
         if think_matches:
             reasoning_content = _strip_tags("".join(think_matches))
-            # Remove all complete think sections to avoid interference with answer extraction
             remaining = re.sub(r"<think>.*?</think>", "", remaining, flags=re.DOTALL | re.IGNORECASE)
         else:
-            # fallback A: only </think>
             m_close = re.search(r"</think>", remaining, flags=re.IGNORECASE)
             if m_close:
                 reasoning_content = _strip_tags(remaining[:m_close.start()])
                 remaining = remaining[m_close.end():]
             else:
-                # fallback B: only <think>
                 m_open = re.search(r"<think>", remaining, flags=re.IGNORECASE)
                 if m_open:
                     reasoning_content = _strip_tags(remaining[m_open.end():])
                     remaining = remaining[:m_open.start()]
 
-        # =========================
-        # 2) Extract ANSWER (prefer standard closing tag)
-        # =========================
         answer_matches = re.findall(r"<answer>(.*?)</answer>", remaining, flags=re.DOTALL | re.IGNORECASE)
         if answer_matches:
             answer_content = _strip_tags("".join(answer_matches))
         else:
-            # fallback A: only </answer>
             m_close = re.search(r"</answer>", remaining, flags=re.IGNORECASE)
             if m_close:
                 answer_content = _strip_tags(remaining[:m_close.start()])
             else:
-                # fallback B: only <answer>
                 m_open = re.search(r"<answer>", remaining, flags=re.IGNORECASE)
                 if m_open:
                     answer_content = _strip_tags(remaining[m_open.end():])
 
-        # =========================
-        # 3) Fallback logic: if think is present but answer is empty, and remaining text has content, use remaining as answer
-        # =========================
         if reasoning_content and not answer_content:
             leftover = _strip_tags(remaining)
             if leftover:
                 answer_content = leftover
 
-        # If nothing extracted, return original text with empty answer
         if not reasoning_content and not answer_content:
             return raw, ""
 
@@ -262,7 +247,6 @@ class PerovskiteReportGenerator:
             ],
             "temperature": 0.7,
         }
-        print(self.base_url)
         response = requests.post(
             f"{self.base_url}/v1/chat/completions", json=payload, timeout=120
         )
@@ -291,12 +275,9 @@ class PerovskiteReportGenerator:
                 answer_content, reasoning_content = self._api_get_answer_and_thinking(
                     system_prompt, user_prompt
                 )
-                # For consistency: (raw, reasoning, answer)
-                # Use answer_content as raw since DashScope doesn't return unparsed content
                 return answer_content, reasoning_content, answer_content
             except Exception as e2:
                 print(f"[ERROR] Both local model and DashScope API failed: {e2}")
-                # Final fallback: return empty strings
                 return "", "", ""
 
     def _api_get_answer_and_thinking(self, system_prompt: str, user_prompt: str) -> Tuple[str, str]:
@@ -314,7 +295,7 @@ class PerovskiteReportGenerator:
         ]
 
         completion = self.dashscope_client.chat.completions.create(
-            model="qwen-plus",  # Can be changed to qwen3-235b-a22b-thinking-2507 etc.
+            model="qwen-plus",
             messages=messages,
             stream=True,
         )
@@ -327,18 +308,15 @@ class PerovskiteReportGenerator:
                 continue
             delta = chunk.choices[0].delta
 
-            # Streaming reasoning content (some models use this field)
             if hasattr(delta, "reasoning_content") and delta.reasoning_content is not None:
                 reasoning_content += delta.reasoning_content
 
-            # Visible response content
             if hasattr(delta, "content") and delta.content:
                 answer_content += delta.content
 
         answer_content = answer_content.strip()
         reasoning_content = reasoning_content.strip()
 
-        # If API has no dedicated reasoning_content field, parse from content using <think></think>
         if not reasoning_content:
             rc2, ans2 = self._extract_content(answer_content)
             if ans2.strip():
@@ -373,78 +351,46 @@ class PerovskiteReportGenerator:
             - answer_content_analyze: Analysis result text
             - reasoning_content_analyze: Reasoning content from analysis
         """
-        # Extract input_text and material from raw json
         input_text = data
 
-        # material = sample_info.get("Change_Category", "")
-
-        # Step 1: Formulation optimization analysis
         print("Step 1: Formulation optimization analysis")
         system_prompt_analyze, user_prompt_analyze = ReportPrompts.get_analyze_prompts(input_text)
         _, reasoning_content_analyze, answer_content_analyze = self._run_with_extract(
             system_prompt_analyze, user_prompt_analyze
         )
-        print("Step 1 - Reasoning:", reasoning_content_analyze)
 
-        # Step 2: Extract Result & Discussion
         system_prompt_rewrite, user_prompt_rewrite = ReportPrompts.get_rewrite_prompts(answer_content_analyze)
-
-        # _, reasoning_content_rewrite, answer_content_rewrite = run_with_extract(
-        #     system_prompt_rewrite, user_prompt_rewrite
-        # )
-
-        answer_content_rewrite, reasoning_content_rewrite = self._api_get_answer_and_thinking(
+        answer_content_rewrite, _ = self._api_get_answer_and_thinking(
             system_prompt_rewrite, user_prompt_rewrite
         )
 
-        # Step 3: Material mechanism explanation
         print("Step 3: Material mechanism explanation")
         system_prompt_material, user_prompt_material = ReportPrompts.get_material_prompts(answer_content_rewrite)
         _, reasoning_content_material, answer_content_material = self._run_with_extract(
             system_prompt_material, user_prompt_material
         )
 
-        # Step 4: Abstract generation
         system_prompt_abstract, user_prompt_abstract = ReportPrompts.get_abstract_prompts(input_text, answer_content_analyze)
-
-        # _, reasoning_content_abstract, answer_content_abstract = run_with_extract(
-        #     system_prompt_abstract, user_prompt_abstract
-        # )
-
-        answer_content_abstract, reasoning_content_abstract = self._api_get_answer_and_thinking(
+        answer_content_abstract, _ = self._api_get_answer_and_thinking(
             system_prompt_abstract, user_prompt_abstract
         )
 
-        # Step 5: Conclusion table generation
         print("Step 5: Conclusion table generation")
         system_prompt_table, user_prompt_table = ReportPrompts.get_table_prompts(answer_content_analyze)
-
-        # _, reasoning_content_table, answer_content_table = run_with_extract(
-        #     system_prompt_table, user_prompt_table
-        # )
-
-        answer_content_table, reasoning_content_table = self._api_get_answer_and_thinking(
+        answer_content_table, _ = self._api_get_answer_and_thinking(
             system_prompt_table, user_prompt_table
         )
 
-        # Step 6: JSON parameter extraction
         system_prompt_json, user_prompt_json = ReportPrompts.get_json_prompts(input_text, answer_content_analyze)
-
-        # _, reasoning_content_json, answer_content_json = run_with_extract(
-        #     system_prompt_json, user_prompt_json
-        # )
-
-        answer_content_json, reasoning_content_json = self._api_get_answer_and_thinking(
+        answer_content_json, _ = self._api_get_answer_and_thinking(
             system_prompt_json, user_prompt_json
         )
 
-        # Try to parse as JSON object, if fails keep original string
         try:
             optimized_fp_obj: Any = json.loads(answer_content_json)
         except Exception:
             optimized_fp_obj = answer_content_json
 
-        # Build final report structure
         report = {
             "1_Abstract": answer_content_abstract,
             "2_Introduction": input_text,
@@ -454,18 +400,16 @@ class PerovskiteReportGenerator:
                 "4_2_Optimized_Formula_Parameter": optimized_fp_obj,
             },
             "5_Supporting_Information": answer_content_material,
-            # Debug reasoning can be enabled if needed:
-            # "debug_reasoning": {
-            #     "analyze": reasoning_content_analyze,
-            #     "rewrite": reasoning_content_rewrite,
-            #     "material": reasoning_content_material,
-            #     "abstract": reasoning_content_abstract,
-            #     "table": reasoning_content_table,
-            #     "json": reasoning_content_json,
-            # },
         }
 
-        return report, input_text, user_prompt_analyze,optimized_fp_obj,answer_content_analyze,reasoning_content_analyze
+        return (
+            report,
+            input_text,
+            user_prompt_analyze,
+            optimized_fp_obj,
+            answer_content_analyze,
+            reasoning_content_analyze,
+        )
 
     def _row_to_standard_dict(self, row: pd.Series) -> Dict[str, str]:
         """Convert pandas Series to standard dictionary with expected fields.
@@ -481,10 +425,8 @@ class PerovskiteReportGenerator:
         """
         result = {}
         for field in self.expected_fields:
-            # Check if field exists
             if field in row.index:
                 val = row[field]
-                # Handle NaN / None / empty values
                 if pd.isna(val) or val is None or str(val).strip().lower() in (
                     "nan",
                     "none",
@@ -523,7 +465,6 @@ class PerovskiteReportGenerator:
             mechanism: Mechanism description text.
             mechanism_reasoning: Mechanism reasoning text.
         """
-        # Convert to JSON string safely
         def safe_json(val: Any) -> str:
             if isinstance(val, (dict, list)):
                 return json.dumps(val, ensure_ascii=False)
@@ -534,20 +475,18 @@ class PerovskiteReportGenerator:
         reasoning_output_json = safe_json(reasoning_output)
         recommend_value_json = safe_json(recommend_value)
 
-        # Build insert values (order must match SQL)
         values = [
             ID,
             status,
-            control_recipe_value_json,  # JSON
-            reasoning_output_json,      # JSON
-            recommend_value_json,       # JSON
+            control_recipe_value_json,
+            reasoning_output_json,
+            recommend_value_json,
             control_recipe_text or "",
             question or "",
             mechanism or "",
             mechanism_reasoning or ""
         ]
 
-        # SQL statement (field order must match values)
         sql = """
         INSERT INTO `report_optimised` (
             ID,
@@ -562,10 +501,9 @@ class PerovskiteReportGenerator:
         ) VALUES (%s,%s,%s, %s, %s, %s, %s, %s, %s)
         """
 
-        # Execute insert
         conn = None
         try:
-            conn = pymysql.connect(**self.output_db_config)  # Note: 'table' not included
+            conn = pymysql.connect(**self.output_db_config)
             cursor = conn.cursor()
             cursor.execute(sql, values)
             conn.commit()
@@ -575,6 +513,7 @@ class PerovskiteReportGenerator:
         finally:
             if conn:
                 conn.close()
+
     def _export_output_to_csv(self) -> str:
         """Export data from output database to CSV file.
         
@@ -585,25 +524,18 @@ class PerovskiteReportGenerator:
             Path to the generated CSV file.
         """
         try:
-            # Create data directory if it doesn't exist
             data_dir = Path(__file__).resolve().parent.parent / "data"
             data_dir.mkdir(parents=True, exist_ok=True)
-            
-            # Connect to output database
+
             conn = pymysql.connect(**self.output_db_config)
-            
-            # Read data from report_optimised table
             query = "SELECT * FROM report_optimised"
             df = pd.read_sql(query, conn)
             conn.close()
-            
-            # Generate timestamped filename
-            from datetime import datetime
+
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             csv_filename = f"report_optimised_{timestamp}.csv"
             csv_path = data_dir / csv_filename
-            
-            # Export to CSV
+
             df.to_csv(csv_path, index=False, encoding='utf-8-sig')
             print(f" Successfully exported {len(df)} records to CSV: {csv_path}")
             return str(csv_path)
@@ -613,25 +545,10 @@ class PerovskiteReportGenerator:
             traceback.print_exc()
             return ""
 
-    def _get_random_row_from_db(self, config: Dict) -> pd.Series:
-        """Fetch random row from database using provided configuration.
-
-        Args:
-            config: Database configuration dict with host, user, password, database, port, table.
-
-        Returns:
-            Pandas Series containing random row data.
-
-        Raises:
-            ValueError: If table is empty.
-        """
-    def run_all(self, total_runs=5, max_workers=5):
-        """
-        
-        """
+    def run_all(self, total_runs: int = 5, max_workers: int = 5) -> None:
+        """Generate reports for every row in the configured input table."""
         try:
-            
-            print("📥 Fetching all data from database...")
+            print("Fetching all data from database...")
             all_data_df = get_all_rows_from_db(self.db_config)
             total_rows = len(all_data_df)
             print(f"Successfully fetched {total_rows} rows from database.")
@@ -643,34 +560,24 @@ class PerovskiteReportGenerator:
             global_success_count = 0
             global_total_expected = total_rows * total_runs
 
-            
             for idx, row in all_data_df.iterrows():
-                
                 row.index = row.index.str.strip()
                 sample_id = row.get("sample_id")
-                
-               
+
                 if sample_id is None:
-                    sample_id = f"row_{idx}" 
+                    sample_id = f"row_{idx}"
                     print(f"Row {idx+1}/{total_rows} missing sample_id, using {sample_id}")
-                
+
                 print(f"\nProcessing Row {idx+1}/{total_rows} (sample_id={sample_id})")
 
                 try:
-                    
                     output_text = row_to_text(row)
                     control_recipe_value = self._row_to_standard_dict(row)
-                    
-                    
-                    
 
-                    
                     def _generate_and_insert(trial_idx: int) -> bool:
                         try:
-                            
-                            # tid = threading.get_ident()
                             print(f"   [Trial {trial_idx+1}/{total_runs}] Generating...")
-                            
+
                             reasoning_output, control_recipe_text, question, recommend_value, mechanism, mechanism_reasoning = \
                                 self._process_single_text(output_text)
 
@@ -685,13 +592,11 @@ class PerovskiteReportGenerator:
                                 mechanism=mechanism,
                                 mechanism_reasoning=mechanism_reasoning
                             )
-                            # print(f"   Trial {trial_idx+1} inserted.")
                             return True
                         except Exception as e:
                             print(f"   Trial {trial_idx+1} failed: {e}")
                             return False
 
-                    
                     with futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
                         futures_list = [
                             executor.submit(_generate_and_insert, i) for i in range(total_runs)
@@ -707,28 +612,22 @@ class PerovskiteReportGenerator:
                 except Exception as row_err:
                     print(f" Row {idx+1} (sample_id={sample_id}) processing failed: {row_err}")
                     traceback.print_exc()
-                    
                     continue
 
             print("\n" + "="*50)
-            print(f"All Done!")
+            print("All Done!")
             print(f"Total Rows: {total_rows}")
             print(f"Total Expected Runs: {global_total_expected}")
             print(f"Total Successful Outputs: {global_success_count}")
             print(f"Success Rate: {global_success_count/global_total_expected:.2%}")
             print("="*50)
-            
-            # Export output database to CSV
+
             print("\nExporting results to CSV...")
             self._export_output_to_csv()
 
         except Exception as e:
             print(" run_all execution failed:", e)
             traceback.print_exc()
-
-
-
-
 
     def run_once(
         self, total_runs: int = 1, max_workers: Optional[int] = None
@@ -743,7 +642,6 @@ class PerovskiteReportGenerator:
             max_workers = total_runs
 
         try:
-            # Read one record from database
             row = get_random_row_from_db(self.db_config)
             row.index = row.index.str.strip()
             sample_id = row.get("sample_id")
@@ -751,7 +649,6 @@ class PerovskiteReportGenerator:
                 raise ValueError("Row does not contain sample_id field")
             print(f"Successfully read one original data (sample_id={sample_id})")
 
-            # Preprocessing: execute only once
             output_text = row_to_text(row)
             control_recipe_value = self._row_to_standard_dict(row)
             print(
@@ -761,12 +658,9 @@ class PerovskiteReportGenerator:
                 else output_text,
             )
 
-            # Generate total_runs reports concurrently with max_workers threads
             def _generate_and_insert(trial_idx: int) -> bool:
                 try:
-                    print(
-                        f"[Thread {threading.get_ident()}] Generating trial {trial_idx+1}/{total_runs}..."
-                    )
+                    print(f"Generating trial {trial_idx+1}/{total_runs}...")
                     reasoning_output, control_recipe_text, question, recommend_value, mechanism, mechanism_reasoning = \
                         self._process_single_text(output_text)
 
@@ -787,7 +681,6 @@ class PerovskiteReportGenerator:
                     print(f"Trial {trial_idx+1} generation failed: {e}")
                     return False
 
-            # Execute concurrently using ThreadPoolExecutor
             with futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
                 futures_list = [
                     executor.submit(_generate_and_insert, i) for i in range(total_runs)
@@ -797,18 +690,13 @@ class PerovskiteReportGenerator:
                 ]
 
             success_count = sum(results)
-            print(
-                f"Completed: 1 input → {success_count}/{total_runs} outputs successfully generated and stored"
-            )
-            
-            # Export output database to CSV
+            print(f"Completed: 1 input -> {success_count}/{total_runs} outputs successfully generated and stored")
+
             print("\nExporting results to CSV...")
             self._export_output_to_csv()
 
         except Exception as e:
             print("run_once execution failed:", e)
-            import traceback
-
             traceback.print_exc()
 
 

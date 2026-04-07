@@ -3,7 +3,7 @@
 This module contains all prompt templates used in the report generation pipeline.
 """
 
-from typing import Dict, Tuple
+from typing import Tuple
 
 
 class ReportPrompts:
@@ -13,14 +13,12 @@ class ReportPrompts:
     scientific reports on perovskite solar cell research.
     """
 
-    # ========== 1. Formulation Optimization Analysis ==========
     ANALYZE_SYSTEM_PROMPT: str = "You are an expert in perovskite materials."
 
     ANALYZE_USER_PROMPT_TEMPLATE: str = """Based on the perovskite material formulation and processing parameters, analyze their impact on PCE, FF, Jsc, and Voc, and propose optimization strategies for the formulation to enhance PCE, FF, Jsc, and Voc.
 {input_text}
 Not writing markdown."""
 
-    # ========== 2. Material Name Extraction ==========
     REWRITE_SYSTEM_PROMPT: str = "You are an expert in the field of chemistry."
 
     REWRITE_USER_PROMPT_TEMPLATE: str = """Results & Discussion (performance & mechanisms):
@@ -33,13 +31,11 @@ Identify ALL optimized materials explicitly mentioned in the modifications. Outp
 - If THREE materials: "ABBREV1, ABBREV2, ABBREV3" (e.g., 2-AEP, Me-2PACz, Me-4PACz)
 NO additional text, explanations, or punctuation."""
 
-    # ========== 3. Material Mechanism Explanation ==========
     MATERIAL_SYSTEM_PROMPT: str = "You are an expert in perovskite materials."
 
     MATERIAL_USER_PROMPT_TEMPLATE: str = """In perovskite photovoltaics, what is {material_name}, and what are its roles and underlying mechanisms?
 Not writing markdown."""
 
-    # ========== 4. Abstract Generation ==========
     ABSTRACT_SYSTEM_PROMPT: str = """You are a scientific writing assistant and an expert in the field of perovskite solar cells. Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. FORMATTING RULES (MUST OBEY): • Output MUST be ONE SINGLE PARAGRAPH of continuous plain text. • Do NOT insert any headings, titles, section labels, Markdown (no '###', no bold, no lists). • Do NOT use bullet points or numbered lists. • Do NOT start with the word 'Abstract' or any title. • Do NOT insert blank lines or line breaks inside the abstract. CONTENT REQUIREMENTS: The abstract should follow this logical structure: (1) giving the background, briefly mentioning the potential of inverted (p–i–n) perovskite solar cells; (2) summarizing the key fabrication strategy or core process optimization(s), preferably in a 'from A to B' form (e.g., SAM, passivation agent or additive engineering); (3) reporting the main performance indicators (PCE, VOC, JSC, FF) and their improvement range. Only mention parameters that show a clear increase; if an index is flat or slightly decreased, do not mention it; (4) giving concise mechanism insights to explain why the improved recipe outperforms the control, without going into excessive detail; (5) concluding with the overall significance and potential impact of this optimization. Be precise and factual; avoid citations, figure/table mentions, and avoid introducing any information that is not supported by the input."""
 
     ABSTRACT_USER_PROMPT_TEMPLATE: str = """Method (key fabrication details):
@@ -53,7 +49,6 @@ Output ONLY the abstract text as ONE SINGLE PARAGRAPH of 250–300 words,
 with no title, no headings, no bullet points, and no extra line breaks.
 Do not add any explanations before or after the abstract."""
 
-    # ========== 5. Conclusion Table ==========
     TABLE_SYSTEM_PROMPT: str = """You are a technical writing assistant for perovskite solar cells.
 
 Your ONLY task in this conversation:
@@ -96,7 +91,6 @@ Start your answer with the header row:
 | F/P Optimization | Performance | Mechanism |
 """
 
-    # ========== 6. JSON Parameter Extraction ==========
     JSON_SYSTEM_PROMPT: str = """You are a deterministic JSON extraction + merge engine for perovskite device recipes.
 
 Your task:

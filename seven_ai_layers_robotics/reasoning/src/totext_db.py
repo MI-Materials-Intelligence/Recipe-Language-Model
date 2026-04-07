@@ -4,20 +4,13 @@ This module provides functions to convert database records into
 descriptive text using template-based generation.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 import random
-import json
-from pathlib import Path
+from sqlalchemy import create_engine
 
-# ---------------------------
-# Template List Definitions
-# ---------------------------
-# Synonym and Phrase Library Definitions
-# --------------------------------------
 
-# Preparation-related phrases (15 items)
 PREPARED_PHRASES = [
     "was prepared",
     "was formulated",
@@ -36,7 +29,6 @@ PREPARED_PHRASES = [
     "was refined and produced"
 ]
 
-# Introductory Phrases
 INTRO_SEGMENTS = [
     "Based on a systematically tuned set of experimental parameters, this perovskite solar cell {prepared_term}, ultimately achieving a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
     "Drawing upon carefully optimized conditions, the perovskite device {prepared_term}, resulting in a PCE of {pce}%, with a fill factor of {ff}%, an open-circuit voltage of {voc} V, and a short-circuit current density of {jsc} mA/cm².",
@@ -127,23 +119,6 @@ INTRO_SEGMENTS = [
     "The PSCs displayed a significantly enhanced PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",
     ]
 
-# intro_segments = [
-#     "Based on a systematically tuned set of experimental parameters, this perovskite solar cell {prepared_term}, ultimately achieving a PCE of {pce}%.",
-#     "Under carefully optimized conditions, the perovskite device was fabricated, achieving a PCE of {pce}%.",
-#     "By refining specific fabrication parameters, a perovskite solar cell {prepared_term}, culminating in a PCE of {pce}%.",
-#     "Through deliberate control of solution composition, coating speeds, and thermal treatments, this perovskite cell {prepared_term}, leading to a PCE of {pce}%.",
-#     "Using a parameter-driven approach, we have engineered a perovskite solar cell that {prepared_term}, thus realizing a PCE of {pce}%.",
-#     "This work arises from meticulous parameter optimization, where a perovskite solar device {prepared_term}, reflecting a PCE of {pce}%.",
-#     "Within a framework of controlled experimental inputs, a perovskite cell configuration {prepared_term}, ultimately manifesting a PCE of {pce}%.",
-#     "Each step—from solution concentration to annealing—was carefully optimized to {prepared_term} this perovskite solar cell, achieving a PCE of {pce}%.",
-#     "Guided by experimental parameters such as spin speeds, antisolvent timing, and annealing profiles, this device {prepared_term}, realizing a PCE of {pce}%.",
-#     "Guided by incremental parameter refinements, the perovskite assembly {prepared_term}, achieving a PCE of {pce}%.",
-#     "Based on a methodical exploration of fabrication parameters, the perovskite cell {prepared_term}, reaches the PCE of {pce}%.",
-#     "By strategically aligning experimental conditions with device architecture, a perovskite solar cell {prepared_term}, demonstrating a PCE of {pce}%.",
-#     "Through iterative refinements in substrate preparation, solution concentration, and coating protocols, this perovskite device {prepared_term}, echoing a PCE of {pce}%.",
-# ]
-
-# Perovskite Formula Segments
 PEROVSKITE_FORMULA_SEGMENTS = [
     "A perovskite precursor solution was first prepared using {formula_pvk} at {concentration_pvk} mol/L.",
     "Starting with a {formula_pvk} solution at {concentration_pvk} mol/L, the base solution was formulated to form the core perovskite layer.",
@@ -215,7 +190,6 @@ PEROVSKITE_FORMULA_SEGMENTS = [
     "For perovskite film, the solution concentration of {formula_pvk} was {concentration_pvk} mol/L.",
 ]
 
-# SAM Formula Segments - Single
 SAM_FORMULA_SEGMENTS_SINGLE = [
     "The SAM material {formula_sam1} ({concentration_sam1} mg/mL) was subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) as a SAM was carried out to improve layer formation and refine the film’s interfacial structure.",
@@ -247,7 +221,6 @@ SAM_FORMULA_SEGMENTS_SINGLE = [
     "The {formula_sam1} solution was prepared with a concentration of {concentration_sam1} mg/mL.",
 ]
 
-# SAM Formula Segments - Dual
 SAM_FORMULA_SEGMENTS_DUAL = [
     "Two SAM materials of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) were subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL) and {formula_sam2} ({concentration_sam2} mg/mL) as SAMs were carried out to improve layer formation and refine the film’s interfacial structure.",
@@ -278,7 +251,6 @@ SAM_FORMULA_SEGMENTS_DUAL = [
     "The {formula_sam1} concentration is {concentration_sam1} mg/mL and {formula_sam2} concentration is {concentration_sam2} mg/mL.",
     ]
 
-# SAM Formula Segments - Triple
 SAM_FORMULA_SEGMENTS_TRIPLE = [
     "Three SAM materials of {formula_sam1} ({concentration_sam1} mg/mL), {formula_sam2} ({concentration_sam2} mg/mL) and {formula_sam3} ({concentration_sam3} mg/mL) were subsequently added into the perovskite solution to enhance interfacial properties and optimize device performance.",
     "The incorporation of {formula_sam1} ({concentration_sam1} mg/mL), {formula_sam2} ({concentration_sam2} mg/mL) and {formula_sam3} ({concentration_sam3} mg/mL) as SAMs were carried out to improve layer formation and refine the film’s interfacial structure.",
@@ -302,7 +274,6 @@ SAM_FORMULA_SEGMENTS_TRIPLE = [
 
 ]
 
-# Additive Formula Segments - Single
 ADDITIVE_FORMULA_SEGMENTS_SINGLE = [
     "{formula_add1} ({concentration_add1} mg/mL) was incorporated as an additive.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL) was added to the perovskite solution as an additive.",
@@ -354,7 +325,6 @@ ADDITIVE_FORMULA_SEGMENTS_SINGLE = [
 
     ]
 
-# Additive Formula Segments - Dual
 ADDITIVE_FORMULA_SEGMENTS_DUAL = [
     "{formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were incorporated as additives.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL) and {formula_add2} ({concentration_add2} mg/mL) were added to the perovskite solution as additives.",
@@ -392,7 +362,6 @@ ADDITIVE_FORMULA_SEGMENTS_DUAL = [
 
     ]
 
-# Additive Formula Segments - Triple
 ADDITIVE_FORMULA_SEGMENTS_TRIPLE = [
     "{formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were incorporated as additives.",
     "To enhance device performance, {formula_add1} ({concentration_add1} mg/mL), {formula_add2} ({concentration_add2} mg/mL) and {formula_add3} ({concentration_add3} mg/mL) were added to the perovskite solution as additives.",
@@ -425,7 +394,6 @@ ADDITIVE_FORMULA_SEGMENTS_TRIPLE = [
 
     ]
 
-# Process Segments
 PROCESS_SEGMENTS = [
     "Spin-coating was conducted in two stages: {spin1_speed} rpm for {spin1_time} s, then {spin2_speed} rpm for {spin2_time} s.",
     "A sequential spin-coating procedure was employed, first at {spin1_speed} rpm for {spin1_time} s, followed by {spin2_speed} rpm for {spin2_time} s.",
@@ -509,7 +477,6 @@ PROCESS_SEGMENTS = [
 
     ]
 
-# Antisolvent Segments
 ANTISOLVENT_SEGMENTS = [
     "During the second spin-coating step, {antisolvent_volume} µL of antisolvent was introduced at last {antisolvent_timing} s.",
     "At a carefully chosen interval ({antisolvent_timing} s) during the second stage, {antisolvent_volume} µL of antisolvent was gently dispensed to improve crystallization.",
@@ -616,7 +583,6 @@ ANTISOLVENT_SEGMENTS = [
 
     ]
 
-# Anneal Segments
 ANNEAL_SEGMENTS = [
     "The resulting films were then annealed at {anneal_temp} °C for {anneal_time} min.",
     "Subsequent thermal treatment was carried out at {anneal_temp} °C for {anneal_time} min to finalize the perovskite crystal structure.",
@@ -691,7 +657,6 @@ ANNEAL_SEGMENTS = [
 
     ]
 
-# Instruction Templates
 INSTRUCTION_TEMPLATES = [
     "Recommend a set of perovskite solar cell preparation schemes with a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², including materials information and process parameters.",
     "Propose fabrication procedures for perovskite solar cells achieving a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm², detailing the materials and methods used.",
@@ -721,37 +686,6 @@ INSTRUCTION_TEMPLATES = [
     "Provide a comprehensive fabrication protocol detailing the systematic optimization of key parameters that enabled the production of high-efficiency perovskite solar cells achieving a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm².",
     ]
 
-# instruction_templates = [
-#     "Recommend a set of perovskite solar cell preparation schemes with a PCE of {pce}%, including materials information and process parameters.",
-#     "Propose fabrication procedures for perovskite solar cells achieving a PCE of {pce}%, detailing the materials and methods used.",
-#     "Suggest a series of preparation strategies for perovskite solar cells targeting a PCE of {pce}%, encompassing material specifications and processing conditions.",
-#     "Provide a comprehensive preparation plan for perovskite solar cells with a PCE of {pce}%, outlining the materials and fabrication parameters.",
-#     "Design a perovskite solar cell synthesis protocol aiming for a PCE of {pce}%, incorporating relevant materials and processing steps.",
-#     "Outline a preparation methodology for perovskite solar cells achieving a PCE of {pce}%, including material compositions and fabrication techniques.",
-#     "Develop a set of synthesis procedures for perovskite solar cells targeting a PCE of {pce}%, detailing the materials and processing conditions involved.",
-#     "Create a fabrication framework for perovskite solar cells with a PCE of {pce}%, specifying the materials used and the processing parameters.",
-#     "Formulate a preparation approach for perovskite solar cells aiming at a PCE of {pce}%, incorporating both material information and process details.",
-#     "Draft a set of synthesis steps for perovskite solar cells achieving a PCE of {pce}%, including material specifications and processing parameters.",
-#     "Establish a preparation protocol for perovskite solar cells with a PCE of {pce}%, outlining the necessary materials and fabrication conditions.",
-#     "Construct a fabrication plan for perovskite solar cells targeting a PCE of {pce}%, detailing the materials and processing parameters required.",
-#     "Devise a perovskite solar cell preparation strategy aiming for a PCE of {pce}%, encompassing both material information and process steps.",
-#     "Formulate a comprehensive synthesis protocol for perovskite solar cells achieving a PCE of {pce}%, including details on materials and fabrication processes.",
-#     "Design a preparation scheme for perovskite solar cells with a PCE of {pce}%, specifying the materials used and the processing conditions.",
-#     "Please design a perovskite solar cell based on a systematically tuned set of experimental parameters to achieve a PCE of {pce}%. Layout the complete protocol.",
-#     "Provide a detailed and step-by-step protocol for fabricating the perovskite device under carefully optimized conditions, ensuring that the process achieves a PCE of {pce}%. Include specific materials, equipment, deposition techniques, annealing parameters, and any critical environmental controls necessary to replicate the optimized fabrication.",
-#     "Develop a comprehensive fabrication protocol for a perovskite solar cell, detailing the refined parameters that led to achieving a PCE of {pce}%. Specify the materials, deposition methods, annealing conditions, and any critical optimizations in the process to ensure reproducibility and high performance.",
-#     "Provide a detailed fabrication protocol for the perovskite cell, outlining precise control over solution composition, coating speeds, and thermal treatments to achieve a PCE of {pce}%. Include specific material formulations, processing parameters, and quality control measures to ensure reproducibility and performance optimization.",
-#     "Using a parameter-driven approach, we engineered a perovskite solar cell that achieved a PCE of {pce}%.",
-#     "Outline a comprehensive fabrication protocol detailing the meticulous parameter optimization that led to the perovskite solar cell achieving a PCE of {pce}%. Include specific adjustments in material selection, deposition techniques, processing conditions, and performance characterization. ",
-#     "Develop a detailed fabrication protocol for the perovskite cell, specifying the controlled experimental inputs that led to achieving a PCE of {pce}%. Include precise guidelines on material preparation, deposition techniques, processing conditions, and key optimization steps.",
-#     "Provide a detailed fabrication protocol for the perovskite solar cell, outlining the careful optimization of each step, from solution concentration to annealing, that led to achieving a PCE of {pce}%. Include precise material formulations, deposition techniques, thermal processing conditions, and any critical optimization strategies.",
-#     "Detail a step-by-step fabrication protocol for the perovskite device, emphasizing the tuning of key parameters such as coating speeds, antisolvent timing, and annealing profiles. Specify the exact material compositions, processing techniques, and optimization strategies that enabled the achievement of a PCE of {pce}%, ensuring reproducibility and performance consistency.",
-#     "Design a comprehensive fabrication protocol detailing the incremental refinement of parameters that led to achieving a perovskite solar cell with a PCE of {pce}%.",
-#     "Provide a comprehensive fabrication protocol detailing the systematic optimization of key parameters that enabled the production of high-efficiency perovskite solar cells achieving a PCE of {pce}%.",
-#     ]
-
-
-# Passivation Material Segments - Single
 PASSIVATION_MATERIAL_SEGMENTS_SINGLE = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL) was incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL) was spin-coated onto the sample surface as a passivation layer.",
@@ -796,7 +730,6 @@ PASSIVATION_MATERIAL_SEGMENTS_SINGLE = [
 
     ]
 
-# Passivation Material Segments - Dual
 PASSIVATION_MATERIAL_SEGMENTS_DUAL = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL) and {formula_passivator2} ({concentration_passivator2} mg/mL) were spin-coated onto the sample surface as a passivation layer.",
@@ -841,7 +774,6 @@ PASSIVATION_MATERIAL_SEGMENTS_DUAL = [
 
 ]
 
-# Passivation Material Segments - Triple
 PASSIVATION_MATERIAL_SEGMENTS_TRIPLE = [
     "{formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL) were incorporated as passivator.",
     "To enhance device performance, {formula_passivator1} ({concentration_passivator1} mg/mL), {formula_passivator2} ({concentration_passivator2} mg/mL) and {formula_passivator3} ({concentration_passivator3} mg/mL)  were spin-coated onto the sample surface as a passivation layer.",
@@ -876,7 +808,6 @@ PASSIVATION_MATERIAL_SEGMENTS_TRIPLE = [
 
         ]
 
-# Passivation Spin Segments
 PASSIVATION_SPIN_SEGMENTS = [
     "The spin-coating process was conducted at {spin_speed_passivator} rpm for {spin_time_passivator} s.",
     "Spin-coating of the passivation layer was performed at {spin_speed_passivator} rpm for {spin_time_passivator} s.",
@@ -937,7 +868,6 @@ PASSIVATION_SPIN_SEGMENTS = [
 
     ]
 
-# Passivation Drop Segments
 PASSIVATION_DROP_SEGMENTS = [
     "Subsequently, {passivator_volume} µL of passivator was dropped at {passivator_timing} s during spin-coating.",
     "During spin-coating, {passivator_volume} µL of passivator was introduced at {passivator_timing} s.",
@@ -957,7 +887,6 @@ PASSIVATION_DROP_SEGMENTS = [
 
     ]
 
-# Passivation Anneal Segments
 PASSIVATION_ANNEAL_SEGMENTS = [
     "The passivation layer was then annealed at {anneal_temp_passivator} °C for {anneal_time_passivator} min to enhance film quality.",
     "Annealing of the passivation layer was performed at {anneal_temp_passivator} °C for {anneal_time_passivator} min.",
@@ -995,28 +924,23 @@ PASSIVATION_ANNEAL_SEGMENTS = [
 
     ]
 
-# RGB Image Analysis Templates
 IMAGE_ANALYSIS_SEGMENTS = [
     "Image analysis shows that the spin-coating coverage reaches {coverage}%, and the average grayscale value of the film is {grayscale_value}"
 ]
 
-# PL Analysis Templates
 PL_ANALYSIS_SEGMENTS = [
     "Spectral analysis indicates that, upon the onset of annealing, the film reaches the explosive nucleation point at {peak_time} seconds, at which the photoluminescence (PL) intensity attains its maximum. Following this peak, the PL intensity decreases to 30% of its maximum value, with an average decay slope of {decay_slope}."
 ]
 
-# XRD Analysis Templates - 12.6°
 XRD_ANALYSIS_SEGMENTS_12 = [
     "XRD analysis showed a diffraction peak was identified at around 12.65°, with an intensity of {xrd_intensity_12} cts and a full width at half maximum (FWHM) of {xrd_fhwm_12}, which corresponds to the characteristic peak of PbI2. The relatively low intensity of this peak suggests a limited presence of residual PbI2."
 ]
 
-# XRD Analysis Templates - Stress
 XRD_ANALYSIS_SEGMENTS_STRESS = [
     "XRD analysis showed a diffraction peak was identified at 4.00°, with an intensity of {xrd_intensity_4} cts，which corresponds to the formation of a 2D structure within the perovskite lattice. The high intensity implies efficient surface passivation, contributing positively to device performance. GIXRD analysis further revealed a residual tensile stress of {xrd_Stress} MPa in the perovskite film via measurement conducted at an incident angle of 1°."
 ]
 
 
-# ===================== Safe value retrieval utilities =====================
 def gv(row: pd.Series, col: str, default: str = 'N/A') -> str:
     """Safely retrieve value from pandas Series.
 
@@ -1081,7 +1005,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
     """
     parts = []
 
-    # Introduction section
     parts.append(
         templates['intro'].format(
             prepared_term=templates['prepared_term'],
@@ -1089,7 +1012,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
         )
     )
 
-    # Perovskite formula
     parts.append(
         templates['perovskite_formula'].format(
             formula_pvk=gv(row, 'Formula PVK'),
@@ -1097,7 +1019,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
         )
     )
 
-    # SAM (optional)
     if templates.get('sam_formula'):
         parts.append(
             templates['sam_formula'].format(
@@ -1110,7 +1031,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
             )
         )
 
-    # Additives (optional)
     if templates.get('additive_formula'):
         parts.append(
             templates['additive_formula'].format(
@@ -1123,7 +1043,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
             )
         )
 
-    # Process steps
     parts.append(
         templates['process'].format(
             spin1_speed=gv(row, 'Spin Coating Speed PVK 1'),
@@ -1133,7 +1052,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
         )
     )
 
-    # Antisolvent
     parts.append(
         templates['antisolvent'].format(
             antisolvent_volume=gv(row, 'Antisolvent Volume'),
@@ -1141,7 +1059,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
         )
     )
 
-    # Annealing
     parts.append(
         templates['anneal'].format(
             anneal_temp=gv(row, 'Annealed Temperature PVK'),
@@ -1149,7 +1066,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
         )
     )
 
-    # Passivation layer (optional)
     if templates.get('passivation_material'):
         parts.append(
             templates['passivation_material'].format(
@@ -1183,7 +1099,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
                 )
             )
 
-    # RGB (optional)
     rgb_keys = ['area_px2', 'gray_mean']
     if all(k in row.index for k in rgb_keys) and all(gv(row, k) != 'N/A' for k in rgb_keys):
         parts.append(
@@ -1193,7 +1108,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
             )
         )
 
-    # PL (optional)
     pl_keys = ['peak_time', 'decay_slope']
     if all(k in row.index for k in pl_keys) and all(gv(row, k) != 'N/A' for k in pl_keys):
         parts.append(
@@ -1203,7 +1117,6 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
             )
         )
 
-    # XRD 12.6° segment (only use 12 template)
     if templates.get('xrd_analysis_12'):
         if gv(row, 'xrd_intensity_12.6') != 'N/A' and gv(row, 'xrd_fhwm_12.6') != 'N/A':
             parts.append(
@@ -1213,9 +1126,7 @@ def generate_output_text(row: pd.Series, templates: dict) -> str:
                 )
             )
 
-    # XRD Stress/multi-peak segment (only use stress template)
     if templates.get('xrd_analysis_stress'):
-        # Only write this section when xrd_Stress is valid
         if gv(row, 'xrd_Stress') != 'N/A':
             parts.append(
                 templates['xrd_analysis_stress'].format(
@@ -1251,7 +1162,6 @@ def build_templates_for_row(row: pd.Series) -> dict:
     xrd_analysis_12 = random.choice(XRD_ANALYSIS_SEGMENTS_12)
     xrd_analysis_stress = random.choice(XRD_ANALYSIS_SEGMENTS_STRESS) if gv(row, 'xrd_Stress') != 'N/A' else ""
 
-    # SAM
     sam1, sam2, sam3 = gv(row, 'Formula SAM 1'), gv(row, 'Formula SAM 2'), gv(row, 'Formula SAM 3')
     if sam1 == 'N/A':
         sam_formula_template = ""
@@ -1263,7 +1173,6 @@ def build_templates_for_row(row: pd.Series) -> dict:
         else:
             sam_formula_template = random.choice(SAM_FORMULA_SEGMENTS_TRIPLE)
 
-    # Additives
     add1, add2, add3 = gv(row, 'Formula Additive 1'), gv(row, 'Formula Additive 2'), gv(row, 'Formula Additive 3')
     if add1 == 'N/A':
         additive_formula_template = ""
@@ -1275,7 +1184,6 @@ def build_templates_for_row(row: pd.Series) -> dict:
         else:
             additive_formula_template = random.choice(ADDITIVE_FORMULA_SEGMENTS_TRIPLE)
 
-    # Passivation layer
     passivation_material_template = ""
     passivation_spin_template = ""
     passivation_drop_template = ""
@@ -1322,35 +1230,8 @@ def row_to_text(row: pd.Series) -> str:
     templates = build_templates_for_row(row)
     return generate_output_text(row, templates)
 
-# Build template dictionary for a specific database row
-# questions = {
-#     "passivators": '''How does the peak intensity and residual stress of low dimensional perovskite characteristic peaks around 4 ° change in XRD characterization when passivating agents are used for surface treatment of perovskite?'''
-# }
-
-# questions = {
-#     "additives": '''How will the peak intensity and half width of the 12.6 ° characteristic peak of additives added to perovskite precursors to prepare thin films change in XRD characterization?'''
-# }
-
-# questions = {
-#     "sam": '''SAM is added to perovskite precursor to prepare thin films, and in-situ PL spectra are collected during annealing. How do the nucleation time and PL decay slope change, thereby affecting PCE, Voc, Jsc, and FF?'''
-# }
-
-questions = {
-    "RGB": '''During the preparation of perovskite thin films, how do adjustments to perovskite composition concentration or process parameters affect the defect coverage ratio and grayscale intensity values obtained from image-based defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?'''
-}
-
-import pandas as pd
-from pathlib import Path
-import json
-
-
-import pandas as pd
-import random
-import json
-from sqlalchemy import create_engine
-
-
 DB_CONFIG: Dict[str, Any] = {}
+
 
 def get_random_row_from_db(config: Dict[str, Any]) -> pd.Series:
     """Fetch random row from MySQL database.
@@ -1382,9 +1263,6 @@ def get_random_row_from_db(config: Dict[str, Any]) -> pd.Series:
     return df.iloc[0]
 
 
-import pandas as pd
-from sqlalchemy import create_engine
-
 def get_all_rows_from_db(config: Dict[str, Any]) -> pd.DataFrame:
     """Fetch all rows from MySQL database.
     Args:
@@ -1403,7 +1281,6 @@ def get_all_rows_from_db(config: Dict[str, Any]) -> pd.DataFrame:
     if df.empty:
         print("Warning: Table is empty")
     return df
-
 
 
 def main():
