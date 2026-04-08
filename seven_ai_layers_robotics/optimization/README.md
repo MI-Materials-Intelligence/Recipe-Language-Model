@@ -94,4 +94,4 @@ Optimization/
 
 - **prepare_training.py**: Prepare DPO training data
 - **run_training.py**: Execute DPO training
-- **optimization_api/**: DPO optimization API service
+- **optimization_api**: DPO optimization API service
