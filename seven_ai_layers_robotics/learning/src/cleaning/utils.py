@@ -316,16 +316,6 @@ def contains_target_expression(
 
     Returns:
         bool: True if any of the target expressions are found in the text, False otherwise.
-
-    Example:
-        >>> contains_target_expression("We ran Experiment 2 yesterday.")
-        True
-
-        >>> contains_target_expression("we tested sam1", case_sensitive=False)
-        True
-
-        >>> contains_target_expression("We tested Sam3")
-        False
     """
     if patterns is None:
         patterns = [

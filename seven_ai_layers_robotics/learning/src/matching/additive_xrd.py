@@ -1,32 +1,4 @@
 from __future__ import annotations
-def run_additive_xrd(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Additive XRD pipeline.
-
-    Args:
-        seed: Override random seed (optional).
-        verbose: Print start / end logs.
-        
-    Returns:
-        None
-    """
-    if verbose:
-        print("▶ Running Additive XRD pipeline...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("Additive XRD pipeline finished.")
 import sys
 import json
 import random
@@ -966,6 +938,34 @@ def main() -> None:
     print("Output JSON:", output_json)
     print("Records:", len(records))
 
+def run_additive_xrd(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run Additive XRD pipeline.
 
+    Args:
+        seed: Override random seed (optional).
+        verbose: Print start / end logs.
+        
+    Returns:
+        None
+    """
+    if verbose:
+        print("▶ Running Additive XRD pipeline...")
+
+    if seed is not None:
+        import random
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("Additive XRD pipeline finished.")
+        
 if __name__ == "__main__":
     run_additive_xrd()
