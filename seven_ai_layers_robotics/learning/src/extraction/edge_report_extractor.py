@@ -279,5 +279,5 @@ class EdgeReportExtractor:
             return True
 
         except Exception as e:
-            print(f"❌ Processing failed: {e}")
+            print(f"Processing failed: {e}")
             raise e
