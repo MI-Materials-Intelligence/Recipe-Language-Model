@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     # Initialize and execute
     pipeline = EdgeReportPipeline()
-    success = pipeline.run_full_process(src_table="experiments_data", target_table="experiments_cleaned_data")
+    success = pipeline.run_full_process(src_table="experiments_data")
 
     if not success:
         print("\nWorkflow execution failed, please check logs.")
