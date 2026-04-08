@@ -1,10 +1,11 @@
-"""
-Characterization Data Automated Processing Pipeline
-Supports: PL SAM, Image Process, Additive XRD, Passivator XRD data extraction -> JSON generation -> Database insertion
+"""Characterization data processing pipeline.
 
-Usage:
-    1. Run directly: python this_script.py
-    2. Import externally: from this_script import CharacterizationDataPipeline; pipeline = CharacterizationDataPipeline(); pipeline.run_all()
+This module orchestrates:
+1. PL SAM pair extraction
+2. Image Process pair extraction
+3. Additive XRD pair extraction
+4. Passivator XRD pair extraction
+5. Pair insertion into the characterization match table
 """
 
 import os
@@ -58,22 +59,18 @@ except ImportError as e:
 
 
 class CharacterizationDataPipeline:
-    """Characterization Data Automated Processing Pipeline.
-    
-    Supports: PL SAM, Image Process, Additive XRD, Passivator XRD 
-    data extraction -> JSON generation -> Database insertion
-    """
+    """Pipeline orchestrator for characterization data processing."""
 
     def __init__(
         self,
         db_config: Optional[Dict[str, Any]] = None,
         work_dir: Optional[str] = None,
     ):
-        """Initialize pipeline.
-        
+        """Initialize the pipeline instance.
+
         Args:
-            db_config: Database configuration dictionary. Defaults to DB_CONFIG if not provided.
-            work_dir: Working directory path. Defaults to WORK_DIR if not provided.
+            db_config: Database configuration. Defaults to ``DB_CONFIG``.
+            work_dir: Working directory path. Defaults to ``WORK_DIR``.
         """
         self.db_config = db_config if db_config else DB_CONFIG
         self.work_dir = work_dir if work_dir else WORK_DIR
@@ -91,15 +88,22 @@ class CharacterizationDataPipeline:
         }
 
     def check_module_status(self) -> Dict[str, bool]:
-        """Check availability status of each processing module.
-        
+        """Return availability status for each processing module.
+
         Returns:
-            Dictionary mapping module names to their availability status.
+            A mapping from module name to availability flag.
         """
         return self.module_status.copy()
 
     def run_characterisation_pl_sam_pipeline(self, verbose: bool = True) -> bool:
-        """Execute PL SAM data extraction pipeline"""
+        """Run the PL SAM extraction pipeline.
+
+        Args:
+            verbose: Whether to print progress logs.
+
+        Returns:
+            ``True`` if execution succeeds, otherwise ``False``.
+        """
         if not characterisation_pl_sam_AVAILABLE:
             print(" PL SAM module not available")
             return False
@@ -122,7 +126,14 @@ class CharacterizationDataPipeline:
             return False
 
     def run_characterisation_image_pvk_pipeline(self, verbose: bool = True) -> bool:
-        """Execute Image Process data extraction pipeline"""
+        """Run the Image Process extraction pipeline.
+
+        Args:
+            verbose: Whether to print progress logs.
+
+        Returns:
+            ``True`` if execution succeeds, otherwise ``False``.
+        """
         if not characterisation_image_pvk_AVAILABLE:
             print(" Image Process module not available")
             return False
@@ -145,7 +156,14 @@ class CharacterizationDataPipeline:
             return False
 
     def run_additive_xrd_pipeline(self, verbose: bool = True) -> bool:
-        """Execute Additive XRD data extraction pipeline"""
+        """Run the Additive XRD extraction pipeline.
+
+        Args:
+            verbose: Whether to print progress logs.
+
+        Returns:
+            ``True`` if execution succeeds, otherwise ``False``.
+        """
         if not ADDITIVE_XRD_AVAILABLE:
             print(" Additive XRD module not available")
             return False
@@ -168,7 +186,14 @@ class CharacterizationDataPipeline:
             return False
 
     def run_passivator_xrd_pipeline(self, verbose: bool = True) -> bool:
-        """Execute Passivator XRD data extraction pipeline"""
+        """Run the Passivator XRD extraction pipeline.
+
+        Args:
+            verbose: Whether to print progress logs.
+
+        Returns:
+            ``True`` if execution succeeds, otherwise ``False``.
+        """
         if not PASSIVATOR_XRD_AVAILABLE:
             print(" Passivator XRD module not available")
             return False
@@ -191,7 +216,14 @@ class CharacterizationDataPipeline:
             return False
 
     def run_database_insertion(self, verbose: bool = True) -> bool:
-        """Execute database insertion pipeline"""
+        """Run database insertion for generated characterization pairs.
+
+        Args:
+            verbose: Whether to print progress logs.
+
+        Returns:
+            ``True`` if execution succeeds, otherwise ``False``.
+        """
         if not INSERT_PAIRS_AVAILABLE:
             print(" Database insertion module not available")
             return False
@@ -214,10 +246,12 @@ class CharacterizationDataPipeline:
             return False
 
     def run_full_process(self) -> bool:
-        """Execute complete workflow: all characterization data processing + database insertion.
-        
+        """Run the full workflow.
+
+        The workflow includes all extraction steps and database insertion.
+
         Returns:
-            True if all steps succeeded, False otherwise.
+            ``True`` if all enabled steps succeed, otherwise ``False``.
         """
         try:
             results = self.run_all(
@@ -249,15 +283,18 @@ class CharacterizationDataPipeline:
         include_db_insertion: bool = True,
         verbose: bool = True,
     ) -> Dict[str, bool]:
-        """
-        Execute complete data processing and database insertion workflow
-        :param include_characterisation_pl_sam: Whether to include PL SAM processing
-        :param include_characterisation_image_pvk: Whether to include Image Process processing
-        :param include_additive_xrd: Whether to include Additive XRD processing
-        :param include_passivator_xrd: Whether to include Passivator XRD processing
-        :param include_db_insertion: Whether to include database insertion
-        :param verbose: Whether to print detailed logs
-        :return: Dictionary of step execution results
+        """Run selected workflow steps and return per-step results.
+
+        Args:
+            include_characterisation_pl_sam: Whether to run PL SAM processing.
+            include_characterisation_image_pvk: Whether to run Image Process processing.
+            include_additive_xrd: Whether to run Additive XRD processing.
+            include_passivator_xrd: Whether to run Passivator XRD processing.
+            include_db_insertion: Whether to run database insertion.
+            verbose: Whether to print detailed logs.
+
+        Returns:
+            A mapping from step name to execution result.
         """
         if verbose:
             print("\n" + "="*80)
