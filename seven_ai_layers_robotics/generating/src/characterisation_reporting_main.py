@@ -35,25 +35,25 @@ LLM_CONFIG = {
 REPORT_GENERATORS = {}
 
 try:
-    from characterization_reporting.sam_report import run_sam_report
+    from seven_ai_layers_robotics.generating.src.characterization_reporting.sam_report import run_sam_report
     REPORT_GENERATORS['sam'] = run_sam_report
 except ImportError as e:
     print(f"Warning: Unable to import SAM report generator. Error: {e}")
 
 try:
-    from characterization_reporting.add_report import run_add_report
+    from seven_ai_layers_robotics.generating.src.characterization_reporting.add_report import run_add_report
     REPORT_GENERATORS['additive'] = run_add_report
 except ImportError as e:
     print(f"Warning: Unable to import Additive report generator. Error: {e}")
 
 try:
-    from characterization_reporting.pass_report import run_pass_report
+    from seven_ai_layers_robotics.generating.src.characterization_reporting.pass_report import run_pass_report
     REPORT_GENERATORS['passivator'] = run_pass_report
 except ImportError as e:
     print(f"Warning: Unable to import Passivator report generator. Error: {e}")
 
 try:
-    from characterization_reporting.process_report import run_process_report
+    from seven_ai_layers_robotics.generating.src.characterization_reporting.process_report import run_process_report
     REPORT_GENERATORS['process'] = run_process_report
 except ImportError as e:
     print(f"Warning: Unable to import Process report generator. Error: {e}")

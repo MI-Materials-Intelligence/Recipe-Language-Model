@@ -37,13 +37,9 @@ DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 try:
     IS_VARIABLE_REPORT_AVAILABLE = False
 
-    _var_reporting_dir = os.path.join(WORK_DIR, 'Variable_Reporting')
-    if _var_reporting_dir not in sys.path:
-        sys.path.insert(0, _var_reporting_dir)
-
     try:
-        from single_report_prepare import PerovskiteAnalyzer
-        from single_report import ReportGenerator
+        from seven_ai_layers_robotics.generating.src.variable_reporting.single_report_prepare import PerovskiteAnalyzer
+        from seven_ai_layers_robotics.generating.src.variable_reporting.single_report import ReportGenerator
         IS_VARIABLE_REPORT_AVAILABLE = True
     except ImportError as e:
         print(f"Warning: Unable to import Variable_Reporting module. Error: {e}")

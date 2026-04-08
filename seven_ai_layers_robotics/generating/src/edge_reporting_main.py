@@ -80,7 +80,8 @@ class EdgeReportPipeline:
         os.makedirs(self.work_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
 
-        self._initialize_step_modules()
+        self._setup_step2()
+        self._setup_step3()
 
     def _setup_step2(self):
         """Configure Step 2 module"""
