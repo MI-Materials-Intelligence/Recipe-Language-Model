@@ -1,8 +1,12 @@
-import math
-import re
+﻿import re
 import json
+import sys
 import warnings
-from typing import Literal, Optional
+from pathlib import Path
+
+import joblib
+import numpy as np
+import pandas as pd
 
 
 try:
@@ -15,14 +19,8 @@ warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 warnings.filterwarnings("ignore", category=UserWarning, message=".*xgboost.*")
 warnings.filterwarnings("ignore", message=".*XGBoost.*")
 
-import pandas as pd
-import numpy as np
-import joblib
-import sys
-from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[4]))
 from seven_ai_layers_robotics.config import config
-
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -30,7 +28,6 @@ pd.set_option('future.no_silent_downcasting', True)
 
 def load_model_data(task_type: str) -> tuple[dict, any, any, any]:
     """Load model configuration and artifacts."""
-    # Get model configuration from app.config
     model_config = config.evaluation_predictor.get_model_config(config.root_path)[task_type]
 
     encoding = json.load(open(model_config["encoding"]))
@@ -43,15 +40,14 @@ def load_model_data(task_type: str) -> tuple[dict, any, any, any]:
 
 MAPPINGS, COL_JSC, SCALER_JSC, MODEL_JSC = load_model_data("jsc")
 
-# Convert MAPPINGS to lowercase and merge into a single dictionary
 STRING_MAPPINGS = json.dumps(MAPPINGS)
 STRING_MAPPINGS = STRING_MAPPINGS.lower()
 mappings_lower = json.loads(STRING_MAPPINGS)
 
-# Merge list of dicts into a single dict
 MERGED = {}
 for item in mappings_lower:
     MERGED.update(item)
+
 
 def get_valid_number(string: str) -> str:
     """Extract valid number from string using regex."""
@@ -67,9 +63,9 @@ def get_formula_pvk(string: str) -> str:
     reg = re.compile(r'[A-Za-z]+\d\.{0,1}\d*')
     matches = re.findall(reg, string)
 
-    # Concatenate all matched results together
     formula_pvk = ''.join(matches)
     return formula_pvk
+
 
 def get_jsc(fp_params_initial: dict, task: str = "None") -> float:
     """
@@ -84,7 +80,6 @@ def get_jsc(fp_params_initial: dict, task: str = "None") -> float:
     """
     def pvk_encoding(formula_pvk: str) -> dict:
         formula_pvk = formula_pvk.replace("PbI", "Pb1I").replace("PbBr", "Pb1Br")
-        # zqy
         formula_pvk = get_formula_pvk(formula_pvk)
 
         reg = re.compile(r'([a-zA-Z]+)(\d+\.{0,1}\d*)')
@@ -94,8 +89,6 @@ def get_jsc(fp_params_initial: dict, task: str = "None") -> float:
 
         return result
 
-    # try:
-    ## input parsing
     fp_params = {}
     formula_pvk_encoding = pvk_encoding(fp_params_initial["Formula PVK"])
     fp_params['Fa1'] = formula_pvk_encoding.get('Cs', 0)
@@ -110,14 +103,7 @@ def get_jsc(fp_params_initial: dict, task: str = "None") -> float:
         value = str(value).replace("nan", "") if value is not None else ""
 
         if "Formula" in key:
-
-            # if "PVK" in key:
-            #     continue
-
             if "PVK" not in key:
-
-                # list to dict
-
                 items = MERGED.get(key.lower(), {})
                 if value:
                     formula_encoding = items.get(value.lower(), "")
@@ -144,13 +130,9 @@ def get_jsc(fp_params_initial: dict, task: str = "None") -> float:
             else:
                 fp_params[key] = fp_params_initial.get(key, 0)
 
-    # print(f"task {task}: \n\n FP_params: \n\n", fp_params)
-
     df_fp_params = pd.DataFrame([fp_params])
 
     x_new = df_fp_params[COL_JSC].replace('', np.nan).fillna(0)
-    # print(f"task {task}: \n\n FP_params: \n\n", x_new.to_dict(orient='records')[0])
-
     x_new_std = SCALER_JSC.transform(x_new)
     y_new_pred_jsc = MODEL_JSC.predict(x_new_std)[0]
 

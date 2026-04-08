@@ -16,7 +16,7 @@ from collections import defaultdict
 # ===== Config Loader =====
 def _load_recipeqa_config() -> Dict[str, Any]:
     """Load RecipeQA configuration from app.config
-    
+
     Returns:
         Dictionary containing LLM configuration with api_key, base_url, model, and temperature.
     """
@@ -41,7 +41,7 @@ def _load_recipeqa_config() -> Dict[str, Any]:
 BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # RecipeQA
 DATA_DIR: str = os.path.join(BASE_DIR, "data")  # RecipeQA/data
 
-# Lazy-loaded global variables
+
 RECIPEQA_CONFIG: Dict[str, Any] = {}
 LLM_CONFIG: Dict[str, Any] = {}
 MAX_CONCURRENT_REQUESTS: int = 5
@@ -68,7 +68,7 @@ def _init_llm_config() -> None:
 
 def _create_llm_client() -> AsyncOpenAI:
     """Create and configure the LLM client.
-    
+
     Returns:
         Configured AsyncOpenAI client instance.
     """
@@ -160,10 +160,10 @@ Do not propose any process changes.
 # ===== Utils =====
 def safe_filename(name: str) -> str:
     """Remove invalid characters from filename.
-    
+
     Args:
         name: Original filename.
-        
+
     Returns:
         Sanitized filename with invalid characters replaced by underscores.
     """
@@ -172,10 +172,10 @@ def safe_filename(name: str) -> str:
 
 def read_text_file(path: str) -> str:
     """Read text content from file.
-    
+
     Args:
         path: File path to read.
-        
+
     Returns:
         File content as string.
     """
@@ -184,7 +184,7 @@ def read_text_file(path: str) -> str:
 
 def atomic_write_json(path: str, data: Any) -> None:
     """Atomically write JSON data to file.
-    
+
     Args:
         path: Target file path.
         data: Data to serialize to JSON.
@@ -199,7 +199,7 @@ def atomic_write_json(path: str, data: Any) -> None:
 
 def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
     """Save data to JSON file.
-    
+
     Args:
         data: Data to serialize.
         file_path: Output file path.
@@ -213,10 +213,10 @@ def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
 
 def read_json_file(file_path: str) -> Any:
     """Read JSON file and parse content.
-    
+
     Args:
         file_path: Path to JSON file.
-        
+
     Returns:
         Parsed JSON data.
     """
@@ -238,7 +238,7 @@ def rebuild_mechanism_from_db(
     print(f"[INFO] DB config: {db_config['host']}:{db_config['port']}/{db_config['database']}")
     print(f"[INFO] Table: {table_name}")
     print(f"[INFO] Output dir: {output_root}")
-    
+
     # Create output directory
     os.makedirs(output_root, exist_ok=True)
     print(f"[INFO] Created output directory: {output_root}")
@@ -298,7 +298,8 @@ def rebuild_mechanism_from_db(
             except Exception as e:
                 print(f"[ERROR] failed to write {md_path}: {e}")
 
-        print(f"\n✅ Rebuilt {written_count} markdown files into '{output_root}'")
+        print(f"\n Rebuilt {written_count} markdown files into '{output_root}'")
+        print(f"\nRebuilt {written_count} markdown files into '{output_root}'")
         print(f"[INFO] Total records processed: {len(rows)}")
         print(f"[INFO] Total files written: {written_count}")
 
@@ -318,11 +319,11 @@ def rebuild_mechanism_from_db(
 # ===== Main =====
 def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
     """Recursively find files by extension in directory.
-    
+
     Args:
         directory: Root directory to search.
         extensions: List of file extensions to match (e.g., [".json", ".md"]).
-        
+
     Returns:
         List of absolute file paths matching the extensions.
     """
@@ -337,12 +338,12 @@ def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
 
 def _safe_get(d: dict, path: List[str], default: str = "") -> str:
     """Safely get nested dictionary value by path.
-    
+
     Args:
         d: Dictionary to query.
         path: List of keys representing the path to the value.
         default: Default value if path not found. Default is empty string.
-        
+
     Returns:
         Value at path or default if not found.
     """
@@ -355,15 +356,15 @@ def _safe_get(d: dict, path: List[str], default: str = "") -> str:
 
 def normalize_material_key(name: str) -> str:
     """Normalize material/variable name to a key for md file matching.
-    
+
     Normalization steps:
     1. Apply MAPPING_RELATION for alias correction (e.g., PEACI -> PEACl)
     2. Convert to uppercase
     3. Keep only letters and numbers
-    
+
     Args:
         name: Raw material or variable name.
-        
+
     Returns:
         Normalized key for filename matching (case-insensitive).
     """
@@ -405,7 +406,7 @@ def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], s
         if parent in ("sam", "additive", "passivator"):
             type_key: Optional[str] = parent     # 'sam' / 'additive' / 'passivator'
         else:
-            type_key = None                      # 其它目录或根目录
+            type_key = None                      
 
         map_key = (type_key, key)
         if map_key in mapping and mapping[map_key] != path:
@@ -414,14 +415,6 @@ def build_md_knowledge_map(expert_data_root: str) -> Dict[Tuple[Optional[str], s
 
     print(f"[INFO] loaded {len(mapping)} md knowledge files from {osp.abspath(expert_data_root)}")
     return mapping
-
-
-def read_text_file(path: str) -> str:
-    """
-    Read md text content
-    """
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
 
 
 def extract_material_names_from_filename(base: str) -> List[str]:
@@ -441,7 +434,7 @@ def extract_material_names_from_filename(base: str) -> List[str]:
     # Unify arrows
     s = s.replace("→", "->").replace("➡", "->").replace("=>", "->")
 
-    # ✅ Unify action words
+    # Unify action words
     ACTION_WORDS = (
         r"adding|removing|add|remove|"
         r"replacing|replace|replaced|"
@@ -459,7 +452,7 @@ def extract_material_names_from_filename(base: str) -> List[str]:
         # Remove prefix action words: Adding/Removing/Increasing/Decreasing...
         t = re.sub(rf'^(?:{ACTION_WORDS})\s+', "", t, flags=re.IGNORECASE).strip()
 
-        # ✅ Remove suffix action words: PEABr Decreasing / PMACl Increasing
+        # Remove suffix action words: PEABr Decreasing / PMACl Increasing
         t = re.sub(rf'\s+(?:{ACTION_WORDS})$', "", t, flags=re.IGNORECASE).strip()
 
         # Remove parentheses content (concentration/units often in parentheses)
@@ -494,7 +487,7 @@ def extract_material_names_from_filename(base: str) -> List[str]:
         tok = _clean_token(m.group(2))
         return [tok] if tok else [_clean_token(s)]
 
-    # ✅ 2.5) Handle "PEABr_ Decreasing / PMACl_ Increasing"
+    # 2.5) Handle "PEABr_ Decreasing / PMACl_ Increasing"
     # Only split when action word is clearly after "_", to avoid misinterpreting complex names
     m = re.match(rf'^(.*?)\s*_\s*({ACTION_WORDS})\b', s, flags=re.IGNORECASE)
     if m:
@@ -634,13 +627,11 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
 
         folder_lower = folder_name.strip().lower()
 
-        # Determine if it's Formula SAM / Additive / Passivator categories
         is_formula_sam = folder_lower.startswith("formula sam")
         is_formula_additive = folder_lower.startswith("formula additive")
         is_formula_passivator = folder_lower.startswith("formula passivator")
         is_formula_folder = folder_lower.startswith("formula")
 
-        # Corresponding md type key
         if is_formula_sam:
             mat_type: Optional[str] = "sam"
         elif is_formula_additive:
@@ -659,11 +650,8 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
 
             # 3.1 Decide how to parse "names" based on whether it's Formula directory
             if is_formula_folder and mat_type in ("sam", "additive", "passivator"):
-                # Formula SAM / Additive / Passivator -> split filename to get multiple material names
                 material_names = extract_material_names_from_filename(base_name)
             else:
-                # Non-above Formula categories (including Formula PVK and all non-Formula),
-                # use filename directly as variable name
                 material_names = [base_name]
 
             expert_data = build_background_from_names(material_names, material_type=mat_type)
@@ -711,7 +699,7 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
                     "target_device_fabrication": inputs.get("target_device_fabrication", ""),
                     "category_folder": folder_name,
                     "match_file": osp.basename(jf),
-                    "expert_data": expert_data,  # 里有 summary_text，process_item 会用来喂给 API
+                    "expert_data": expert_data,  # Contains summary_text used by process_item for the API
                     "primary_materials": expert_data.get("material_names", []),
                 })
 
@@ -720,7 +708,8 @@ def get_tasks(expert_data_root: str, single_var_match_result_root: str, save_pat
 
 
 # ===== Inference =====
-async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None) -> None:
+async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None) -> Optional[int]:
+    record_id = item.get("record_id")
     sid1_raw = (item.get("meta_info", {}).get("Sample_ID_1", "") or "").split(",")[0].strip()
     sid2_raw = (item.get("meta_info", {}).get("Sample_ID_2", "") or "").split(",")[0].strip()
     fn = f"{safe_filename(sid1_raw) or 'X'}_{safe_filename(sid2_raw) or 'Y'}.json"
@@ -728,15 +717,15 @@ async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None
 
     os.makedirs(save_root, exist_ok=True)
     
-    # ✅ Skip if output file already exists
+    # Skip if output file already exists
     if osp.exists(save_path):
         print(f"[SKIP] Output already exists: {osp.abspath(save_path)}")
-        return
+        return record_id
 
-    # ✅ Load expert_data at runtime from md files (saves 90% JSON space)
+    # Load expert_data at runtime from md files (saves 90% JSON space)
     material_names = item.get("primary_materials", [])
     material_type = item.get("material_type")  # 'sam' / 'additive' / 'passivator' / None
-    
+
     if md_map is not None and material_names:
         # Build reference_analysis from md files dynamically
         pieces = []
@@ -756,7 +745,7 @@ async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None
         reference_analysis = "\n\n".join(pieces) if pieces else "No background knowledge available."
     else:
         reference_analysis = "No background knowledge available."
-    
+
     primary_materials_str = ", ".join(material_names) if material_names else "None"
 
     async with semaphore:
@@ -813,7 +802,7 @@ async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None
                 }
                 atomic_write_json(save_path, payload)
                 print(f"[SAVED] {osp.abspath(save_path)} | chunks={chunks} | think_len={len(think_part)} | answer_len={len(answer_part)}")
-                return
+                return record_id
 
             except Exception as e:
                 print(f"[WARN] attempt {attempt} failed: {e!r}")
@@ -833,22 +822,30 @@ async def process_item(item: Dict[str, Any], save_root: str, md_map: Dict = None
                         print(f"[FALLBACK] {osp.abspath(save_path)}")
                     except Exception as e2:
                         print(f"[FATAL] cannot save stub: {e2!r} | path={osp.abspath(save_path)}")
-                    return
+                    return None
 
-async def request_llm(data: List[Dict[str, Any]], save_root: str, expert_data_root: str = None):
+async def request_llm(
+    data: List[Dict[str, Any]],
+    save_root: str,
+    expert_data_root: str = None
+) -> List[int]:
     print(f"[PATH] dist: {osp.abspath(save_root)}")
     os.makedirs(save_root, exist_ok=True)
     
-    # ✅ Build md knowledge map for runtime retrieval
+    # Build md knowledge map for runtime retrieval
     md_map = {}
     if expert_data_root and osp.isdir(expert_data_root):
         md_map = build_md_knowledge_map(expert_data_root)
-    
+
     tasks = [process_item(item, save_root, md_map) for item in data]
     results = await asyncio.gather(*tasks, return_exceptions=True)
+    success_ids = []
     for i, r in enumerate(results):
         if isinstance(r, Exception):
             print(f"[TASK-ERR] #{i}: {repr(r)}")
+        elif r is not None:
+            success_ids.append(r)
+    return success_ids
 
 # ===== Dataset =====
 def get_dataset(data_root: str) -> List[Dict[str, Any]]:
@@ -873,7 +870,7 @@ def get_tasks_from_db(
     save_path: str,
     num_thres: int = 1,
     db_config: Optional[Dict[str, Any]] = None
-):
+) -> List[int]:
     def _pure_id(s: str) -> str:
         if s is None:
             return ""
@@ -954,6 +951,7 @@ def get_tasks_from_db(
         with conn.cursor() as cursor:
             cursor.execute("""
                 SELECT
+                    id,
                     task_name,
                     json_filename,
                     meta_info,
@@ -973,15 +971,16 @@ def get_tasks_from_db(
     grouped: Dict[str, List[Dict]] = defaultdict(list)
     for row in rows:
         record = {
-            "task_name": row[0],
-            "json_filename": row[1],
-            "meta_info": row[2],
-            "sample_id_1": row[3],
-            "sample_id_2": row[4],
-            "control_device_fabrication": row[5],
-            "target_device_fabrication": row[6] or "",
+            "id": row[0],
+            "task_name": row[1],
+            "json_filename": row[2],
+            "meta_info": row[3],
+            "sample_id_1": row[4],
+            "sample_id_2": row[5],
+            "control_device_fabrication": row[6],
+            "target_device_fabrication": row[7] or "",
         }
-        grouped[row[0]].append(record)
+        grouped[row[1]].append(record)
 
     total_task: List[Dict[str, Any]] = []
     seen = set()
@@ -1024,7 +1023,7 @@ def get_tasks_from_db(
             sid1 = _pure_id(meta.get("Sample_ID_1") or rec["sample_id_1"])
             sid2 = _pure_id(meta.get("Sample_ID_2") or rec["sample_id_2"])
 
-            # ✅ Key: Use json_filename instead of base_name
+            # Key: Use json_filename instead of base_name
             base_name = rec["json_filename"]  # Already removed .json
 
             if is_formula_folder and mat_type in ("sam", "additive", "passivator"):
@@ -1040,14 +1039,14 @@ def get_tasks_from_db(
             seen.add(dedup_key)
 
             total_task.append({
+                "record_id": rec["id"],
                 "meta_info": meta,
                 "control_device_fabrication": rec["control_device_fabrication"],
                 "target_device_fabrication": rec["target_device_fabrication"],
                 "category_folder": folder_name,
                 "match_file": f"{base_name}.json",
                 "primary_materials": material_names,
-                "material_type": mat_type,  # ✅ For runtime md retrieval
-                # ❌ Removed: expert_data (saves ~90% space)
+                "material_type": mat_type,  
             })
 
         # Optional: Sample by category (original logic samples per JSON file, now can sample by category or globally)
@@ -1055,6 +1054,7 @@ def get_tasks_from_db(
 
     print(f"[INFO] Total tasks built: {len(total_task)}")
     save_json_file(total_task, save_path)
+    return [t["record_id"] for t in total_task]
 
 
 # ===== Main =====
@@ -1107,7 +1107,7 @@ def main():
 
     tasks = read_json_file(task_save_path)
     print(f"[INFO] tasks: {len(tasks)} | dist: {osp.abspath(dist_save_root)}")
-    # ✅ Pass expert_data_root for runtime md loading
+    # Pass expert_data_root for runtime md loading
     asyncio.run(request_llm(tasks, dist_save_root, MECHANISM_DIR))
 
     dist_files = read_files_by_extension(dist_save_root, extensions=[".json"])

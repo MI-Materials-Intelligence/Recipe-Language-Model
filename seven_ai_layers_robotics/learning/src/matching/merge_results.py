@@ -21,14 +21,12 @@ def get_all_json_files(directory: str, recursive: bool = True) -> List[str]:
     json_files = []
 
     if recursive:
-        # Walk through directory tree
         for root, _, files in os.walk(directory):
             for file in files:
                 if file.lower().endswith(".json"):
                     full_path = os.path.join(root, file)
                     json_files.append(full_path)
     else:
-        # List files in the top-level directory only
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
             if os.path.isfile(full_path) and file.lower().endswith(".json"):
@@ -199,7 +197,6 @@ def merge_json_files(file_paths: List[str], output_root: Optional[str] = None) -
 
     save_json(overall_tasks, osp.join(output_root, "overall_tasks.json"))
 
-    # save_expert_files(output_root, expert_tasks)
 
 
 def merge_results(formula_root: str, fp_root: str):

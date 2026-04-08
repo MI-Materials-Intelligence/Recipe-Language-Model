@@ -55,7 +55,7 @@ Optimization/
 "4_Conclusion": {"4_1_Table": "| F/P Optimization | Performance | Mechanism |\n| Introduction of 4,4,4-NA SAM (0.33 mg/mL in ethanol) and reduction of perovskite precursor concentration to 1.65 mol/L with optimized antisolvent (150 µL ethyl acetate at 15 s). …… "},
 "5_Supporting_Information": "4,4,4-NA acts as a multifunctional interfacial modifier. …… These effects collectively prolong photoluminescence lifetime and improve charge transport and extraction, thereby contributing to enhanced device performance"}
 
-{"score": {"overall": 0.76, "Mechanistic_Reasoning": 0.36, "Recipe_Recommendation": 0.40}}}}}
+{"score": {"overall": 0.76, "Mechanistic_Reasoning": 0.36, "Recipe_Recommendation": 0.40}}
 ```
 
 
@@ -94,4 +94,4 @@ Optimization/
 
 - **prepare_training.py**: Prepare DPO training data
 - **run_training.py**: Execute DPO training
-- **optimization_api/**: DPO optimization API service
+- **optimization_api**: DPO optimization API service

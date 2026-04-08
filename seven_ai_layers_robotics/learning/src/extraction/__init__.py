@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 
 from .data_extractor import DataExtractor

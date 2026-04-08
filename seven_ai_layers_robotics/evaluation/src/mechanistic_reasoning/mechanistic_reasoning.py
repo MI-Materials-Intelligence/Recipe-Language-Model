@@ -1,21 +1,18 @@
-import json
+﻿import json
 import pickle
 import re
-from typing import Tuple, Dict, Any
-import os
+import sys
+from pathlib import Path
 
-from flask import Flask, request, jsonify, Blueprint
+from flask import Blueprint, jsonify, request
 from openai import OpenAI, AsyncOpenAI
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-import sys
-from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parents[3]))
 from seven_ai_layers_robotics.config import config
 
-# ========== Get LLM configuration from app.config ==========
 LLM_KEY = config.evaluation_llm.default_llm_key
 
 API_KEYS = {
@@ -89,7 +86,6 @@ def calculate_domain_knowledge(to_evaluate: str, substance: str = None, ground: 
     }
 
     try:
-        # llm_results = llm_score(to_evaluate, ["domain_knowledge"])
         llm_results = llm_score(to_evaluate)
         dimensions_scores = llm_results["rubric_scores"]["mechanistic_reasoning"]["dimensions"]
 
@@ -102,7 +98,6 @@ def calculate_domain_knowledge(to_evaluate: str, substance: str = None, ground: 
                 "score": mapping.get(score_id)["score"] / 10,
             }
 
-        # update results
         if substance:
             sub_score = get_terminology(substance)
             l_reason = result["reason"]
@@ -151,7 +146,6 @@ def calculate_mechanism_integrity(to_evaluate: str, ground: str = None) -> dict:
     }
 
     try:
-        # llm_results = llm_score(to_evaluate, ["mechanism_integrity"])
         llm_results = llm_score(to_evaluate)
         dimensions_scores = llm_results["rubric_scores"]["mechanistic_reasoning"]["dimensions"]
 
@@ -203,7 +197,6 @@ def calculate_mechanism_interpretation(to_evaluate: str, ground: str = None) -> 
     }
 
     try:
-        # llm_results = llm_score(to_evaluate, ["mechanism_interpretation"])
         llm_results = llm_score(to_evaluate)
         dimensions_scores = llm_results["rubric_scores"]["mechanistic_reasoning"]["dimensions"]
 
@@ -255,7 +248,6 @@ def calculate_mechanism_comprehensiveness(to_evaluate: str, ground: str = None) 
     }
 
     try:
-        # llm_results = llm_score(to_evaluate, ["mechanism_comprehensiveness"])
         llm_results = llm_score(to_evaluate)
         dimensions_scores = llm_results["rubric_scores"]["mechanistic_reasoning"]["dimensions"]
 
@@ -307,7 +299,6 @@ def calculate_mechanism_coherence(to_evaluate: str, ground: str = None) -> dict:
     }
 
     try:
-        # llm_results = llm_score(to_evaluate, ["mechanism_coherence"])
         llm_results = llm_score(to_evaluate)
         dimensions_scores = llm_results["rubric_scores"]["mechanistic_reasoning"]["dimensions"]
 
@@ -361,10 +352,8 @@ def calculate_mechanistic_reasoning(to_evaluate: str, substance: str = None, gro
     result_item = {}
 
     try:
-        # Call the LLM scoring function
         llm_results = llm_score(to_evaluate)
 
-        # Get the score of the mechanism reasoning dimension
         dimension_data = llm_results.get("rubric_scores", {}).get("mechanistic_reasoning", {})
         dimensions_scores = dimension_data.get("dimensions", [])
 
@@ -375,20 +364,17 @@ def calculate_mechanistic_reasoning(to_evaluate: str, substance: str = None, gro
             }
         results = result_item
 
-        # Create a mapping from ID to score
         score_mapping = {item["id"]: item for item in dimensions_scores}
 
-        # Update the results of each scoring dimension
         for score_id in range(1, len(config.evaluation.mechanism_indicators) + 1):
             if score_id in score_mapping:
                 item = score_mapping[score_id]
                 results[config.evaluation.mechanism_indicators[score_id - 1]] = {
                     "reason": item.get("comment", "No comment"),
-                    "score": item.get("score", 0) / 10.0  # Convert to the range of 0-1
+                    "score": item.get("score", 0) / 10.0
                 }
 
                 if score_id == 1:
-                    # update results
                     if substance:
                         sub_score = get_terminology(substance)
                         llm_reason = results[config.evaluation.mechanism_indicators[score_id - 1]]["reason"]
@@ -398,7 +384,6 @@ def calculate_mechanistic_reasoning(to_evaluate: str, substance: str = None, gro
                             "score": SUBSTANCE_WEIGHT * sub_score + (1 - SUBSTANCE_WEIGHT) * llm_score_val,
                         }
 
-        # Define function mapping
         MECHANISM_FUNCTIONS = {
             "domain_knowledge": lambda: calculate_domain_knowledge(to_evaluate, substance, ground),
             "mechanism_integrity": lambda: calculate_mechanism_integrity(to_evaluate, ground),
@@ -407,10 +392,8 @@ def calculate_mechanistic_reasoning(to_evaluate: str, substance: str = None, gro
             "mechanism_coherence": lambda: calculate_mechanism_coherence(to_evaluate, ground)
         }
 
-        # Keep only the required keys
         results = {k: results[k] for k in config.evaluation.mechanism_custom if k in results}
 
-        # Recalculate for each missing or invalid metric
         for key, func in MECHANISM_FUNCTIONS.items():
             if key in results and results.get(key, {}).get("score") is None:
                 results[key] = func()
@@ -511,16 +494,12 @@ def get_answer_and_thinking(system_prompt: str, user_prompt: str) -> tuple[str, 
 
     response = result.choices[0].message.content.strip()
 
-    print("Model scoring output: ", response)
-
-    # If there is no separate reasoning field, it is assumed here that you have implemented extract_content.
     reasoning, answer = extract_content(response)
     if not answer.strip():
         answer = response.strip()
     return answer, reasoning
 
 
-# ========== build user prompt ==========
 def build_user_prompt(rubric_dict: dict, sample_str: str) -> str:
     """Build user prompt for LLM scoring based on rubric and model response.
     
@@ -578,7 +557,7 @@ Grading instructions:
 
 3. For EVERY dimension inside each rubric:
    - Add a new field "score" (integer from 0 to max_score, inclusive).
-   - Add a new field "comment" (1–2 English sentences explaining the score).
+   - Add a new field "comment" (1-2 English sentences explaining the score).
 
 4. When building your output:
    - ONLY add "score" and "comment" fields; do not modify existing fields.
@@ -618,7 +597,6 @@ def score_one_sample(sample: str, rubric: dict) -> dict:
         think_end = raw.find("</think>") + len("</think>")
         raw = raw[think_end:].strip()
     
-    # Step 2: Try to extract from markdown code blocks
     if raw.startswith("```"):
         raw = raw.strip("`")
         if "\n" in raw:
@@ -627,9 +605,7 @@ def score_one_sample(sample: str, rubric: dict) -> dict:
             raw = raw.rsplit("```", 1)[0]
         raw = raw.strip()
     
-    # Step 3: If still not starting with { or [, find the first JSON object
     if not (raw.startswith("{") or raw.startswith("[")):
-        # Find first { and last } to extract JSON
         start_idx = raw.find("{")
         end_idx = raw.rfind("}") + 1
         if start_idx != -1 and end_idx > start_idx:
@@ -638,13 +614,11 @@ def score_one_sample(sample: str, rubric: dict) -> dict:
     try:
         scores = json.loads(raw)
     except json.JSONDecodeError as e:
-        print("JSON decode error, raw output:")
-        print(raw)
+        print(f"JSON decode error: {e}")
         raise e
 
     return scores
 
-# ========== Main process: read file, score item by item, write back ==========
 def llm_score(mechanism: str, indicators: list = None):
     """Score mechanism text using LLM based on rubric.
     
@@ -655,16 +629,13 @@ def llm_score(mechanism: str, indicators: list = None):
     Returns:
         Dictionary containing mechanism text with added rubric_scores field.
     """
-    # 1) Read rubric
     with open(config.get_evaluation_data_path(config.evaluation.rubric_path), "r", encoding="utf-8") as f:
         rubric = json.load(f)
 
-    # 2) Read model response
     data = {
         "mechanism": mechanism
     }
 
-    # 3) Score item by item and write to the new field 'rubric_scores'
     if isinstance(data, dict):
         try:
             mechanism = data["mechanism"]
@@ -674,15 +645,9 @@ def llm_score(mechanism: str, indicators: list = None):
     else:
         raise ValueError("error")
 
-    # # 4) Write to a new file (keep the original file unchanged; you can also overwrite the original file)
-    # with open(os.path.join(OUTPUT_PATH, "temp.json"), "w", encoding="utf-8") as f:
-    #     json.dump(data, f, ensure_ascii=False, indent=2)
-
-    # print(f"Scored results written to: {OUTPUT_PATH}")
-
     return data
 
-## rule
+
 def extract_with_pattern(data, pattern=r".+"):
     """Extract strings matching a specific pattern from data using regular expressions.
     
@@ -804,8 +769,3 @@ def get_structure(text, config={"min_length": 200}):
         "reason": "",
         "score": score,
     }
-
-if __name__ == "__main__":
-
-    similarity = get_similarity("hello world", "hello world")
-    print(similarity)

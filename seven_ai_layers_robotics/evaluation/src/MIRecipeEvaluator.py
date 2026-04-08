@@ -1,5 +1,6 @@
 import json
 import sys
+import traceback
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -7,13 +8,11 @@ import pandas as pd
 import requests
 from sqlalchemy import create_engine, text
 
-# Add the src directory to sys.path for relative imports
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from seven_ai_layers_robotics.config import config
 
-# Import local evaluation functions
 from evaluation.evaluation_custom import calculate_evaluation_custom, get_required_params
 from recipe_recommendation.recipe_recommendation import calculate_recipe_recommendation
 
@@ -38,7 +37,6 @@ class MIRecipeEvaluator:
         Loads configuration from app.config and initializes database connection.
         """
         db = config.database
-        # svc = config.services
 
         self.db_config = {
             "host": db.host,
@@ -48,8 +46,6 @@ class MIRecipeEvaluator:
             "port": db.port,
             "table": "report_optimised"
         }
-        # self.api_url = svc.evaluation_api_url
-        # self.timeout = svc.http_timeout_sec
 
         self.engine = create_engine(
             f"mysql+pymysql://{db.user}:{db.password}@{db.host}:{db.port}/{db.database}?charset={db.charset}",
@@ -67,10 +63,10 @@ class MIRecipeEvaluator:
         try:
             sql = f"SELECT * FROM `{self.db_config['table']}` WHERE status = 0;"
             df = pd.read_sql(sql, self.engine)
-            print(f"📌 Total {len(df)} pending records loaded (status IS NULL).")
+            print(f"Total {len(df)} pending records loaded (status = 0).")
             return df.to_dict('records')
         except Exception as e:
-            print("❌ Failed to load database records:", e)
+            print("Failed to load database records:", e)
             return []
 
     def send_to_http_api(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -87,10 +83,10 @@ class MIRecipeEvaluator:
         try:
             response = requests.post(self.api_url, json=data, timeout=300)
             response.raise_for_status()
-            print(f"✅ Score API called successfully")
+            print("Score API called successfully")
             return response.json()
         except Exception as e:
-            print(f"❌ Failed to call score API: {e}")
+            print(f"Failed to call score API: {e}")
             return None
 
     def get_evaluation_score(self, db_record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -104,15 +100,12 @@ class MIRecipeEvaluator:
             Dictionary with 'index', 'predicted_pce', and 'score' keys, or None if evaluation fails.
         """
         try:
-            # 1. Build recipe data
             control_fp = json.loads(db_record["control_recipe_value"])
             optimized_fp = json.loads(db_record["recommend_value"])
 
-            # 2. Call calculate_recipe_recommendation to calculate recipe recommendation results
             recipe_recommendation_result = calculate_recipe_recommendation(optimized_fp, control_fp)
-            predicted_pce = json.dumps(recipe_recommendation_result, ensure_ascii=False)  # Save complete calculation result as JSON string
+            predicted_pce = json.dumps(recipe_recommendation_result, ensure_ascii=False)
 
-            # 3. Build input for evaluation_custom
             eval_input = {
                 "control_fp": control_fp,
                 "optimized_fp": optimized_fp,
@@ -135,13 +128,10 @@ class MIRecipeEvaluator:
                 }
             }
 
-            print("eval_input:", eval_input)
-
-            # 4. Call evaluation_custom to calculate Score
             optimize, control, to_evaluate, substance, ground, indicator_weight = get_required_params(eval_input)
             score_result = calculate_evaluation_custom(optimize, control, to_evaluate, substance, ground, indicator_weight)
 
-            print(f"✅ Local evaluation completed - predicted_pce: {predicted_pce}, overall_score: {score_result.get('score', {}).get('overall', None)}")
+            print(f"Local evaluation completed - predicted_pce: {predicted_pce}, overall_score: {score_result.get('score', {}).get('overall', None)}")
 
             return {
                 "index": db_record["index"],
@@ -149,8 +139,7 @@ class MIRecipeEvaluator:
                 "score": score_result
             }
         except Exception as e:
-            print("❌ Failed to get score:", e)
-            import traceback
+            print(" Failed to get score:", e)
             traceback.print_exc()
             return None
 
@@ -184,10 +173,10 @@ class MIRecipeEvaluator:
                 )
                 conn.commit()
 
-            print(f"✅ Successfully updated Score, predicted_pce and status=1 for index={result['index']}")
+            print(f"Successfully updated Score, predicted_pce and status=1 for index={result['index']}")
             return True
         except Exception as e:
-            print(f"❌ Database update failed (index={result['index']}): {e}")
+            print(f"Database update failed (index={result['index']}): {e}")
             return False
 
     def run(self) -> None:
@@ -201,24 +190,20 @@ class MIRecipeEvaluator:
         """
         pending = self.load_pending_records()
         if not pending:
-            print("⚠️ No data to process (status IS NULL).")
+            print("No data to process (status = 0).")
             return
 
-        # for db_record in pending[:1]:
         for db_record in pending:
             print("\n============================")
-            print(f"▶️ Starting to process index = {db_record['index']}")
+            print(f"Starting to process index = {db_record['index']}")
             print("============================")
 
             result = self.get_evaluation_score(db_record)
             self.update_score_to_db(result)
 
-        print("\n🎉 All records with status IS NULL have been processed!")
+        print("\nAll records with status = 0 have been processed!")
 
 
-# ============================================================================
-# Example usage (no parameters needed)
-# ============================================================================
 if __name__ == '__main__':
     evaluator = MIRecipeEvaluator()
     evaluator.run()

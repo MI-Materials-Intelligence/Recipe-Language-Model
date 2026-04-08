@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Data Extractor
 Responsible for exporting data from database and converting to Excel format
@@ -18,11 +17,9 @@ def load_database_config() -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Database configuration dictionary
     """
-    # Get current module directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = None
 
-    # Search upward for project root config.toml
     for _ in range(5):
         potential_config = os.path.join(current_dir, '..', '..', '..', '..', 'config', 'config.toml')
         if os.path.exists(potential_config):
@@ -38,7 +35,6 @@ def load_database_config() -> Dict[str, Any]:
     with open(config_path, 'rb') as f:
         config = tomllib.load(f)
 
-    # Use learning_database configuration instead of database
     return config.get('learning_database', {})
 
 
@@ -80,7 +76,7 @@ class DataExtractor:
             rows = cursor.fetchall()
 
             if not rows:
-                print(f"⚠️ Table `{table_name}` is empty.")
+                print(f"Table `{table_name}` is empty.")
                 cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
                 columns_info = cursor.fetchall()
                 all_columns = [col['Field'] for col in columns_info]
@@ -96,11 +92,11 @@ class DataExtractor:
                     writer.writerow(row)
 
             row_count = len(rows) if rows else 0
-            print(f"✅ Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
+            print(f"Table `{table_name}` exported to `{output_csv}` ({row_count} rows, excluding 'id' column)")
             return True
 
         except Error as e:
-            print(f"❌ Export failed: {e}")
+            print(f"Export failed: {e}")
             return False
         finally:
             if conn and conn.is_connected():
@@ -120,10 +116,10 @@ class DataExtractor:
         try:
             df = pd.read_csv(csv_path, low_memory=False)
             df.to_excel(xlsx_path, index=False, engine='openpyxl')
-            print(f"✅ Converted to Excel: {xlsx_path}")
+            print(f"Converted to Excel: {xlsx_path}")
             return True
         except Exception as e:
-            print(f"❌ CSV to XLSX conversion failed: {e}")
+            print(f"CSV to XLSX conversion failed: {e}")
             return False
 
     def extract_and_convert(
@@ -142,11 +138,11 @@ class DataExtractor:
         Raises:
             Exception: If export or conversion fails.
         """
-        print("📤 Exporting data from database...")
+        print("Exporting data from database...")
         if not self.export_table_to_csv_exclude_id(table_name, output_csv):
             raise Exception("Export failed")
 
-        print("🔄 Converting to Excel format...")
+        print("Converting to Excel format...")
         if not self.csv_to_xlsx(output_csv, output_xlsx):
             raise Exception("Conversion failed")
 

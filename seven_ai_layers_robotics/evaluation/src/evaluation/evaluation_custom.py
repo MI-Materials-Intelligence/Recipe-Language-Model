@@ -1,11 +1,13 @@
-from flask import request, jsonify, Blueprint
-
-from recipe_recommendation.recipe_recommendation import calculate_recipe
-from mechanistic_reasoning.mechanistic_reasoning import calculate_mechanistic_reasoning
 import sys
 from pathlib import Path
+
+from flask import Blueprint, jsonify, request
+
 sys.path.append(str(Path(__file__).resolve().parents[3]))
 from seven_ai_layers_robotics.config import config
+
+from mechanistic_reasoning.mechanistic_reasoning import calculate_mechanistic_reasoning
+from recipe_recommendation.recipe_recommendation import calculate_recipe
 
 evaluation_custom_bp = Blueprint('evaluation_custom', __name__)
 
@@ -32,7 +34,6 @@ def get_required_params(data: dict) -> tuple[dict, dict, str, any, any, dict]:
     return optimize, control, to_evaluate, substance, ground, indicator_weight
 
 
-
 @evaluation_custom_bp.route('/evaluation_custom', methods=['POST'])
 def evaluation_custom() -> tuple:
     """Handle evaluation custom API request.
@@ -46,6 +47,7 @@ def evaluation_custom() -> tuple:
     result = calculate_evaluation_custom(optimize, control, to_evaluate, substance, ground, indicator_weight)
 
     return jsonify(result)
+
 
 def calculate_evaluation_custom(
     optimize: dict,

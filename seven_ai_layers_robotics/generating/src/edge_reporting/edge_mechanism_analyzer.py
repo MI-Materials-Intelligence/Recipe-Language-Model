@@ -14,12 +14,9 @@ import requests
 from docx import Document
 import pymysql
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-# ================== Configuration Area ==================
-# Load configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-# Load DeepSeek configuration from config
+
 DEEPSEEK_CONFIG = {
     'api_key': config.deepseek.api_key,
     'base_url': config.deepseek.base_url,
@@ -28,7 +25,7 @@ DEEPSEEK_CONFIG = {
     'timeout': config.deepseek.timeout,
 }
 
-# Database configuration
+
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -38,34 +35,32 @@ DB_CONFIG = {
     'charset': config.generating_database.charset,
 }
 
-# DeepSeek API configuration
+
 DEEPSEEK_API_KEY = DEEPSEEK_CONFIG.get("api_key", "")
 API_URL_BASE = DEEPSEEK_CONFIG.get("base_url", "https://api.deepseek.com/v1/chat/completions")
-# Ensure API_URL includes the complete /chat/completions path
 if not API_URL_BASE.endswith("/chat/completions"):
     API_URL = API_URL_BASE.rstrip("/") + "/chat/completions"
 else:
     API_URL = API_URL_BASE
 MODEL_NAME = DEEPSEEK_CONFIG.get("model", "deepseek-reasoner")
 
-# JSON output root directory (subdirectories by type)
-# Automatically get current script directory and concatenate relative path to Generating/data/edge
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_ROOT_DIR = os.path.join(SCRIPT_DIR, "..", "..", "data", "edge")
 
-# Reports directory (fixed path)
+
 REPORTS_DIR = os.path.join(JSON_ROOT_DIR, "reports")
 
-# .docx file mapping: type -> docx filename
+
 DOCX_FILES_MAP = {
     "characterisation_pl_sam": "characterisation_pl_sam.docx",
     "characterisation_xrd_additives": "characterisation_xrd_additives.docx",
     "characterisation_xrd_passivators": "characterisation_xrd_passivators.docx",
     "characterisation_image_pvk": "characterisation_image_pvk.docx",
-    "experiments_cleaned_data": "experiments_cleaned_data.docx"  # default/generic
+    "experiments_cleaned_data": "experiments_cleaned_data.docx"  
 }
 
-MAX_WORKERS = 3  # DeepSeek may have rate limits, recommend ≤3
+MAX_WORKERS = 3  
 
 PROMPT_TEMPLATE = """
 You are an expert in perovskite crystallization physics, interface chemistry, defect passivation, molecular engineering, and structural/optical characterization.
@@ -105,7 +100,7 @@ These steps MUST NOT appear in the output, but the final paragraph MUST REFLECT 
    - Collective synergy.
    Integrated naturally into the paragraph.
 
-🔥 5. **Characterization-Driven Mechanism Analysis (CONDITIONAL, MANDATORY IF PRESENT):**
+  5. **Characterization-Driven Mechanism Analysis (CONDITIONAL, MANDATORY IF PRESENT):**
 
    - If **image-derived characterization data** (e.g., film coverage metrics, grayscale intensity, defect density indicators, morphological uniformity descriptors extracted from optical/PL mapping images) is present:
        - Internally analyze thin-film continuity, defect distribution, crystallization uniformity, and their influence on charge transport pathways and non-radiative recombination.
@@ -123,7 +118,7 @@ These steps MUST NOT appear in the output, but the final paragraph MUST REFLECT 
    - If a characterization type is NOT present, it MUST NOT be mentioned.
 
 
-🔥 6. **STRICT ORDERING CONSTRAINT FOR FINAL PARAGRAPH (INTERNAL):**
+  6. **STRICT ORDERING CONSTRAINT FOR FINAL PARAGRAPH (INTERNAL):**
    - Characterization-driven mechanisms (Image/PL/XRD) MUST be placed:
      **AFTER passivation mechanisms and BEFORE performance metrics**
    - Performance metrics MUST appear at the very end of the paragraph.
@@ -155,7 +150,7 @@ Now analyze the following experimental description and answer with ONE paragraph
 {experiment}
 """
 
-# ================== Utility Functions ==================
+
 
 def read_docx_paragraphs(docx_path):
     doc = Document(docx_path)
@@ -292,7 +287,7 @@ def process_single_record(report_index, record_type, record_id, docx_path):
     json_obj = build_json_obj(exp_text, summary)
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(json_obj, f, ensure_ascii=False, indent=2)
-    print(f"✅ JSON generated: {json_path}")
+    print(f"JSON generated: {json_path}")
 
     # 6. Update status
     mark_as_done(report_index)
@@ -300,13 +295,13 @@ def process_single_record(report_index, record_type, record_id, docx_path):
 # ================== Main Process ==================
 
 def main():
-    print("🔍 Starting Stage 2: Processing records with status=1 in ...")
+    print(" Starting Stage 2: Processing records with status=1 in ...")
     records = fetch_pending_records()
     if not records:
         print("📭 No pending records")
         return
 
-    print(f"📥 Found {len(records)} pending records in total")
+    print(f"Found {len(records)} pending records in total")
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = []
         for rec in records:
@@ -315,7 +310,7 @@ def main():
                 rec['index'],
                 rec['type'],
                 rec['id'],
-                rec['location']  # This is the .docx path
+                rec['location']  
             )
             futures.append(fut)
 
@@ -324,7 +319,7 @@ def main():
                 fut.result()
                 print(f"[{i+1}/{len(records)}] Completed one record processing")
             except Exception as e:
-                print(f"❌ Processing failed: {e}")
+                print(f"Processing failed: {e}")
 
     print("🎉 Stage 2 completed!")
 

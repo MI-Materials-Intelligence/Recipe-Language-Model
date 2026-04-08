@@ -15,7 +15,7 @@ from mysql.connector import Error
 # ===== Config Loader =====
 def _load_recipeqa_config() -> Dict[str, Any]:
     """Load RecipeQA configuration from config.toml.
-    
+
     Returns:
         Dictionary containing LLM and database configuration.
     """
@@ -25,11 +25,11 @@ def _load_recipeqa_config() -> Dict[str, Any]:
 
         # Try multiple possible paths
         current_file = Path(__file__).resolve()
-        
+
         # Path 1: recipeQA -> seven_ai_layers_robotics -> project root (2 levels up)
         project_root = current_file.parent.parent.parent
         config_path = project_root / "config.toml"
-        
+
         # Path 2: Try alternative path structure
         if not config_path.exists():
             project_root = current_file.parent.parent.parent.parent
@@ -45,13 +45,13 @@ def _load_recipeqa_config() -> Dict[str, Any]:
         # Return recipeqa_llm configuration
         recipeqa_llm_config = config.get("recipeqa_llm", {})
         recipeqa_db_config = config.get("recipeqa", {}).get("database", {})
-        
+
         result = {}
         if recipeqa_llm_config:
             result.update(recipeqa_llm_config)
         if recipeqa_db_config:
             result["database"] = recipeqa_db_config
-            
+
         return result
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
@@ -131,10 +131,10 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
 # ===== Utils =====
 def safe_filename(name: str) -> str:
     """Remove invalid characters from filename.
-    
+
     Args:
         name: Original filename.
-        
+
     Returns:
         Sanitized filename with invalid characters replaced by underscores.
     """
@@ -143,10 +143,10 @@ def safe_filename(name: str) -> str:
 
 def read_text_file(path: str) -> str:
     """Read text content from file.
-    
+
     Args:
         path: File path to read.
-        
+
     Returns:
         File content as string.
     """
@@ -155,7 +155,7 @@ def read_text_file(path: str) -> str:
 
 def atomic_write_json(path: str, data: Any) -> None:
     """Atomically write JSON data to file.
-    
+
     Args:
         path: Target file path.
         data: Data to serialize to JSON.
@@ -170,7 +170,7 @@ def atomic_write_json(path: str, data: Any) -> None:
 
 def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
     """Save data to JSON file.
-    
+
     Args:
         data: Data to serialize.
         file_path: Output file path.
@@ -184,10 +184,10 @@ def save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
 
 def read_json_file(file_path: str) -> Any:
     """Read JSON file and parse content.
-    
+
     Args:
         file_path: Path to JSON file.
-        
+
     Returns:
         Parsed JSON data.
     """
@@ -196,11 +196,11 @@ def read_json_file(file_path: str) -> Any:
 
 def read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
     """Recursively find files by extension in directory.
-    
+
     Args:
         directory: Root directory to search.
         extensions: List of file extensions to match.
-        
+
     Returns:
         List of absolute file paths matching the extensions.
     """
@@ -317,23 +317,23 @@ def get_tasks_from_db(
     if db_config is None:
         # Try to load from RECIPEQA_CONFIG first
         recipeqa_db = RECIPEQA_CONFIG.get("database", {})
-        
+
         if not recipeqa_db:
             # Try to load from main config file
             try:
                 from pathlib import Path
                 import tomllib
-                
+
                 current_file = Path(__file__).resolve()
                 # Try path 1: project root / config.toml
                 project_root = current_file.parent.parent.parent
                 config_path = project_root / "config.toml"
-                
+
                 # Try path 2: alternative structure
                 if not config_path.exists():
                     project_root = current_file.parent.parent.parent.parent
                     config_path = project_root / "config.toml"
-                
+
                 if config_path.exists():
                     with config_path.open("rb") as f:
                         config = tomllib.load(f)
@@ -448,7 +448,7 @@ def get_tasks_from_db(
 
     print(f"[INFO] Total tasks built: {len(total_task)}")
     save_json_file(total_task, save_path)
-    return [t["record_id"] for t in total_task]  
+    return [t["record_id"] for t in total_task]
 
 # ===== Inference =====
 async def process_single_item(item: Dict[str, Any], save_root: str, success_ids: list) -> None:
@@ -509,7 +509,7 @@ async def process_single_item(item: Dict[str, Any], save_root: str, success_ids:
                     "meta_info": item.get("meta_info", {}),
                 }
                 atomic_write_json(save_path, payload)
-                success_ids.append(record_id)  
+                success_ids.append(record_id)
                 return
 
             except Exception as e:
@@ -594,7 +594,7 @@ def rebuild_mechanism_from_db(output_root: str, db_config: dict, table_name: str
             md_path = os.path.join(target_dir, f"{material_key}.md")
             with open(md_path, "w", encoding="utf-8") as f:
                 f.write(content)
-        print(f"\n✅ Rebuilt {len(rows)} markdown files into '{output_root}'")
+        print(f"\n Rebuilt {len(rows)} markdown files into '{output_root}'")
     except Error as e:
         print(f"[ERROR] database error: {e}")
     finally:

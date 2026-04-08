@@ -1,17 +1,16 @@
-import os.path as osp
 import os
-from typing import List
+import os.path as osp
 import shutil
+from typing import List
 
 from fastapi import UploadFile, File, Form, APIRouter
 
 from app.models.schemas import (
+    PrepareTrainingResponse,
     RunInferenceRequest,
     RunInferenceResponse,
     RunTrainingRequest,
     RunTrainingResponse,
-    PrepareTrainingRequest,
-    PrepareTrainingResponse,
     RunningItemCheckRequest,
     RunningItemCheckResponse,
 )
@@ -42,8 +41,6 @@ def api_run_training(request: RunTrainingRequest) -> RunTrainingResponse:
     log_file = osp.join(
         get_config().LORA_OUTPUT_ROOT, training_item_name, "training.log"
     )
-
-    # Start training in a tmux session
     status = run_training(
         session_name=training_item_name,
         gpu_list=request.gpu_ids,
@@ -65,7 +62,6 @@ def api_run_inference(request: RunInferenceRequest) -> RunInferenceResponse:
     Returns:
         RunInferenceResponse: Response object containing inference ID and status.
     """
-    # Start inference in a tmux session
     inference_item_name = "inference_" + request.item_name
     config_path = f"examples/inference/{request.item_name}.yaml"
     log_file = osp.join(

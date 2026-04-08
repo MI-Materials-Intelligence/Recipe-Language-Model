@@ -19,7 +19,7 @@ def compute_pair_hash_from_row(row):
     """
     Calculate pair_hash from database row
     """
-    # Determine regulation factor
+    
     if row["additive"]:
         factor_type = "Additive"
         factor_value = json.loads(row["additive"])
@@ -33,7 +33,7 @@ def compute_pair_hash_from_row(row):
         factor_type = "Process"
         factor_value = json.loads(row["process"])
     else:
-        return None  # Invalid data, skip
+        return None  
 
     payload = {
         "sample_id_1": row["sample_id_1"],
@@ -58,7 +58,7 @@ def backfill_hash():
     """)
     rows = cursor.fetchall()
 
-    print(f"🔧 Number of records requiring hash backfill: {len(rows)}")
+    print(f"Number of records requiring hash backfill: {len(rows)}")
 
     update_sql = """
         UPDATE characterisation_match
@@ -75,7 +75,6 @@ def backfill_hash():
     cursor.close()
     conn.close()
 
-    print("✅ Historical data hash backfill completed")
 
 if __name__ == "__main__":
     backfill_hash()

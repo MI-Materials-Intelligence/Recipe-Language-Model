@@ -283,7 +283,7 @@ def ensure_single_report_unique_index():
     exists = cursor.fetchone()[0] > 0
     if not exists:
         cursor.execute("ALTER TABLE `report_edge` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
-        print("✅ Added unique index (type, id) to ")
+        print("Added unique index (type, id) to ")
     cursor.close()
     conn.close()
 
@@ -351,7 +351,7 @@ def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     doc.save(output_path)
     total = len(generated_ids) + len(skipped_ids) + len(failed_ids)
-    print(f"✅ Completed {source_table}: total {total} | generated {len(generated_ids)} | skipped {len(skipped_ids)} | failed {len(failed_ids)}")
+    print(f"Completed {source_table}: total {total} | generated {len(generated_ids)} | skipped {len(skipped_ids)} | failed {len(failed_ids)}")
 
     # Write to single_report (insert only new records)
     if source_table:
@@ -378,7 +378,7 @@ if __name__ == "__main__":
     ensure_single_report_unique_index()
 
     for task in TASKS:
-        print(f"\n📄 Processing table: {task['table']}")
+        print(f"\nProcessing table: {task['table']}")
         df = read_table(task["table"])
         abs_output = os.path.abspath(task["output"])
         generate_docx_from_df(
@@ -388,4 +388,4 @@ if __name__ == "__main__":
             index_col=task.get("index_col"),
             source_table=task["table"]
         )
-    print("\n🎉 All tasks completed!")
+    print("\nAll tasks completed!")

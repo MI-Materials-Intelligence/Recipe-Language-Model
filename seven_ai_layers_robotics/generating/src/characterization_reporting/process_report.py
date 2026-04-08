@@ -10,12 +10,12 @@ import mysql.connector
 from openai import OpenAI
 import numpy as np
 
-# Category: Global Configuration
+
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
-# ========= Load configuration from app.config =========
+
 MYSQL_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -65,7 +65,7 @@ def run_process_report(
     main()
 
     if verbose:
-        print("✅ Running process pair to report finished.")
+        print("Running process pair to report finished.")
 
 
 # Category: Constants
@@ -222,7 +222,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor(dictionary=True)
 
-    # Select non-empty fields based on type
+   
     if factor_type == "SAM":
         condition = "sam IS NOT NULL AND sam != '' AND sam != '[]'"
     elif factor_type == "Additive":
@@ -282,7 +282,7 @@ def db_row_to_item(row: dict) -> dict:
         "sample_id_2_date": row.get("sample_id_2_date"),
     }
 
-    # ⚠️ Only one of the four regulation factor types will match
+    
     if row.get("sam"):
         item["SAM"] = json.loads(row["sam"]) if isinstance(row["sam"], str) else row["sam"]
 
@@ -356,7 +356,7 @@ def get_answer_and_thinking(
     if client is None:
         raise RuntimeError("Please initialize client object before calling get_answer_and_thinking.")
 
-    # Put generic role + background knowledge in system prompt
+   
     system_prompt = (
         "You are an expert in the field of perovskite solar cells. "
         "Please answer the question according to the professional background I provided. "
@@ -372,7 +372,7 @@ def get_answer_and_thinking(
             "please rely on your internal expertise."
         )
 
-    # Package question + control + target into same user prompt
+   
     user_content = (
         "You are given an original perovskite device (control) and an optimized device (target). "
         "Please analyze them and answer the question.\n\n"
@@ -396,12 +396,12 @@ def get_answer_and_thinking(
         stream=True,
     )
 
-    reasoning_content = ""  # Complete reasoning process
-    answer_content = ""     # Complete response
+    reasoning_content = ""  
+    answer_content = ""     
     is_answering = False
 
     for chunk in completion:
-        # Some implementations may not have choices in the last chunk
+       
         if not getattr(chunk, "choices", None):
             usage = getattr(chunk, "usage", None)
             if usage:
@@ -411,16 +411,16 @@ def get_answer_and_thinking(
 
         delta = chunk.choices[0].delta
 
-        # Collect "reasoning process"
+     
         if hasattr(delta, "reasoning_content") and delta.reasoning_content is not None:
             reasoning_content += delta.reasoning_content
 
-        # Collect formal response
+     
         if hasattr(delta, "content") and delta.content:
             if not is_answering:
                 print("\n" + "=" * 20 + "Complete Response" + "=" * 20 + "\n")
                 is_answering = True
-            # If you want to print in real-time, you can print(delta.content, end="", flush=True) here
+            
             answer_content += delta.content
 
     return answer_content.strip(), reasoning_content.strip()
@@ -440,7 +440,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # ⚠️ Currently you explicitly said: only extract from SAM
+   
     for key in ("Process",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -457,7 +457,7 @@ def get_material_background_from_item(
     for raw_name in material_names:
         norm_name = normalize_material_name(raw_name)
 
-        # Use directly if in cache
+
         if norm_name in cache:
             background_chunks.append(cache[norm_name])
             continue
@@ -476,9 +476,7 @@ def get_material_background_from_item(
         return "\n\n".join(background_chunks)
     else:
         return ""
-# ========== 1. Generic LLM call encapsulation ==========
 
-# ========== 6. Main process: load -> call model -> generate SFT samples + report ==========
 def update_status(pair_id: int, status: str):
     """
     Update status of a specific pair
@@ -500,25 +498,21 @@ def update_status(pair_id: int, status: str):
     cursor.close()
     conn.close()
 def main() -> None:
-    # ===== Configuration area: Change to your own paths =====
-    # Directory containing md files
 
-
-    # SFT output (complete JSON array + JSONL)
 
 
     script_dir = Path(__file__).parent.resolve()
-    # Output to Generating/data directory
-    generating_root = script_dir.parent.parent  # Characterisation_Reporting -> Generating
+
+    generating_root = script_dir.parent.parent  
     data_root = generating_root / "data"
     output_dir = data_root / "characterisation_image_pvk"
     OUTPUT_PATH = output_dir / "sft_pairs_with_think_answer.json"
     OUTPUT_JSONL_PATH = output_dir / "sft_pairs_with_think_answer.jsonl"
 
-    # report output
+
     REPORT_JSON_PATH = output_dir / "reports.json"
     REPORT_JSONL_PATH = output_dir / "reports.jsonl"
-    # ✅ Ensure directories exist
+
     for p in [
         OUTPUT_PATH,
         OUTPUT_JSONL_PATH,
@@ -527,24 +521,23 @@ def main() -> None:
     ]:
         ensure_parent_dir(p)
 
-    # ===== 1. Build "material name/process name -> md file" mapping =====
-    material_content_map = build_material_content_map_from_db("process")
-    md_cache = {}  # Cache md content
 
-    # ===== 2. Read all entries from json =====
-    # db_rows = load_pending_items(limit=1, factor_type="Process")
+    material_content_map = build_material_content_map_from_db("process")
+    md_cache = {}  
+
+
     db_rows = load_pending_items(factor_type="Process")
     if not db_rows:
-        print("✅ No status=pending records currently, exiting directly")
+        print("No status=pending records currently, exiting directly")
         return
 
-    # Convert to your familiar item structure
+
     items = [(row["id"], db_row_to_item(row)) for row in db_rows]
 
     records = []
     reports = []
 
-    # Open JSONL files, write while generating
+
     with open(OUTPUT_JSONL_PATH, "w", encoding="utf-8-sig") as fout_sft, \
          open(REPORT_JSONL_PATH, "w", encoding="utf-8-sig") as fout_report:
 
@@ -571,7 +564,7 @@ def main() -> None:
                 print(f"Material / Process [{mat_info}]")
                 print(f"Question: {question}")
 
-                # md background knowledge for 5_Supporting_Information
+
                 background_knowledge = get_material_background_from_item(
                     item,
                     material_content_map,
@@ -581,7 +574,7 @@ def main() -> None:
 
                 answer_content_material = background_knowledge
 
-                # ===== 3.1 First model call: main analysis (3_Result_Discussion) =====
+
                 answer_content_analyze, reasoning_content_analyze = get_answer_and_thinking(
                     question=question,
                     control=control,
@@ -590,13 +583,12 @@ def main() -> None:
                     Process=process
                 )
 
-                # ===== 3.2 Generate Method input text for abstract / table =====
-                # Here input_text still uses "control"/"target" for compatibility with your SFT design
+
                 safe_control = control.replace('"', '\\"')
                 safe_target = target.replace('"', '\\"')
                 input_text = f'"control": "{safe_control}", "target": "{safe_target}"'
 
-                # ===== 3.3 Second call: generate abstract 1_Abstract =====
+
                 user_prompt_abstract = f'''
                 Method (key fabrication details):
                 {input_text}
@@ -614,7 +606,7 @@ def main() -> None:
                     user_prompt_abstract
                 )
 
-                # ===== 3.4 Third call: generate conclusion table 4_1_Table =====
+
                 user_prompt_table = f'''
                 [REAL INPUT]
                 Results & Discussion (performance & mechanisms):
@@ -630,8 +622,7 @@ def main() -> None:
                     user_prompt_table
                 )
 
-                # ===== 3.5 Assemble report structure =====
-                # Put row1_index, row2_index in Sample_Information
+
                 sample_info = {
                     "sample_id_1": item.get("sample_id_1"),
                     "sample_id_2": item.get("sample_id_2"),
@@ -639,7 +630,7 @@ def main() -> None:
                     "sample_id_2_date": item.get("sample_id_2_date"),
                 }
 
-                # source_file holds the csv table name
+
                 filename = item.get("source_file", "")
 
                 report = {
@@ -649,20 +640,17 @@ def main() -> None:
                     },
                     "1_Abstract": answer_content_abstract,
                     "2_Method": {
-                        # Here target is conceptualized as optimization
                         "2_1_Control_F_P": control,
                         "2_2_Optimized_F_P": target,
                     },
-                    # 3_Result_Discussion: answer_content from main API
                     "3_Result_Discussion": answer_content_analyze,
                     "4_Conclusion": {
                         "4_1_Table": answer_content_table,
                     },
-                    # 5_Supporting_Information: reference md text
                     "5_Supporting_Information": answer_content_material,
                 }
 
-                # ===== 3.6 Assemble SFT sample =====
+               
                 instruction = question
                 output_text = f"<think>{reasoning_content_analyze}</think><answer>{answer_content_analyze}</answer>"
 
@@ -670,27 +658,26 @@ def main() -> None:
                     "instruction": instruction,
                     "input": input_text,
                     "output": output_text,
-                    # "report": report,  # Optionally attach report to each record
                 }
 
-                # 1) Add to memory list
+                
                 records.append(record)
                 reports.append(report)
 
-                # 2) Real-time write to SFT JSONL
+                
                 fout_sft.write(json.dumps(record, ensure_ascii=False))
                 fout_sft.write("\n")
                 fout_sft.flush()
 
-                # 3) Real-time write to report JSONL
+                
                 fout_report.write(json.dumps(report, ensure_ascii=False))
                 fout_report.write("\n")
                 fout_report.flush()
                 update_status(pair_id, "done")
             except Exception as e:
-                print(f"❌ id={pair_id} processing failed: {e}")
+                print(f"id={pair_id} processing failed: {e}")
                 update_status(pair_id, "error")
-                # ===== 4. Save results (complete JSON array format) =====
+                
             save_sft_records(records, OUTPUT_PATH)
             save_reports(reports, REPORT_JSON_PATH)
             print(f"SFT JSONL real-time written to file: {OUTPUT_JSONL_PATH}")

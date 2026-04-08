@@ -38,7 +38,7 @@ client = OpenAI(
 )
 TABLE_NAME = "characterisation_match"
 
-# Category: Constants
+
 SYSTEM_PROMPT_ABSTRACT = (
     "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
     "Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. "
@@ -107,7 +107,7 @@ def get_answer_and_thinking(
     if client is None:
         raise RuntimeError("Please initialize the client object before calling get_answer_and_thinking.")
 
-    # system prompt contains general role + background knowledge
+   
     system_prompt = (
         "You are an expert in the field of perovskite solar cells. "
         "Please answer the question according to the professional background I provided. "
@@ -123,7 +123,7 @@ def get_answer_and_thinking(
             "please rely on your internal expertise."
         )
 
-    # Pack question + control + target into the same user prompt
+    
     user_content = (
         "You are given an original perovskite device (control) and an optimized device (target). "
         "Please analyze them and answer the question.\n\n"
@@ -147,8 +147,8 @@ def get_answer_and_thinking(
         stream=True,
     )
 
-    reasoning_content = ""  # Complete thinking process
-    answer_content = ""     # Complete response
+    reasoning_content = ""  
+    answer_content = ""     
     is_answering = False
 
     for chunk in completion:
@@ -222,7 +222,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
     cursor.close()
     conn.close()
 
-    print(f"📥 Loaded {factor_type} type pending records count: {len(rows)}")
+    print(f"Loaded {factor_type} type pending records count: {len(rows)}")
     return rows
 
 def db_row_to_item(row: dict) -> dict:
@@ -242,7 +242,7 @@ def db_row_to_item(row: dict) -> dict:
         "sample_id_2_date": row.get("sample_id_2_date"),
     }
 
-    # ⚠️ Only one of the four regulation factor types will match
+    #  Only one of the four regulation factor types will match
     if row.get("sam"):
         item["SAM"] = json.loads(row["sam"]) if isinstance(row["sam"], str) else row["sam"]
 
@@ -269,7 +269,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # ⚠️ Currently you explicitly say: only extract from SAM
+    
     for key in ("Passivator",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -278,7 +278,7 @@ def get_material_background_from_item(
             if vals:
                 material_names.append(vals)
 
-    # Deduplicate + clean
+    
     material_names = list({m for m in material_names if m})
 
     background_chunks = []
@@ -286,7 +286,7 @@ def get_material_background_from_item(
     for raw_name in material_names:
         norm_name = normalize_material_name(raw_name)
 
-        # Use directly if in cache
+        
         if norm_name in cache:
             background_chunks.append(cache[norm_name])
             continue
@@ -305,9 +305,7 @@ def get_material_background_from_item(
         return "\n\n".join(background_chunks)
     else:
         return ""
-# ========== 1. General LLM call encapsulation ==========
 
-# Category: Global Configuration
 import sys
 from pathlib import Path as PathLib
 script_dir = PathLib(__file__).parent
@@ -433,10 +431,7 @@ def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
 
     return answer_content.strip(), reasoning_content.strip()
 
-# === LLM call functions (unchanged) ===
-# ... [get_answer_and_thinking, api_get_answer_and_thinking, SYSTEM_PROMPT_ABSTRACT, SYSTEM_PROMPT_TABLE] ...
 
-# === Single item processing function (key: thread-safe) ===
 def process_single_item(
     pair_id: int,
     item: dict,
@@ -449,7 +444,7 @@ def process_single_item(
         target = (item.get("target") or "").strip()
         passivator = item.get("Passivator", "")
 
-        # Extract material names for printing
+        
         materials_for_print = []
         for key in ("Passivator", "Additive", "SAM", "Process"):
             vals = item.get(key) or []
@@ -462,10 +457,10 @@ def process_single_item(
         print(f"\n========== Processing ID={pair_id} | Material [{mat_info}] ==========")
         print(f"Question: {question}")
 
-        # Get background knowledge (read-only, thread-safe)
+        
         background_knowledge = get_material_background_from_item(item, material_content_map, {})
 
-        # First call: main analysis
+        
         answer_content_analyze, reasoning_content_analyze = get_answer_and_thinking(
             question=question,
             control=control,
@@ -478,7 +473,7 @@ def process_single_item(
         safe_target = target.replace('"', '\\"')
         input_text = f'"control": "{safe_control}", "target": "{safe_target}"'
 
-        # Second call: abstract
+        
         user_prompt_abstract = f"""
 Method (key fabrication details):
 {input_text}
@@ -495,7 +490,7 @@ Do not add any explanations before or after the abstract.
             SYSTEM_PROMPT_ABSTRACT, user_prompt_abstract
         )
 
-        # Third call: table
+        
         user_prompt_table = f"""
 [REAL INPUT]
 Results & Discussion (performance & mechanisms):
@@ -510,7 +505,7 @@ Start your answer with the header row:
             SYSTEM_PROMPT_TABLE, user_prompt_table
         )
 
-        # Build report
+        
         sample_info = {
             "sample_id_1": item.get("sample_id_1"),
             "sample_id_2": item.get("sample_id_2"),
@@ -537,7 +532,7 @@ Start your answer with the header row:
             "output": f"<think>{reasoning_content_analyze}</think><answer>{answer_content_analyze}</answer>",
         }
 
-        # Safe write to JSONL
+        
         with sft_file_lock:
             with open(output_paths["sft_jsonl"], "a", encoding="utf-8-sig") as f:
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -552,16 +547,16 @@ Start your answer with the header row:
         return record, report
 
     except Exception as e:
-        print(f"❌ ID={pair_id} processing failed: {e}")
+        print(f"ID={pair_id} processing failed: {e}")
         traceback.print_exc()
         update_status(pair_id, "error")
         return None, None
 
-# === Main function modification ===
+
 def main() -> None:
     script_dir = Path(__file__).parent.resolve()
-    # Output to Generating/data directory
-    generating_root = script_dir.parent.parent  # Characterisation_Reporting -> Generating
+    
+    generating_root = script_dir.parent.parent  
     data_root = generating_root / "data"
     output_dir = data_root / "characterisation_xrd_passivators"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -573,27 +568,27 @@ def main() -> None:
         "report_jsonl": output_dir / "reports.jsonl",
     }
 
-    # Clear or create JSONL files
+    
     for p in [paths["sft_jsonl"], paths["report_jsonl"]]:
         ensure_parent_dir(p)
-        open(p, "w").close()  # Clear
+        open(p, "w").close()  
 
-    # Load material library (read-only, shareable)
+    
     material_content_map = build_material_content_map_from_db("Passivator Mechanism Library")
 
-    # Load pending items
+    
     db_rows = load_pending_items(factor_type="Passivator")
     if not db_rows:
-        print("✅ No pending records, exiting")
+        print("No pending records, exiting")
         return
 
     items = [(row["id"], db_row_to_item(row)) for row in db_rows]
-    print(f"🚀 Preparing to process {len(items)} records in parallel...")
+    print(f"Preparing to process {len(items)} records in parallel...")
 
     records = []
     reports = []
 
-    # ⚠️ Control concurrency (recommend 3~5 to avoid API rate limiting)
+    
     max_workers = 4
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -608,17 +603,17 @@ def main() -> None:
                 records.append(record)
                 reports.append(report)
 
-    # Save complete JSON arrays
+    
     with open(paths["sft_json"], "w", encoding="utf-8-sig") as f:
         json.dump(records, f, ensure_ascii=False, indent=4)
     with open(paths["report_json"], "w", encoding="utf-8-sig") as f:
         json.dump(reports, f, ensure_ascii=False, indent=4)
 
-    print(f"✅ All completed! Processed {len(records)} records in total")
-    print(f"📄 SFT JSON: {paths['sft_json']}")
-    print(f"📄 Report JSON: {paths['report_json']}")
-    print(f"📄 SFT JSONL: {paths['sft_jsonl']}")
-    print(f"📄 Report JSONL: {paths['report_jsonl']}")
+    print(f"All completed! Processed {len(records)} records in total")
+    print(f"SFT JSON: {paths['sft_json']}")
+    print(f"Report JSON: {paths['report_json']}")
+    print(f"SFT JSONL: {paths['sft_jsonl']}")
+    print(f"Report JSONL: {paths['report_jsonl']}")
 
 def run_pass_report(
     *,
@@ -647,7 +642,7 @@ def run_pass_report(
     main()
 
     if verbose:
-        print("✅ Running pass pair to report finished.")
+        print("Running pass pair to report finished.")
 
 if __name__ == "__main__":
     run_pass_report()

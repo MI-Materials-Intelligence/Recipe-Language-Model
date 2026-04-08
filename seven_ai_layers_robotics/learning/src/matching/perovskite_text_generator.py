@@ -1,4 +1,3 @@
-# perovskite_text_generator.py
 """Perovskite Text Generator - Generates text descriptions for perovskite solar cell fabrication.
 
 This module contains templates and functions for generating structured text descriptions
@@ -118,23 +117,7 @@ intro_segments = [
         "The PSCs displayed a significantly enhanced PCE of {pce}%, with VOC of {voc} V, JSC of {jsc} mA/cm², and FF of {ff}%.",
     ]
 
-# intro_segments = [
-#     "Based on a systematically tuned set of experimental parameters, this perovskite solar cell {prepared_term}, ultimately achieving a PCE of {pce}%.",
-#     "Under carefully optimized conditions, the perovskite device was fabricated, achieving a PCE of {pce}%.",
-#     "By refining specific fabrication parameters, a perovskite solar cell {prepared_term}, culminating in a PCE of {pce}%.",
-#     "Through deliberate control of solution composition, coating speeds, and thermal treatments, this perovskite cell {prepared_term}, leading to a PCE of {pce}%.",
-#     "Using a parameter-driven approach, we have engineered a perovskite solar cell that {prepared_term}, thus realizing a PCE of {pce}%.",
-#     "This work arises from meticulous parameter optimization, where a perovskite solar device {prepared_term}, reflecting a PCE of {pce}%.",
-#     "Within a framework of controlled experimental inputs, a perovskite cell configuration {prepared_term}, ultimately manifesting a PCE of {pce}%.",
-#     "Each step—from solution concentration to annealing—was carefully optimized to {prepared_term} this perovskite solar cell, achieving a PCE of {pce}%.",
-#     "Guided by experimental parameters such as spin speeds, antisolvent timing, and annealing profiles, this device {prepared_term}, realizing a PCE of {pce}%.",
-#     "Guided by incremental parameter refinements, the perovskite assembly {prepared_term}, achieving a PCE of {pce}%.",
-#     "Based on a methodical exploration of fabrication parameters, the perovskite cell {prepared_term}, reaches the PCE of {pce}%.",
-#     "By strategically aligning experimental conditions with device architecture, a perovskite solar cell {prepared_term}, demonstrating a PCE of {pce}%.",
-#     "Through iterative refinements in substrate preparation, solution concentration, and coating protocols, this perovskite device {prepared_term}, echoing a PCE of {pce}%.",
-# ]
 
-# 钙钛矿材料和配方描述（Perovskite Formula Segments, 15条）
 perovskite_formula_segments = [
     "A perovskite precursor solution was first prepared using {formula_pvk} at {concentration_pvk} mol/L.",
     "Starting with a {formula_pvk} solution at {concentration_pvk} mol/L, the base solution was formulated to form the core perovskite layer.",
@@ -154,7 +137,6 @@ perovskite_formula_segments = [
     "The composition of perovskite is {concentration_pvk} mol/L {formula_pvk}.", 
     "The {formula_pvk} ({concentration_pvk} mol/L) perovskite precursor solution was prepared.", 
     "The perovskite composition is {formula_pvk}, and the initial stock perovskite solution is {concentration_pvk} mol/L.", 
-    # "The perovskite precursor is {formula_pvk}.", 
     "The composition of the {concentration_pvk} mol/L perovskite film with band gap is {formula_pvk}.", 
     "The {concentration_pvk} mol/L perovskite precursor solution with a chemical formula of {formula_pvk}.", 
     "The perovskite precursor solutions were prepared by dissolving {concentration_pvk} mol/L {formula_pvk}.", 
@@ -166,7 +148,6 @@ perovskite_formula_segments = [
     "Then, perovskite precursor solution ({concentration_pvk} mol/L) was prepared at the stoichiometric ratio of {formula_pvk}.", 
     "A {concentration_pvk} mol/L perovskite precursor solution was constructed by mixing FAI, PbI2, methylammonium iodide and caesium iodide in DMF: DMSO mixed solvent with the chemical formula of {formula_pvk}.",  
     "For the inorganic perovskite layers, {concentration_pvk} mol/L {formula_pvk} inorganic perovskite precursor solution was prepared in DMSO solvent.",  
-    # "The perovskite precursor solution was prepared with a concentration of {concentration_pvk} mol/L using PbI2 and MAI dissolved in a mixed DMF/DMSO solvent.",  
     "The perovskite ({formula_pvk}) precursor solution was prepared with a concentration of {concentration_pvk} mol/L in a mixed solvent of DMF and DMSO.",  
     "The mixed perovskite ({formula_pvk}) precursor solution was prepared with a total concentration of {concentration_pvk} mol/L in DMF/DMSO co-solvent.",  
     "The perovskite precursor solution was prepared based on the perovskite composition of {formula_pvk} in anhydrous DMF solvent (total concentration of {concentration_pvk} mol/L).",  
@@ -707,34 +688,6 @@ instruction_templates = [
     "Provide a comprehensive fabrication protocol detailing the systematic optimization of key parameters that enabled the production of high-efficiency perovskite solar cells achieving a PCE of {pce}%, FF of {ff}, Voc of {voc} V, Jsc of {jsc} mA/cm².",
     ]
 
-# instruction_templates = [
-#     "Recommend a set of perovskite solar cell preparation schemes with a PCE of {pce}%, including materials information and process parameters.",
-#     "Propose fabrication procedures for perovskite solar cells achieving a PCE of {pce}%, detailing the materials and methods used.",
-#     "Suggest a series of preparation strategies for perovskite solar cells targeting a PCE of {pce}%, encompassing material specifications and processing conditions.",
-#     "Provide a comprehensive preparation plan for perovskite solar cells with a PCE of {pce}%, outlining the materials and fabrication parameters.",
-#     "Design a perovskite solar cell synthesis protocol aiming for a PCE of {pce}%, incorporating relevant materials and processing steps.",
-#     "Outline a preparation methodology for perovskite solar cells achieving a PCE of {pce}%, including material compositions and fabrication techniques.",
-#     "Develop a set of synthesis procedures for perovskite solar cells targeting a PCE of {pce}%, detailing the materials and processing conditions involved.",
-#     "Create a fabrication framework for perovskite solar cells with a PCE of {pce}%, specifying the materials used and the processing parameters.",
-#     "Formulate a preparation approach for perovskite solar cells aiming at a PCE of {pce}%, incorporating both material information and process details.",
-#     "Draft a set of synthesis steps for perovskite solar cells achieving a PCE of {pce}%, including material specifications and processing parameters.",
-#     "Establish a preparation protocol for perovskite solar cells with a PCE of {pce}%, outlining the necessary materials and fabrication conditions.",
-#     "Construct a fabrication plan for perovskite solar cells targeting a PCE of {pce}%, detailing the materials and processing parameters required.",
-#     "Devise a perovskite solar cell preparation strategy aiming for a PCE of {pce}%, encompassing both material information and process steps.",
-#     "Formulate a comprehensive synthesis protocol for perovskite solar cells achieving a PCE of {pce}%, including details on materials and fabrication processes.",
-#     "Design a preparation scheme for perovskite solar cells with a PCE of {pce}%, specifying the materials used and the processing conditions.",
-#     "Please design a perovskite solar cell based on a systematically tuned set of experimental parameters to achieve a PCE of {pce}%. Layout the complete protocol.",
-#     "Provide a detailed and step-by-step protocol for fabricating the perovskite device under carefully optimized conditions, ensuring that the process achieves a PCE of {pce}%. Include specific materials, equipment, deposition techniques, annealing parameters, and any critical environmental controls necessary to replicate the optimized fabrication.",
-#     "Develop a comprehensive fabrication protocol for a perovskite solar cell, detailing the refined parameters that led to achieving a PCE of {pce}%. Specify the materials, deposition methods, annealing conditions, and any critical optimizations in the process to ensure reproducibility and high performance.",
-#     "Provide a detailed fabrication protocol for the perovskite cell, outlining precise control over solution composition, coating speeds, and thermal treatments to achieve a PCE of {pce}%. Include specific material formulations, processing parameters, and quality control measures to ensure reproducibility and performance optimization.",
-#     "Using a parameter-driven approach, we engineered a perovskite solar cell that achieved a PCE of {pce}%.",
-#     "Outline a comprehensive fabrication protocol detailing the meticulous parameter optimization that led to the perovskite solar cell achieving a PCE of {pce}%. Include specific adjustments in material selection, deposition techniques, processing conditions, and performance characterization. ",
-#     "Develop a detailed fabrication protocol for the perovskite cell, specifying the controlled experimental inputs that led to achieving a PCE of {pce}%. Include precise guidelines on material preparation, deposition techniques, processing conditions, and key optimization steps.",
-#     "Provide a detailed fabrication protocol for the perovskite solar cell, outlining the careful optimization of each step, from solution concentration to annealing, that led to achieving a PCE of {pce}%. Include precise material formulations, deposition techniques, thermal processing conditions, and any critical optimization strategies.",
-#     "Detail a step-by-step fabrication protocol for the perovskite device, emphasizing the tuning of key parameters such as coating speeds, antisolvent timing, and annealing profiles. Specify the exact material compositions, processing techniques, and optimization strategies that enabled the achievement of a PCE of {pce}%, ensuring reproducibility and performance consistency.",
-#     "Design a comprehensive fabrication protocol detailing the incremental refinement of parameters that led to achieving a perovskite solar cell with a PCE of {pce}%.",
-#     "Provide a comprehensive fabrication protocol detailing the systematic optimization of key parameters that enabled the production of high-efficiency perovskite solar cells achieving a PCE of {pce}%.",
-#     ]
 
 
 
@@ -1006,14 +959,14 @@ sam_spin_anneal_segments = [
 
 diff_segments = {
     "Formula SAM 1-Adding": [
-        "The only difference lies in the self-assembled monolayer: The control device does not have a self-assembled monolayer, while the target  device used {formula_sam1}({concentration_sam1} mg/mL). The PCE increased from {control_device_pce}% to {target_device_pce}%, VOC from {control_device_voc} V to {target_device_voc} V, JSC from {control_device_jsc} to {target_device_jsc} mA/cm², and FF from {control_device_ff}% to {target_device_ff}%.", # from 王兴洁
+        "The only difference lies in the self-assembled monolayer: The control device does not have a self-assembled monolayer, while the target  device used {formula_sam1}({concentration_sam1} mg/mL). The PCE increased from {control_device_pce}% to {target_device_pce}%, VOC from {control_device_voc} V to {target_device_voc} V, JSC from {control_device_jsc} to {target_device_jsc} mA/cm², and FF from {control_device_ff}% to {target_device_ff}%.",
     ],
     "Formula Passivator 1-Adding": [
-        "The only difference lay in the passivation layer: control device had no passivation layer, whereas target device used {formula_passivator1} ({concentration_passivator1} mg/mL). The PCE increased from {control_device_pce}% to {target_device_pce}%, VOC from {control_device_voc} V to {target_device_voc} V, JSC from {control_device_jsc} to {target_device_jsc} mA/cm², and FF from {control_device_ff}% to {target_device_ff}%.", # from 蒋胜筹
+        "The only difference lay in the passivation layer: control device had no passivation layer, whereas target device used {formula_passivator1} ({concentration_passivator1} mg/mL). The PCE increased from {control_device_pce}% to {target_device_pce}%, VOC from {control_device_voc} V to {target_device_voc} V, JSC from {control_device_jsc} to {target_device_jsc} mA/cm², and FF from {control_device_ff}% to {target_device_ff}%.",
     ],
     "Formula Additive 1-Adding": [
-        "The only difference was that the control device did not add {formula_additive1} , while the target device added {formula_additive1} ( {concentration_additive1} mg/mL ) . The introduction of {formula_additive1} as an additive brings performance gains: the PCE rose from  {control_device_pce}% to {target_device_pce}%, the short-circuit current density increased from {control_device_jsc} mA cm⁻² to {target_device_jsc} mA cm⁻², and the open-circuit voltage improved from {control_device_voc} V to {target_device_voc} V, while the fill factor declined from {control_device_ff} % to {target_device_ff} % ." # from 雷怡潇
-        "The only difference lay in the additive component: the control device contained no {formula_additive1}, whereas the target device incorporated {formula_additive1} ({concentration_additive1} mg/mL). The PCE increased from {control_device_pce}% to {target_device_pce}%, VOC from {control_device_voc} V to {target_device_voc} V, JSC from {control_device_jsc} to {target_device_jsc} mA/cm², and FF from {control_device_ff}% to {target_device_ff}%." # from 王子旋
+        "The only difference was that the control device did not add {formula_additive1} , while the target device added {formula_additive1} ( {concentration_additive1} mg/mL ) . The introduction of {formula_additive1} as an additive brings performance gains: the PCE rose from  {control_device_pce}% to {target_device_pce}%, the short-circuit current density increased from {control_device_jsc} mA cm⁻² to {target_device_jsc} mA cm⁻², and the open-circuit voltage improved from {control_device_voc} V to {target_device_voc} V, while the fill factor declined from {control_device_ff} % to {target_device_ff} % .",
+        "The only difference lay in the additive component: the control device contained no {formula_additive1}, whereas the target device incorporated {formula_additive1} ({concentration_additive1} mg/mL). The PCE increased from {control_device_pce}% to {target_device_pce}%, VOC from {control_device_voc} V to {target_device_voc} V, JSC from {control_device_jsc} to {target_device_jsc} mA/cm², and FF from {control_device_ff}% to {target_device_ff}%.",
     ],
 }
 
@@ -1083,7 +1036,6 @@ def generate_text(features: dict) -> str:
     Returns:
         Complete formatted text description of the device fabrication process.
     """
-    # ... existing code ...
 
     parts = []
 
