@@ -98,6 +98,10 @@ class VariableReportPipeline:
                 analyzer = PerovskiteAnalyzer()
                 result = analyzer.run(rebuild_knowledge=rebuild_knowledge)
 
+                if result.get('success') is False:
+                    print(f"\nData preparation stage failed: {result.get('reason', 'Unknown reason')}")
+                    return False
+
                 if verbose:
                     print(f"\nData preparation completed!")
                     print(f"Statistics:")
@@ -106,10 +110,6 @@ class VariableReportPipeline:
                     print(f"   - Failed count: {result.get('failed_count', 0)}")
                     print(f"   - Dataset size: {result.get('dataset_size', 0)}")
                     print(f"   - Dataset path: {result.get('dataset_path', 'N/A')}")
-
-                if result.get('success') is False:
-                    print(f"\nData preparation stage failed: {result.get('reason', 'Unknown reason')}")
-                    return False
 
             # Step 2: Report generation
             if steps in ['all', 'report']:

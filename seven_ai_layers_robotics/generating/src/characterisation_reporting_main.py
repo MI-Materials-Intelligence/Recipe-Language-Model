@@ -100,6 +100,7 @@ class CharacterisationReportPipeline:
             raise ImportError("Report generator modules not found")
 
         try:
+            had_failures = False
             if report_type == 'all':
                 for gen_type, generator_func in REPORT_GENERATORS.items():
                     print(f"\n{'='*60}")
@@ -111,6 +112,7 @@ class CharacterisationReportPipeline:
                         print(f"{gen_type.upper()} type report generation completed!")
                     except Exception as e:
                         print(f"{gen_type.upper()} type report generation failed: {e}")
+                        had_failures = True
                         continue
             else:
                 if report_type not in REPORT_GENERATORS:
@@ -122,6 +124,10 @@ class CharacterisationReportPipeline:
 
                 REPORT_GENERATORS[report_type](verbose=verbose)
                 print(f"{report_type.upper()} type report generation completed!")
+
+            if had_failures:
+                print("\nEntire process completed with partial failures.")
+                return False
 
             print("\nEntire process completed!")
             return True

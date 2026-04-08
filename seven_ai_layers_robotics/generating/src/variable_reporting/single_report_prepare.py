@@ -297,6 +297,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         self.config = config or AnalyzerConfig()
 
         self._semaphore = asyncio.Semaphore(self.config.llm.max_concurrent)
+        self._client = AsyncOpenAI(**self.config.llm.to_client_kwargs())
         self._md_text_cache: Dict[str, str] = {}
         self._md_map: Dict[tuple, str] = {}
         self._init_knowledge_map()
