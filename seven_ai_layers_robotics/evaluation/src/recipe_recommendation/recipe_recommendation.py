@@ -2,18 +2,13 @@
 
 import json
 import re
-import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from flask import Blueprint, jsonify, request
 
-path = Path(__file__).resolve().parents[2]
-os.chdir(path)
-sys.path.append(str(Path(__file__).resolve().parents[3]))
-
-from recipe_recommendation.predictor.main_predictor import get_prediction
+from seven_ai_layers_robotics.evaluation.src.recipe_recommendation.predictor.main_predictor import get_prediction
 from seven_ai_layers_robotics.config import config
 
 recipe_integrity_bp = Blueprint('recipe_integrity', __name__)

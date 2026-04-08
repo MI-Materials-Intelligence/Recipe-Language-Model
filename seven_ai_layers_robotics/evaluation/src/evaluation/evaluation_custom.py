@@ -3,11 +3,9 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-sys.path.append(str(Path(__file__).resolve().parents[3]))
 from seven_ai_layers_robotics.config import config
-
-from mechanistic_reasoning.mechanistic_reasoning import calculate_mechanistic_reasoning
-from recipe_recommendation.recipe_recommendation import calculate_recipe
+from seven_ai_layers_robotics.evaluation.src.mechanistic_reasoning.mechanistic_reasoning import calculate_mechanistic_reasoning
+from seven_ai_layers_robotics.evaluation.src.recipe_recommendation.recipe_recommendation import calculate_recipe
 
 evaluation_custom_bp = Blueprint('evaluation_custom', __name__)
 

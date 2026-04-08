@@ -759,8 +759,9 @@ def main() -> None:
     filtered_formula = maybe_downsample(filtered_formula, MAX_PAIRS_PER_SOURCE, SEED) if not filtered_formula.empty else filtered_formula
     filtered_conc = maybe_downsample(filtered_conc, MAX_PAIRS_PER_SOURCE, SEED) if not filtered_conc.empty else filtered_conc
 
-    if WRITE_DIAGNOSTIC_CSV:
-        out_path = output_json
+    out_path = output_json
+    
+    if WRITE_DIAGNOSTIC_CSV:       
         diagnostic_dir = output_dir / (output_dir.stem + "_diagnostic")
         diagnostic_dir.mkdir(parents=True, exist_ok=True)
         pd.DataFrame(summary["formula_breakdown"]).to_csv(diagnostic_dir / "breakdown_formula.csv", index=False, encoding="utf-8-sig")

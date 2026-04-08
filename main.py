@@ -30,7 +30,12 @@ Usage:
 
 import argparse
 import sys
+import warnings
 from typing import Optional
+
+# Suppress RequestsDependencyWarning for urllib3/chardet version mismatch
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="requests")
+warnings.filterwarnings("ignore", message=".*urllib3.*chardet.*charset_normalizer.*")
 
 # Optimized imports using __init__.py
 from seven_ai_layers_robotics.learning import (

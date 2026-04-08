@@ -130,6 +130,7 @@ VALUE_COLUMN = [
 ]
 
 
+@lru_cache(maxsize=None)
 def get_predefined_relation() -> Tuple[List, List, List]:
     """Get predefined column relation mappings for difference classification.
     
@@ -139,6 +140,16 @@ def get_predefined_relation() -> Tuple[List, List, List]:
             - concern_column_list: List of corresponding concern columns  
             - class_list: List of classification names for each combination
     """
+    different_column_list = []
+    concern_column_list = []
+    class_list = []
+    
+    for item in COLUMN_RELATION:
+        different_column_list.append(sorted(list(item[0])))
+        concern_column_list.append(item[1])
+        class_list.append(item[2])
+    
+    return different_column_list, concern_column_list, class_list
 
 
 def process_single_data(data: dict) -> dict:
@@ -507,12 +518,37 @@ def get_single_var_diff_class(formula_data_root, fp_data_root):
     fp_data_path = osp.join(fp_data_root, "overall_tasks.json")
     formula_save_root = osp.join(formula_data_root, "tasks")
     fp_save_root = osp.join(fp_data_root, "tasks")
+    
+    # Read formula data with validation
     formula_data_list = read_json(formula_data_path)
-    formula_result = process_data(formula_data_list)
-    save_data(formula_result, formula_save_root)
+    if formula_data_list is None:
+        print(f"Warning: Failed to read formula data from {formula_data_path}")
+        formula_data_list = []
+    elif not isinstance(formula_data_list, list):
+        print(f"Warning: Formula data is not a list, got {type(formula_data_list)}")
+        formula_data_list = []
+    
+    if formula_data_list:
+        formula_result = process_data(formula_data_list)
+        save_data(formula_result, formula_save_root)
+        print(f"Formula data processed: {len(formula_data_list)} items")
+    else:
+        print("Warning: No formula data to process")
 
+    # Read fp data with validation
     fp_data_list = read_json(fp_data_path)
-    fp_result = process_data(fp_data_list)
-    save_data(fp_result, fp_save_root)
+    if fp_data_list is None:
+        print(f"Warning: Failed to read fp data from {fp_data_path}")
+        fp_data_list = []
+    elif not isinstance(fp_data_list, list):
+        print(f"Warning: FP data is not a list, got {type(fp_data_list)}")
+        fp_data_list = []
+    
+    if fp_data_list:
+        fp_result = process_data(fp_data_list)
+        save_data(fp_result, fp_save_root)
+        print(f"FP data processed: {len(fp_data_list)} items")
+    else:
+        print("Warning: No FP data to process")
 
 

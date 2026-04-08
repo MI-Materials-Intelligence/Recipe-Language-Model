@@ -120,13 +120,24 @@ def generate_dedup_data(data_path):
             - df_with_group_id: Original data with group IDs
     """
     df = pd.read_csv(data_path)
+    
+    # Generate formula column from PVK elements if not exists
+    if "formula" not in df.columns:
+        # Check if required PVK element columns exist
+        missing_cols = [col for col in PVK_ELE_COLUMNS if col not in df.columns]
+        if missing_cols:
+            raise ValueError(f"Missing required columns for formula generation: {missing_cols}")
+        
+        df["formula"] = df.apply(
+            lambda row: "".join([format_number(col, row[col]) for col in PVK_ELE_COLUMNS]),
+            axis=1,
+        )
+    
+    # Fill NA values in formula and FP columns
     fill_cols = sorted(set(FORMULA_COLUMNS + FP_COLUMNS))
-    df[fill_cols] = df[fill_cols].fillna("NA")
-
-    df["formula"] = df.apply(
-        lambda row: "".join([format_number(col, row[col]) for col in PVK_ELE_COLUMNS]),
-        axis=1,
-    )
+    # Only fill columns that exist in the dataframe
+    existing_fill_cols = [col for col in fill_cols if col in df.columns]
+    df[existing_fill_cols] = df[existing_fill_cols].fillna("NA")
 
     df[("Group_ID")] = df.groupby(FORMULA_COLUMNS).ngroup()
 

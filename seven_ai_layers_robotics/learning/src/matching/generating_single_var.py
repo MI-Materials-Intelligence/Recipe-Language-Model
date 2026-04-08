@@ -2,12 +2,16 @@ import csv
 import json
 import os
 import sys
+import warnings
 from functools import partial
 from itertools import combinations, product
 from multiprocessing import Pool, cpu_count
 from typing import Any, Dict, List
 
 import pandas as pd
+
+# Suppress pandas FutureWarning for fillna dtype incompatibility
+warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)  # Learning/src

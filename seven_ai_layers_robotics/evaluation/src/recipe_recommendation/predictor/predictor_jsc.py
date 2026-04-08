@@ -1,6 +1,5 @@
 ﻿import re
 import json
-import sys
 import warnings
 from pathlib import Path
 
@@ -19,7 +18,6 @@ warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 warnings.filterwarnings("ignore", category=UserWarning, message=".*xgboost.*")
 warnings.filterwarnings("ignore", message=".*XGBoost.*")
 
-sys.path.append(str(Path(__file__).resolve().parents[4]))
 from seven_ai_layers_robotics.config import config
 
 

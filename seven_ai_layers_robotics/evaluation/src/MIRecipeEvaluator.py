@@ -8,13 +8,9 @@ import pandas as pd
 import requests
 from sqlalchemy import create_engine, text
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT))
-
 from seven_ai_layers_robotics.config import config
-
-from evaluation.evaluation_custom import calculate_evaluation_custom, get_required_params
-from recipe_recommendation.recipe_recommendation import calculate_recipe_recommendation
+from seven_ai_layers_robotics.evaluation.src.evaluation.evaluation_custom import calculate_evaluation_custom, get_required_params
+from seven_ai_layers_robotics.evaluation.src.recipe_recommendation.recipe_recommendation import calculate_recipe_recommendation
 
 
 class MIRecipeEvaluator:
