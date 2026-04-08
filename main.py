@@ -175,8 +175,8 @@ Examples:
     learning_parser.add_argument(
         '--pipeline', '-p',
         type=str,
-        default='robotic',
-        choices=['robotic', 'edge', 'characterization'],
+        default='variable',
+        choices=['variable', 'edge', 'characterization'],
         help='Pipeline type to run (default: robotic)'
     )
     learning_parser.set_defaults(func=run_learning_pipeline)

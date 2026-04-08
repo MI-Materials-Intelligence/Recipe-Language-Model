@@ -12,19 +12,19 @@ import os
 import sys
 from typing import Any, Dict, Optional
 
-# Add current script directory to sys.path for config import
+
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-# Load configuration from app.config
+
 from seven_ai_layers_robotics.config import config
 
-# Working directory and data paths
+
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# Database and LLM configuration loaded from app.config
+
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -42,32 +42,31 @@ LLM_CONFIG = {
 }
 
 try:
-    # Attempt to import different types of report generators
+   
     REPORT_GENERATORS = {}
 
-    # Import from characterization_reporting package (sibling directory to current module)
-    # SAM Report Generator
+
     try:
         from characterization_reporting.sam_report import run_sam_report
         REPORT_GENERATORS['sam'] = run_sam_report
     except ImportError as e:
         print(f" Warning: Unable to import SAM report generator. Error: {e}")
 
-    # Additive Report Generator
+  
     try:
         from characterization_reporting.add_report import run_add_report
         REPORT_GENERATORS['additive'] = run_add_report
     except ImportError as e:
         print(f"Warning: Unable to import Additive report generator. Error: {e}")
 
-    # Passivator Report Generator
+    
     try:
         from characterization_reporting.pass_report import run_pass_report
         REPORT_GENERATORS['passivator'] = run_pass_report
     except ImportError as e:
         print(f"Warning: Unable to import Passivator report generator. Error: {e}")
 
-    # Process Report Generator
+    
     try:
         from characterization_reporting.process_report import run_process_report
         REPORT_GENERATORS['process'] = run_process_report
@@ -80,9 +79,7 @@ except Exception as e:
     ARE_GENERATORS_AVAILABLE = False
     print(f"Warning: Unable to load report generators, report generation functionality will be unavailable. Error: {e}")
 
-# ==============================
-# Core Class Encapsulation
-# ==============================
+
 
 class CharacterisationReportPipeline:
     """Characterisation Report Automated Processing Pipeline.
@@ -124,7 +121,7 @@ class CharacterisationReportPipeline:
 
         try:
             if report_type == 'all':
-                # Execute all types of report generation
+                
                 for gen_type, generator_func in REPORT_GENERATORS.items():
                     print(f"\n{'='*60}")
                     print(f"Starting to generate {gen_type.upper()} type report...")
@@ -137,7 +134,7 @@ class CharacterisationReportPipeline:
                         print(f"{gen_type.upper()} type report generation failed: {e}")
                         continue
             else:
-                # Execute specified type of report generation
+                
                 if report_type not in REPORT_GENERATORS:
                     raise ValueError(f"Unsupported report type: {report_type}, available types: {list(REPORT_GENERATORS.keys())}")
 
@@ -157,9 +154,7 @@ class CharacterisationReportPipeline:
             traceback.print_exc()
             return False
 
-# ==============================
-# Main Entry Point (Script Direct Execution)
-# ==============================
+
 
 if __name__ == "__main__":
     print("=" * 60)
@@ -172,7 +167,7 @@ if __name__ == "__main__":
     print(f"Available Report Generators: {list(REPORT_GENERATORS.keys())}")
     print("=" * 60)
 
-    # Initialize and execute
+    
     pipeline = CharacterisationReportPipeline()
     success = pipeline.run(report_type='all', verbose=True)
 

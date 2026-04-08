@@ -1,26 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 Variable Report Automated Data Processing Pipeline
-Supports: Fetching pending data from the database -> Generating reports -> Saving to the data directory
 
-Usage:
-    1. Direct execution: python variable_report_pipeline.py
-    2. External import: from variable_report_pipeline import VariableReportPipeline; pipeline = VariableReportPipeline(); pipeline.run()
 """
 
 import os
 import sys
 from typing import Any, Dict, Optional
 
-# Add current script directory to sys.path for config import
+
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-# Load configuration from app.config
+
 from seven_ai_layers_robotics.config import config
 
-# Database and LLM configuration loaded from app.config
+
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -37,16 +33,16 @@ LLM_CONFIG = {
     'timeout': config.generating_llm.timeout,
 }
 
-# Working directory and data paths
+
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# Import report generation modules
+
 try:
-    # Attempt to import Variable_Reporting module
+
     IS_VARIABLE_REPORT_AVAILABLE = False
 
-    # Add Variable_Reporting directory to sys.path
+
     _var_reporting_dir = os.path.join(_script_dir, 'Variable_Reporting')
     if _var_reporting_dir not in sys.path:
         sys.path.insert(0, _var_reporting_dir)
@@ -56,15 +52,13 @@ try:
         from single_report import ReportGenerator
         IS_VARIABLE_REPORT_AVAILABLE = True
     except ImportError as e:
-        print(f"⚠️ Warning: Unable to import Variable_Reporting module. Error: {e}")
+        print(f"Warning: Unable to import Variable_Reporting module. Error: {e}")
 
 except Exception as e:
     IS_VARIABLE_REPORT_AVAILABLE = False
-    print(f"⚠️ Warning: Unable to load Variable_Reporting module, report generation functionality will be unavailable. Error: {e}")
+    print(f"Warning: Unable to load Variable_Reporting module, report generation functionality will be unavailable. Error: {e}")
 
-# ==============================
-# Core Class Encapsulation
-# ==============================
+
 
 class VariableReportPipeline:
     """Variable Report Automated Data Processing Pipeline.
@@ -106,7 +100,7 @@ class VariableReportPipeline:
             raise ImportError("Variable_Reporting module not found, unable to execute report generation.")
 
         try:
-            # Step 1: Data preparation (mechanism analysis)
+         
             if steps in ['all', 'prepare']:
                 print(f"\n{'='*60}")
                 print("Starting data preparation (mechanism analysis)...")
@@ -145,7 +139,7 @@ class VariableReportPipeline:
                     print(f"   - Missing data: {stats.get('missing', 0)}")
                     print(f"   - Skipped: {stats.get('skipped', 0)}")
 
-            print("\n🎉 Entire process completed!")
+            print("\nEntire process completed!")
             return True
 
         except Exception as e:
@@ -155,16 +149,14 @@ class VariableReportPipeline:
             return False
 
 
-# ==============================
-# Main Entry Point (Script Direct Execution)
-# ==============================
+
 
 if __name__ == "__main__":
     print("=" * 60)
     print("Variable Report Pipeline")
     print("=" * 60)
 
-    # Direct execution, no parameters required
+
     pipeline = VariableReportPipeline()
     success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)
 

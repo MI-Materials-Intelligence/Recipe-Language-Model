@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 Edge Report Automated Data Processing Pipeline
-Supports: Data cleaning -> Generating experimental description reports -> Calling DeepSeek for mechanism analysis
 
-Usage:
-    1. Direct execution: python this_script.py
-    2. External import: from this_script import EdgeReportPipeline; pipeline = EdgeReportPipeline(); pipeline.run()
 """
 
 import os
 import sys
 from typing import Any, Dict, Optional
 
-# Add current script directory to sys.path for config import
+
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 if _script_dir not in sys.path:
     sys.path.insert(0, _script_dir)
 
-# Load configuration from app.config
+
 from seven_ai_layers_robotics.config import config
 
-# Database configuration loaded from app.config (Using Generating module)
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -31,31 +26,29 @@ DB_CONFIG = {
 }
 DEFAULT_DB_URI = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4"
 
-# Working directory and data paths
 WORK_DIR = _script_dir
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# Import step modules
 STEP_MODULES = {}
 ARE_MODULES_AVAILABLE = False
 
 try:
-    # Add edge_reporting directory to sys.path
+    
     _edge_reporting_dir = os.path.join(_script_dir, 'edge_reporting')
     if _edge_reporting_dir not in sys.path:
         sys.path.insert(0, _edge_reporting_dir)
 
-    # Step 2: Generate Report
+    
     try:
         import edge_report_generator
         STEP_MODULES['step2'] = edge_report_generator
-        # print(f"edge_report_generator imported successfully")
+        
     except ImportError as e:
         print(f"Warning: Unable to import edge_report_generator module. Error: {e}")
         import traceback
         traceback.print_exc()
 
-    # Step 3: DeepSeek Analysis
+    
     try:
         import edge_mechanism_analyzer
         STEP_MODULES['step3'] = edge_mechanism_analyzer
@@ -73,9 +66,7 @@ except Exception as e:
     traceback.print_exc()
 
 
-# ==============================
-# Core Class Encapsulation
-# ==============================
+
 
 class EdgeReportPipeline:
     """Edge Report Automated Data Processing Pipeline.
@@ -121,7 +112,7 @@ class EdgeReportPipeline:
         s2 = STEP_MODULES['step2']
         s2.DB_URI = self.db_uri
         s2.DB_CONFIG = self.db_config
-        # Correct the output path in TASKS to absolute path, save to Generating/data/reports directory
+
         reports_dir = os.path.join(self.data_dir,  "edge", "reports")
         os.makedirs(reports_dir, exist_ok=True)
         if hasattr(s2, 'TASKS'):
@@ -136,9 +127,7 @@ class EdgeReportPipeline:
 
         s3 = STEP_MODULES['step3']
         s3.DB_CONFIG = self.db_config
-        # JSON output to data directory, not src directory
         s3.JSON_ROOT_DIR = os.path.join(self.data_dir)
-        # Fix API URL (original code has extra spaces at the end)
         if hasattr(s3, 'API_URL'):
             s3.API_URL = s3.API_URL.strip()
 
@@ -204,10 +193,10 @@ class EdgeReportPipeline:
 
         try:
             if steps == 'all':
-                # Execute all steps
+         
                 step_list = ['step2', 'step3']
             else:
-                # Execute specified steps
+                
                 step_list = [s.strip() for s in steps.split(',')]
 
             for step_name in step_list:
@@ -229,9 +218,7 @@ class EdgeReportPipeline:
             return False
 
 
-# ==============================
-# Main Entry Point (Script Direct Execution)
-# ==============================
+
 
 if __name__ == "__main__":
     print("=" * 60)
