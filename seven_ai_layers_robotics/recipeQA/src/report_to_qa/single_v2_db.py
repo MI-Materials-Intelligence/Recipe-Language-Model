@@ -57,6 +57,9 @@ def _load_recipeqa_config() -> Dict[str, Any]:
         print(f"[WARN] Failed to load config: {e}, using default values")
         return {}
 
+
+RECIPEQA_CONFIG: Dict[str, Any] = _load_recipeqa_config()
+
 # Import configuration from app.config
 import sys
 from pathlib import Path as PathLib
@@ -460,6 +463,13 @@ async def process_single_item(item: Dict[str, Any], save_root: str, success_ids:
     sid2_raw = (item.get("meta_info", {}).get("Sample_ID_2", "") or "").split(",")[0].strip()
     fn = f"{safe_filename(sid1_raw) or 'X'}_{safe_filename(sid2_raw) or 'Y'}.json"
     save_path = osp.join(save_root, fn)
+    base_payload = {
+        "think_part": "",
+        "answer_part": "",
+        "control_device_fabrication": item.get("control_device_fabrication", ""),
+        "target_device_fabrication": item.get("target_device_fabrication", ""),
+        "meta_info": item.get("meta_info", {}),
+    }
 
     async with semaphore:
         for attempt in range(1, MAX_RETRIES + 1):
@@ -502,11 +512,9 @@ async def process_single_item(item: Dict[str, Any], save_root: str, success_ids:
                         answer_content += cp
 
                 payload = {
+                    **base_payload,
                     "think_part": reasoning_content.strip(),
                     "answer_part": answer_content.strip(),
-                    "control_device_fabrication": item.get("control_device_fabrication", ""),
-                    "target_device_fabrication": item.get("target_device_fabrication", ""),
-                    "meta_info": item.get("meta_info", {}),
                 }
                 atomic_write_json(save_path, payload)
                 success_ids.append(record_id)
@@ -514,7 +522,7 @@ async def process_single_item(item: Dict[str, Any], save_root: str, success_ids:
 
             except Exception as e:
                 if attempt >= MAX_RETRIES:
-                    stub = {**payload, "error": repr(e)}
+                    stub = {**base_payload, "error": repr(e)}
                     atomic_write_json(save_path, stub)
                     return
                 await asyncio.sleep(RETRY_BASE_DELAY * attempt + random.uniform(0, 1))
