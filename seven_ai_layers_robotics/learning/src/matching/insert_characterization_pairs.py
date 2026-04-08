@@ -179,7 +179,7 @@ def main() -> None:
         for file_path in FILES:
             print(f"\nProcessing: {file_path}")
             records = load_json_records(file_path)
-            print(f"   ➜ {len(records)} records")
+            print(f" {len(records)} records")
 
             if records:
                 insert_records_incremental(conn, records, file_path)
@@ -198,7 +198,7 @@ def run(
     verbose: bool = True,
 ) -> None:
     if verbose:
-        print("▶ Running Insert Characterization Pairs pipeline...")
+        print("Running Insert Characterization Pairs pipeline...")
 
     main()
 
