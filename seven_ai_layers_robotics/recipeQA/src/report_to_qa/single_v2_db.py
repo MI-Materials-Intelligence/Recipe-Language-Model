@@ -14,45 +14,24 @@ from mysql.connector import Error
 
 # ===== Config Loader =====
 def _load_recipeqa_config() -> Dict[str, Any]:
-    """Load RecipeQA configuration from config.toml.
+    """Load RecipeQA configuration from seven_ai_layers_robotics.config.
 
     Returns:
         Dictionary containing LLM and database configuration.
     """
     try:
-        from pathlib import Path
-        import tomllib
+        from seven_ai_layers_robotics.config import config
 
-        # Try multiple possible paths
-        current_file = Path(__file__).resolve()
+        # Build LLM config
+        llm_config = {
+            'api_key': config.recipeqa_llm.dashscope_api_key,
+            'base_url': config.recipeqa_llm.base_url,
+            'model': config.recipeqa_llm.dashscope_model,
+            'temperature': config.recipeqa_llm.temperature,
+            'timeout': config.recipeqa_llm.timeout,
+        }
 
-        # Path 1: recipeQA -> seven_ai_layers_robotics -> project root (2 levels up)
-        project_root = current_file.parent.parent.parent
-        config_path = project_root / "config.toml"
-
-        # Path 2: Try alternative path structure
-        if not config_path.exists():
-            project_root = current_file.parent.parent.parent.parent
-            config_path = project_root / "config.toml"
-
-        if not config_path.exists():
-            print(f"[WARN] Config file not found: {config_path}, using default values")
-            return {}
-
-        with config_path.open("rb") as f:
-            config = tomllib.load(f)
-
-        # Return recipeqa_llm configuration
-        recipeqa_llm_config = config.get("recipeqa_llm", {})
-        recipeqa_db_config = config.get("recipeqa", {}).get("database", {})
-
-        result = {}
-        if recipeqa_llm_config:
-            result.update(recipeqa_llm_config)
-        if recipeqa_db_config:
-            result["database"] = recipeqa_db_config
-
-        return result
+        return llm_config
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
         return {}
@@ -68,31 +47,18 @@ recipeqa_root = script_dir.parent.parent  # report_to_qa -> RecipeQA
 if str(recipeqa_root) not in sys.path:
     sys.path.insert(0, str(recipeqa_root))
 
-try:
-    from seven_ai_layers_robotics.config import config
-    RECIPEQA_LLM_CONFIG = {
-        'api_key': config.recipeqa_llm.dashscope_api_key,
-        'base_url': config.recipeqa_llm.base_url,
-        'model': config.recipeqa_llm.dashscope_model,
-        'temperature': config.recipeqa_llm.temperature,
-        'timeout': config.recipeqa_llm.timeout,
-    }
-except Exception as e:
-    print(f"[WARN] Failed to import from app.config: {e}, using default values")
-    RECIPEQA_LLM_CONFIG = {}
-
-# ===== Config =====
-BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # RecipeQA
-DATA_DIR: str = os.path.join(BASE_DIR, "..", "data")  # RecipeQA/data/
-
 # Load LLM configuration from app.config
-LLM_CONFIG: Dict[str, Any] = RECIPEQA_LLM_CONFIG or {
+LLM_CONFIG: Dict[str, Any] = RECIPEQA_CONFIG or {
     'api_key': '',
     'base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     'model': '',
     'temperature': 0.4,
     'timeout': 60,
 }
+
+# ===== Config =====
+BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # RecipeQA
+DATA_DIR: str = os.path.join(BASE_DIR, "..", "data")  # RecipeQA/data/
 
 MAX_CONCURRENT_REQUESTS: int = 5
 MAX_RETRIES: int = 5
@@ -318,45 +284,27 @@ def get_tasks_from_db(
     db_config: Optional[Dict[str, Any]] = None
 ):
     if db_config is None:
-        # Try to load from RECIPEQA_CONFIG first
-        recipeqa_db = RECIPEQA_CONFIG.get("database", {})
-
-        if not recipeqa_db:
-            # Try to load from main config file
-            try:
-                from pathlib import Path
-                import tomllib
-
-                current_file = Path(__file__).resolve()
-                # Try path 1: project root / config.toml
-                project_root = current_file.parent.parent.parent
-                config_path = project_root / "config.toml"
-
-                # Try path 2: alternative structure
-                if not config_path.exists():
-                    project_root = current_file.parent.parent.parent.parent
-                    config_path = project_root / "config.toml"
-
-                if config_path.exists():
-                    with config_path.open("rb") as f:
-                        config = tomllib.load(f)
-                    # First try recipeqa.database, then fallback to main database
-                    recipeqa_db = config.get("recipeqa", {}).get("database", {})
-                    if not recipeqa_db:
-                        recipeqa_db = config.get("database", {})
-            except Exception as e:
-                print(f"[WARN] Failed to load config: {e}")
-                pass
-
-        # Use loaded config or default values
-        db_config = recipeqa_db if recipeqa_db else {
-            "host": "",
-            "port": 13330,
-            "user": "root",
-            "password": "",
-            "database": "",
-            "charset": "utf8mb4"
-        }
+        # Load from seven_ai_layers_robotics.config
+        try:
+            from seven_ai_layers_robotics.config import config
+            db_config = {
+                'host': config.learning_database.host,
+                'port': config.learning_database.port,
+                'user': config.learning_database.user,
+                'password': config.learning_database.password,
+                'database': config.learning_database.database,
+                'charset': config.learning_database.charset,
+            }
+        except Exception as e:
+            print(f"[WARN] Failed to load config from seven_ai_layers_robotics.config: {e}")
+            db_config = {
+                "host": "",
+                "port": 13330,
+                "user": "root",
+                "password": "",
+                "database": "",
+                "charset": "utf8mb4"
+            }
 
     md_map = build_md_knowledge_map(expert_data_root)
     md_text_cache = {}

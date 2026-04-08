@@ -8,32 +8,25 @@ import tomllib
 
 # ===== Config Loader =====
 def _load_recipeqa_config() -> Dict[str, Any]:
-    """Load RecipeQA configuration from config.toml.
+    """Load RecipeQA configuration from seven_ai_layers_robotics.config.
 
     Returns:
         Dictionary containing configuration with database and LLM settings.
     """
     try:
-        # Project root: current file is in .../RecipeQA/src/
-        # Path levels: src -> RecipeQA -> RLM -> tool -> app -> OpenManus (5 levels up to workspace root)
-        project_root = Path(__file__).resolve().parent.parent  # RecipeQA
+        from seven_ai_layers_robotics.config import config
 
-        # Try multiple possible config locations
-        possible_paths = [
-            project_root.parent.parent / "config.toml",  # Workspace root
-            project_root.parent.parent / "config" / "config.toml",  # Workspace/config/
-            project_root / "config.toml",  # RecipeQA/
-        ]
+        # Build database config from learning_database
+        db_config = {
+            'host': config.learning_database.host,
+            'port': config.learning_database.port,
+            'user': config.learning_database.user,
+            'password': config.learning_database.password,
+            'database': config.learning_database.database,
+            'charset': config.learning_database.charset,
+        }
 
-        for config_path in possible_paths:
-            if config_path.exists():
-                print(f"[INFO] Loaded config from: {config_path}")
-                with config_path.open("rb") as f:
-                    config = tomllib.load(f)
-                return config
-
-        print(f"[WARN] No config file found, using default values")
-        return {}
+        return {"database": db_config}
     except Exception as e:
         print(f"[WARN] Failed to load config: {e}, using default values")
         return {}

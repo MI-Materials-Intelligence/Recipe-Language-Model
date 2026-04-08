@@ -15,7 +15,7 @@ from collections import defaultdict
 
 # ===== Config Loader =====
 def _load_recipeqa_config() -> Dict[str, Any]:
-    """Load RecipeQA configuration from app.config
+    """Load RecipeQA configuration from seven_ai_layers_robotics.config
 
     Returns:
         Dictionary containing LLM configuration with api_key, base_url, model, and temperature.
@@ -23,12 +23,12 @@ def _load_recipeqa_config() -> Dict[str, Any]:
     try:
         from seven_ai_layers_robotics.config import config
 
-        # Build LLM config from app.config - use recipeqa_llm instead of learning
+        # Build LLM config from app.config - use recipeqa_llm
         llm_config = {
-            "api_key": config.recipeqa_llm.dashscope_api_key if hasattr(config, 'recipeqa_llm') else "",
-            "base_url": config.recipeqa_llm.base_url if hasattr(config, 'recipeqa_llm') else "https://dashscope.aliyuncs.com/compatible-mode/v1",
-            "model": config.recipeqa_llm.dashscope_model if hasattr(config, 'recipeqa_llm') else "qwen-plus",
-            "temperature": config.recipeqa_llm.temperature if hasattr(config, 'recipeqa_llm') else 0.4,
+            "api_key": config.recipeqa_llm.dashscope_api_key,
+            "base_url": config.recipeqa_llm.base_url,
+            "model": config.recipeqa_llm.dashscope_model,
+            "temperature": config.recipeqa_llm.temperature,
         }
 
         return llm_config
