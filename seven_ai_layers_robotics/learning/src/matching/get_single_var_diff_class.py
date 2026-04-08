@@ -88,7 +88,7 @@ COLUMN_RELATION = [
         {
             "Spin Coating Speed SAM",
             "Spin Coating Time SAM",
-            " Annealed Temprature SAM",
+            "Annealed Temperature SAM",
             "Annealed Time SAM",
         },
         "Spin Coating Speed SAM",
@@ -130,7 +130,7 @@ VALUE_COLUMN = [
 ]
 
 
-def get_predefined_relation() -> Tuple[List, List]:
+def get_predefined_relation() -> Tuple[List, List, List]:
     """Get predefined column relation mappings for difference classification.
     
     Returns:
@@ -235,7 +235,9 @@ def get_target_field_desc(
             desc = f"Decreasing"
             reverse_desc = f"Increasing"
         else:
-            raise
+            raise ValueError(
+                f"Equal values found for target field `{target_field}`: {low_pce_value} == {high_pce_value}"
+            )
     else:
         if low_pce_value is None and high_pce_value is not None:
             if not need_full_desc:
@@ -344,7 +346,9 @@ def remove_conflict_in_columns(diff_classes: dict) -> dict:
             elif class_max_pce > reverse_class_max_pce:
                 valid_result[class_name] = diff_classes[class_name]
             else:
-                raise f"Same PCE appear for conflict pair <{class_name}-{diff_classes[class_name]['max_PCE_sample_id']}, {reverse_class_name}-{diff_classes[reverse_class_name]['max_PCE_sample_id']}>"
+                raise ValueError(
+                f"Same PCE appear for conflict pair <{class_name}-{diff_classes[class_name]['max_PCE_sample_id']}, {reverse_class_name}-{diff_classes[reverse_class_name]['max_PCE_sample_id']}>"
+            )
         else:
             valid_result[class_name] = diff_classes[class_name]
 
