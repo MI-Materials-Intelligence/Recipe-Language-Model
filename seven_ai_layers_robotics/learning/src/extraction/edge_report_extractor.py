@@ -141,7 +141,7 @@ class EdgeReportExtractor:
         df = self._filter_by_no_segments(df)
         n1 = len(df)
         if df.empty:
-            print(f"⚠️ After outlier removal is empty: {n0} → {n1}")
+            print(f"After outlier removal is empty: {n0} → {n1}")
             return df.drop(columns=["_orig_idx"], errors="ignore")
 
         idx = df.groupby(self.param_cols, dropna=False)["PCE"].idxmax()
@@ -151,12 +151,12 @@ class EdgeReportExtractor:
         df = self._filter_by_no_segments(df)
         n3 = len(df)
         if df.empty:
-            print(f"⚠️ After deduplication then outlier removal is empty: {n2} → {n3}")
+            print(f"After deduplication then outlier removal is empty: {n2} → {n3}")
             return df.drop(columns=["_orig_idx"], errors="ignore")
 
         df = df.sort_values("_orig_idx").drop(columns=["_orig_idx"])
 
-        print(f"✅ Cleaning Statistics: Original {n0} → After outlier removal {n1} → After deduplication {n2} → After second outlier removal {n3}")
+        print(f"Cleaning Statistics: Original {n0} → After outlier removal {n1} → After deduplication {n2} → After second outlier removal {n3}")
         return df
 
     def export_table_to_csv(self, src_table: str, output_csv: str) -> pd.DataFrame:
@@ -169,7 +169,7 @@ class EdgeReportExtractor:
         engine = create_engine(self.db_uri)
         df = pd.read_sql(f"SELECT * FROM `{src_table}`;", con=engine)
         df.to_csv(output_csv, index=False, encoding="utf-8-sig")
-        print(f"✅ Exported {len(df)} rows → {output_csv}")
+        print(f"Exported {len(df)} rows → {output_csv}")
         return df
 
     def process_csv(self, input_csv: str, output_dir: str) -> pd.DataFrame:
@@ -188,7 +188,7 @@ class EdgeReportExtractor:
         out_path = Path(output_dir) / out_filename
         df_out.to_csv(out_path, index=False, encoding="utf-8-sig")
 
-        print(f"✅ Cleaning completed: {out_path}")
+        print(f"Cleaning completed: {out_path}")
         return df_out
 
     @staticmethod
@@ -243,7 +243,7 @@ class EdgeReportExtractor:
         with engine.begin() as conn:
             conn.execute(sql, records)
 
-        print(f"✅ Successfully UPSERTed full fields {len(records)} rows → `{target_table}`")
+        print(f"Successfully UPSERTed full fields {len(records)} rows → `{target_table}`")
 
     def extract_and_process(self, src_table: str, target_table: str,
                            output_dir: str = "data") -> bool:

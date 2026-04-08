@@ -174,7 +174,7 @@ def main() -> None:
     conn = None
     try:
         conn = mysql.connector.connect(**MYSQL_CONFIG)
-        print("🔌 MySQL connected")
+        print("MySQL connected")
 
         for file_path in FILES:
             print(f"\nProcessing: {file_path}")
