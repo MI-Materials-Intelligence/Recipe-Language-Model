@@ -13,17 +13,16 @@ def get_project_root() -> Path:
 
 PROJECT_ROOT = get_project_root()
 # WORKSPACE_ROOT = PROJECT_ROOT / "workspace"
-## 新增_env _env_int
 def _env(key: str, default: Any = None) -> Any:
     v = os.getenv(key)
     return default if v is None or v == "" else v
 
 
-def _env_int(key: str, default: int) -> int:  # ✅ NEW
+def _env_int(key: str, default: int) -> int:  
     v = _env(key, None)
     return int(v) if v is not None else default
 
-class DatabaseSettings(BaseModel):  # ✅ NEW
+class DatabaseSettings(BaseModel):  
     host: str = Field("127.0.0.1", description="DB host")
     port: int = Field(3306, description="DB port")
     user: str = Field("root", description="DB user")
@@ -31,15 +30,9 @@ class DatabaseSettings(BaseModel):  # ✅ NEW
     database: str = Field("", description="DB name")
     charset: str = Field("utf8mb4", description="DB charset")
 
-# class EvaluatorSettings(BaseModel):  # ✅ NEW
-#     evaluation_api_url: str = Field(
-#         "http:///RECIPE/recipe_recommendation",
-#         description="Evaluation HTTP endpoint",
-#     )
-#     http_timeout_sec: int = Field(300, description="HTTP timeout seconds")
 
 
-class ReasoningDatabaseSettings(BaseModel):  # ✅ NEW
+class ReasoningDatabaseSettings(BaseModel): 
     """Configuration for Reasoning module input database"""
     host: str = Field("127.0.0.1", description="DB host")
     port: int = Field(3306, description="DB port")
@@ -50,7 +43,7 @@ class ReasoningDatabaseSettings(BaseModel):  # ✅ NEW
     table: str = Field("experiments_data_daily", description="DB table")
 
 
-class ReasoningOutputDatabaseSettings(BaseModel):  # ✅ NEW
+class ReasoningOutputDatabaseSettings(BaseModel):  
     """Configuration for Reasoning module output database"""
     host: str = Field("127.0.0.1", description="DB host")
     port: int = Field(3306, description="DB port")
@@ -61,7 +54,7 @@ class ReasoningOutputDatabaseSettings(BaseModel):  # ✅ NEW
     table: str = Field("report_optimised", description="DB table")
 
 
-class ReasoningLLMSettings(BaseModel):  # ✅ NEW
+class ReasoningLLMSettings(BaseModel):  #  NEW
     """Configuration for Reasoning module LLM"""
     base_url: str = Field("http://localhost:8000", description="Local LLM API URL")
     dashscope_api_key: str = Field("", description="DashScope API key")
@@ -70,13 +63,13 @@ class ReasoningLLMSettings(BaseModel):  # ✅ NEW
     timeout: int = Field(120, description="Request timeout in seconds")
 
 
-class ReasoningGenerationSettings(BaseModel):  # ✅ NEW
+class ReasoningGenerationSettings(BaseModel): 
     """Configuration for Reasoning module report generation"""
     total_runs: int = Field(15, description="Default number of reports to generate")
     max_workers: int = Field(10, description="Maximum concurrent workers")
 
 
-class GeneratingDatabaseSettings(BaseModel):  # ✅ NEW
+class GeneratingDatabaseSettings(BaseModel):  
     """Configuration for Generating module input database"""
     host: str = Field("127.0.0.1", description="DB host")
     port: int = Field(3306, description="DB port")
@@ -86,7 +79,7 @@ class GeneratingDatabaseSettings(BaseModel):  # ✅ NEW
     charset: str = Field("utf8mb4", description="DB charset")
 
 
-class GeneratingOutputDatabaseSettings(BaseModel):  # ✅ NEW
+class GeneratingOutputDatabaseSettings(BaseModel): 
     """Configuration for Generating module output database"""
     host: str = Field("127.0.0.1", description="DB host")
     port: int = Field(3306, description="DB port")
@@ -96,7 +89,7 @@ class GeneratingOutputDatabaseSettings(BaseModel):  # ✅ NEW
     charset: str = Field("utf8mb4", description="DB charset")
 
 
-class GeneratingLLMSettings(BaseModel):  # ✅ NEW
+class GeneratingLLMSettings(BaseModel):  
     """Configuration for Generating module LLM"""
     base_url: str = Field("https://dashscope.aliyuncs.com/compatible-mode/v1", description="DashScope API base URL")
     dashscope_api_key: str = Field("", description="DashScope API key")
@@ -108,13 +101,13 @@ class GeneratingLLMSettings(BaseModel):  # ✅ NEW
     timeout: int = Field(120, description="Request timeout in seconds")
 
 
-class GeneratingGenerationSettings(BaseModel):  # ✅ NEW
+class GeneratingGenerationSettings(BaseModel):  
     """Configuration for Generating module report generation"""
     total_runs: int = Field(15, description="Default number of reports to generate")
     max_workers: int = Field(10, description="Maximum concurrent workers")
 
 
-class LearningDatabaseSettings(BaseModel):  # ✅ NEW
+class LearningDatabaseSettings(BaseModel):  
     """Configuration for Learning module database"""
     host: str = Field("127.0.0.1", description="DB host")
     port: int = Field(3306, description="DB port")
@@ -124,7 +117,7 @@ class LearningDatabaseSettings(BaseModel):  # ✅ NEW
     charset: str = Field("utf8mb4", description="DB charset")
 
 
-class LearningLLMSettings(BaseModel):  # ✅ NEW
+class LearningLLMSettings(BaseModel):  
     """Configuration for Learning module LLM"""
     model: str = Field("qwen-plus", description="LLM model name")
     base_url: str = Field("https://dashscope.aliyuncs.com/compatible-mode/v1", description="DashScope API base URL")
@@ -133,7 +126,7 @@ class LearningLLMSettings(BaseModel):  # ✅ NEW
     temperature: float = Field(0.0, description="Sampling temperature")
 
 
-class EvaluationLLMSettings(BaseModel):  # ✅ NEW
+class EvaluationLLMSettings(BaseModel): 
     """Configuration for Evaluation module LLM"""
     deepseek_api_key: str = Field("", description="DeepSeek API key")
     deepseek_base_url: str = Field("https://dashscope.aliyuncs.com/compatible-mode/v1", description="DeepSeek base URL")
@@ -147,7 +140,7 @@ class EvaluationLLMSettings(BaseModel):  # ✅ NEW
     default_llm_key: str = Field("qwen", description="Default LLM provider key")
 
 
-class EvaluationPredictorSettings(BaseModel):  # ✅ NEW
+class EvaluationPredictorSettings(BaseModel):  
     """Configuration for Evaluation module predictor"""
     base_model_dir: str = Field(
         "data/predictor_inputs",
@@ -185,7 +178,7 @@ class EvaluationPredictorSettings(BaseModel):  # ✅ NEW
         }
 
 
-class EvaluationSettings(BaseModel):  # ✅ NEW
+class EvaluationSettings(BaseModel):  
     """Configuration for Evaluation module"""
     # Data file paths
     compound_mapping: str = Field(
@@ -282,8 +275,8 @@ class LLMSettings(BaseModel):
     temperature: float = Field(1.0, description="Sampling temperature")
     # api_type: str = Field(..., description="Azure, Openai, or Ollama")
     # api_version: str = Field(..., description="Azure Openai version if AzureOpenai")
-    api_type: Optional[str] = Field(None, description="Azure/OpenAI/Ollama/AWS etc.")  # ♻️ CHANGED
-    api_version: Optional[str] = Field(None, description="Azure OpenAI api version") # ♻️ CHANGED
+    api_type: Optional[str] = Field(None, description="Azure/OpenAI/Ollama/AWS etc.")  
+    api_version: Optional[str] = Field(None, description="Azure OpenAI api version") 
 
 
 class ProxySettings(BaseModel):
@@ -363,7 +356,7 @@ class SandboxSettings(BaseModel):
 
 class DaytonaSettings(BaseModel):
     # daytona_api_key: str
-    daytona_api_key: Optional[str] = Field(None, description="Daytona API key") # ♻️ CHANGED
+    daytona_api_key: Optional[str] = Field(None, description="Daytona API key") 
     daytona_server_url: Optional[str] = Field(
         "https://app.daytona.io/api", description=""
     )
@@ -464,23 +457,23 @@ class AppConfig(BaseModel):
     daytona_config: Optional[DaytonaSettings] = Field(
         None, description="Daytona configuration"
     )
-    database: DatabaseSettings = Field(default_factory=DatabaseSettings)  # ✅ NEW
-    # services: EvaluatorSettings = Field(default_factory=EvaluatorSettings)    # ✅ NEW
-    reasoning_database: Optional[ReasoningDatabaseSettings] = Field(None, description="Reasoning input database")  # ✅ NEW
-    reasoning_output_database: Optional[ReasoningOutputDatabaseSettings] = Field(None, description="Reasoning output database")  # ✅ NEW
-    reasoning_llm: Optional[ReasoningLLMSettings] = Field(None, description="Reasoning LLM")  # ✅ NEW
-    reasoning_generation: Optional[ReasoningGenerationSettings] = Field(None, description="Reasoning generation")  # ✅ NEW
-    generating_database: Optional[GeneratingDatabaseSettings] = Field(None, description="Generating input database")  # ✅ NEW
-    generating_output_database: Optional[GeneratingOutputDatabaseSettings] = Field(None, description="Generating output database")  # ✅ NEW
-    generating_llm: Optional[GeneratingLLMSettings] = Field(None, description="Generating LLM")  # ✅ NEW
-    generating_generation: Optional[GeneratingGenerationSettings] = Field(None, description="Generating generation")  # ✅ NEW
-    learning_database: Optional[LearningDatabaseSettings] = Field(None, description="Learning database")  # ✅ NEW
-    learning_llm: Optional[LearningLLMSettings] = Field(None, description="Learning LLM")  # ✅ NEW
-    evaluation_llm: Optional[EvaluationLLMSettings] = Field(None, description="Evaluation LLM")  # ✅ NEW
-    evaluation_predictor: Optional[EvaluationPredictorSettings] = Field(None, description="Evaluation Predictor")  # ✅ NEW
-    evaluation: Optional[EvaluationSettings] = Field(None, description="Evaluation Module Settings")  # ✅ NEW
-    recipeqa_llm: Optional[RecipeQALLMSettings] = Field(None, description="RecipeQA LLM")  # ✅ NEW
-    deepseek: Optional[DeepSeekSettings] = Field(None, description="DeepSeek LLM")  # ✅ NEW
+    database: DatabaseSettings = Field(default_factory=DatabaseSettings)  
+    # services: EvaluatorSettings = Field(default_factory=EvaluatorSettings)    
+    reasoning_database: Optional[ReasoningDatabaseSettings] = Field(None, description="Reasoning input database")  
+    reasoning_output_database: Optional[ReasoningOutputDatabaseSettings] = Field(None, description="Reasoning output database") 
+    reasoning_llm: Optional[ReasoningLLMSettings] = Field(None, description="Reasoning LLM")  
+    reasoning_generation: Optional[ReasoningGenerationSettings] = Field(None, description="Reasoning generation")  
+    generating_database: Optional[GeneratingDatabaseSettings] = Field(None, description="Generating input database")  
+    generating_output_database: Optional[GeneratingOutputDatabaseSettings] = Field(None, description="Generating output database")  
+    generating_llm: Optional[GeneratingLLMSettings] = Field(None, description="Generating LLM")  
+    generating_generation: Optional[GeneratingGenerationSettings] = Field(None, description="Generating generation") 
+    learning_database: Optional[LearningDatabaseSettings] = Field(None, description="Learning database")  
+    learning_llm: Optional[LearningLLMSettings] = Field(None, description="Learning LLM")  
+    evaluation_llm: Optional[EvaluationLLMSettings] = Field(None, description="Evaluation LLM")  
+    evaluation_predictor: Optional[EvaluationPredictorSettings] = Field(None, description="Evaluation Predictor")  
+    evaluation: Optional[EvaluationSettings] = Field(None, description="Evaluation Module Settings")  
+    recipeqa_llm: Optional[RecipeQALLMSettings] = Field(None, description="RecipeQA LLM")  
+    deepseek: Optional[DeepSeekSettings] = Field(None, description="DeepSeek LLM")  
     class Config:
         arbitrary_types_allowed = True
 
@@ -537,14 +530,7 @@ class Config:
             charset=_env("DB_CHARSET", db_cfg.get("charset", "utf8mb4")),
         )
 
-        # services_settings = EvaluatorSettings(
-        #     evaluation_api_url=_env(
-        #         "EVALUATION_API_URL",
-        #         svc_cfg.get("evaluation_api_url", "http://127.0.0.1:13338/RECIPE/recipe_recommendation"),
-        #     ),
-        #     http_timeout_sec=_env_int("HTTP_TIMEOUT_SEC", int(svc_cfg.get("http_timeout_sec", 300))),
-        # )
-
+     
         # Load Reasoning module configuration
         reasoning_db_cfg = raw_config.get("reasoning_database", {}) or {}
         reasoning_output_db_cfg = raw_config.get("reasoning_output_database", {}) or {}
@@ -817,23 +803,23 @@ class Config:
         else:
             run_flow_settings = RunflowSettings()
         config_dict = {
-            "database": database_settings,  # ✅ NEW
-            # "services": services_settings,  # ✅ NEW
-            "reasoning_database": reasoning_database_settings,  # ✅ NEW
-            "reasoning_output_database": reasoning_output_database_settings,  # ✅ NEW
-            "reasoning_llm": reasoning_llm_settings,  # ✅ NEW
-            "reasoning_generation": reasoning_generation_settings,  # ✅ NEW
-            "generating_database": generating_database_settings,  # ✅ NEW
-            "generating_output_database": generating_output_database_settings,  # ✅ NEW
-            "generating_llm": generating_llm_settings,  # ✅ NEW
-            "generating_generation": generating_generation_settings,  # ✅ NEW
-            "learning_database": learning_database_settings,  # ✅ NEW
-            "learning_llm": learning_llm_settings,  # ✅ NEW
-            "evaluation_llm": evaluation_llm_settings,  # ✅ NEW
-            "evaluation_predictor": evaluation_predictor_settings,  # ✅ NEW
-            "evaluation": evaluation_settings,  # ✅ NEW
-            "recipeqa_llm": recipeqa_llm_settings,  # ✅ NEW
-            "deepseek": deepseek_settings,  # ✅ NEW
+            "database": database_settings,  
+            # "services": services_settings, 
+            "reasoning_database": reasoning_database_settings, 
+            "reasoning_output_database": reasoning_output_database_settings,  
+            "reasoning_llm": reasoning_llm_settings, 
+            "reasoning_generation": reasoning_generation_settings,  
+            "generating_database": generating_database_settings, 
+            "generating_output_database": generating_output_database_settings, 
+            "generating_llm": generating_llm_settings,  
+            "generating_generation": generating_generation_settings,  
+            "learning_database": learning_database_settings,  
+            "learning_llm": learning_llm_settings,  
+            "evaluation_llm": evaluation_llm_settings,  
+            "evaluation_predictor": evaluation_predictor_settings, 
+            "evaluation": evaluation_settings,  
+            "recipeqa_llm": recipeqa_llm_settings,  
+            "deepseek": deepseek_settings,  
             "llm": {
                 "default": default_settings,
                 **{
@@ -886,71 +872,71 @@ class Config:
     #     """Get the workspace root directory"""
     #     return WORKSPACE_ROOT
     @property
-    def database(self) -> DatabaseSettings:  # ✅ NEW
+    def database(self) -> DatabaseSettings:  
         return self._config.database
 
     # @property
-    # def services(self) -> EvaluatorSettings:  # ✅ NEW
+    # def services(self) -> EvaluatorSettings:  
     #     return self._config.services
 
     @property
-    def reasoning_database(self) -> ReasoningDatabaseSettings:  # ✅ NEW
+    def reasoning_database(self) -> ReasoningDatabaseSettings: 
         return self._config.reasoning_database
 
     @property
-    def reasoning_output_database(self) -> ReasoningOutputDatabaseSettings:  # ✅ NEW
+    def reasoning_output_database(self) -> ReasoningOutputDatabaseSettings:  
         return self._config.reasoning_output_database
 
     @property
-    def reasoning_llm(self) -> ReasoningLLMSettings:  # ✅ NEW
+    def reasoning_llm(self) -> ReasoningLLMSettings: 
         return self._config.reasoning_llm
 
     @property
-    def reasoning_generation(self) -> ReasoningGenerationSettings:  # ✅ NEW
+    def reasoning_generation(self) -> ReasoningGenerationSettings:  
         return self._config.reasoning_generation
 
     @property
-    def generating_database(self) -> GeneratingDatabaseSettings:  # ✅ NEW
+    def generating_database(self) -> GeneratingDatabaseSettings:  
         return self._config.generating_database
 
     @property
-    def generating_output_database(self) -> GeneratingOutputDatabaseSettings:  # ✅ NEW
+    def generating_output_database(self) -> GeneratingOutputDatabaseSettings: 
         return self._config.generating_output_database
 
     @property
-    def generating_llm(self) -> GeneratingLLMSettings:  # ✅ NEW
+    def generating_llm(self) -> GeneratingLLMSettings:  
         return self._config.generating_llm
 
     @property
-    def generating_generation(self) -> GeneratingGenerationSettings:  # ✅ NEW
+    def generating_generation(self) -> GeneratingGenerationSettings: 
         return self._config.generating_generation
 
     @property
-    def learning_database(self) -> LearningDatabaseSettings:  # ✅ NEW
+    def learning_database(self) -> LearningDatabaseSettings: 
         return self._config.learning_database
 
     @property
-    def learning_llm(self) -> LearningLLMSettings:  # ✅ NEW
+    def learning_llm(self) -> LearningLLMSettings:  
         return self._config.learning_llm
 
     @property
-    def evaluation_llm(self) -> EvaluationLLMSettings:  # ✅ NEW
+    def evaluation_llm(self) -> EvaluationLLMSettings: 
         return self._config.evaluation_llm
 
     @property
-    def evaluation_predictor(self) -> EvaluationPredictorSettings:  # ✅ NEW
+    def evaluation_predictor(self) -> EvaluationPredictorSettings:  
         return self._config.evaluation_predictor
 
     @property
-    def evaluation(self) -> EvaluationSettings:  # ✅ NEW
+    def evaluation(self) -> EvaluationSettings:  
         return self._config.evaluation
 
     @property
-    def recipeqa_llm(self) -> RecipeQALLMSettings:  # ✅ NEW
+    def recipeqa_llm(self) -> RecipeQALLMSettings:  
         return self._config.recipeqa_llm
 
     @property
-    def deepseek(self) -> DeepSeekSettings:  # ✅ NEW
+    def deepseek(self) -> DeepSeekSettings:  
         return self._config.deepseek
 
     def get_evaluation_data_path(self, relative_path: str) -> Path:
