@@ -6,15 +6,14 @@ import re
 import sys
 import traceback
 from pathlib import Path
-
 import mysql.connector
 from openai import OpenAI
 
-# Add project root to path for config import
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
-# Database and LLM configuration loaded from app.config
+
 MYSQL_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -71,7 +70,7 @@ def db_row_to_item(row: dict) -> dict:
         "sample_id_2_date": row.get("sample_id_2_date"),
     }
 
-    # Only one of the four regulation factor types will be matched
+    
     if row.get("sam"):
         item["SAM"] = json.loads(row["sam"]) if isinstance(row["sam"], str) else row["sam"]
 
@@ -102,7 +101,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> li
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor(dictionary=True)
 
-    # Select non-empty fields based on type
+    
     if factor_type == "SAM":
         condition = "sam IS NOT NULL AND sam != '' AND sam != '[]'"
     elif factor_type == "Additive":
@@ -146,7 +145,7 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> li
     return rows
 
 
-# Material name normalization utilities
+
 def normalize_material_name(name: str) -> str:
     """Normalize material name by converting to uppercase and removing non-alphanumeric characters.
     
@@ -167,9 +166,7 @@ def normalize_material_name(name: str) -> str:
     return re.sub(r"[^A-Z0-9]+", "", name.upper())
 
 
-# =============================
-# Load all markdown from database
-# =============================
+
 def build_material_content_map_from_db(category: str | None = None) -> dict:
     """Read Markdown content from expert_mechanisms table with optional category filtering.
     
@@ -276,9 +273,7 @@ def run_sam_report(
         print("Running sam pair to report finished.")
 
 
-# =============================
-# Extract background knowledge from item (database version)
-# =============================
+
 def get_material_background_from_item(
     item: dict,
     material_content_map: dict,
@@ -292,7 +287,7 @@ def get_material_background_from_item(
 
     material_names = []
 
-    # Currently you explicitly said: only extract from SAM
+    
     for key in ("SAM",):
         vals = item.get(key) or []
         if isinstance(vals, list):
@@ -301,7 +296,7 @@ def get_material_background_from_item(
             if vals:
                 material_names.append(vals)
 
-    # Deduplicate + clean
+    
     material_names = list({m for m in material_names if m})
 
     background_chunks = []
@@ -309,7 +304,7 @@ def get_material_background_from_item(
     for raw_name in material_names:
         norm_name = normalize_material_name(raw_name)
 
-        # Use directly if already in cache
+        
         if norm_name in cache:
             background_chunks.append(cache[norm_name])
             continue
@@ -330,7 +325,7 @@ def get_material_background_from_item(
         return ""
 
 
-# ========== 1. General LLM call encapsulation ==========
+
 
 def get_answer_and_thinking(
     question: str,
@@ -346,7 +341,7 @@ def get_answer_and_thinking(
     if client is None:
         raise RuntimeError("Please initialize the client object before calling get_answer_and_thinking.")
 
-    # Put generic role + background knowledge in system prompt
+    
     system_prompt = (
         "You are an expert in the field of perovskite solar cells. "
         "Please answer the question according to the professional background I provided. "
@@ -362,7 +357,7 @@ def get_answer_and_thinking(
             "please rely on your internal expertise."
         )
 
-    # Pack question + control + target into the same user prompt
+    
     user_content = (
         "You are given an original perovskite device (control) and an optimized device (target). "
         "Please analyze them and answer the question.\n\n"
@@ -386,8 +381,8 @@ def get_answer_and_thinking(
         stream=True,
     )
 
-    reasoning_content = ""  # Complete thinking process
-    answer_content = ""     # Complete response
+    reasoning_content = "" 
+    answer_content = ""     
     is_answering = False
 
     for chunk in completion:
@@ -400,11 +395,11 @@ def get_answer_and_thinking(
 
         delta = chunk.choices[0].delta
 
-        # Collect "thinking process"
+      
         if hasattr(delta, "reasoning_content") and delta.reasoning_content is not None:
             reasoning_content += delta.reasoning_content
 
-        # Collect formal response
+     
         if hasattr(delta, "content") and delta.content:
             if not is_answering:
                 print("\n" + "=" * 20 + "Complete Response" + "=" * 20 + "\n")
@@ -478,7 +473,7 @@ def save_sft_records(records, output_file_path: str):
     print(f"SFT training samples saved to: {output_file_path}")
 
 
-# ========== 2. System prompts for abstract / table (global constants) ==========
+
 
 SYSTEM_PROMPT_ABSTRACT = (
     "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
@@ -533,24 +528,23 @@ DATA:
 - Use ONLY numbers and mechanisms from the user's input.
 '''
 
-# ========== 2. Main flow: database-driven version ==========
+
 def main() -> None:
 
-    # ===== Output path configuration =====
+  
 
 
     script_dir = Path(__file__).parent.resolve()
-    # Output to Generating/data directory
-    generating_root = script_dir.parent.parent  # Characterisation_Reporting -> Generating
+    generating_root = script_dir.parent.parent  
     data_root = generating_root / "data"
     output_dir = data_root / "characterisation_characterisation_pl_sam"
     OUTPUT_PATH = output_dir / "sft_pairs_with_think_answer.json"
     OUTPUT_JSONL_PATH = output_dir / "sft_pairs_with_think_answer.jsonl"
 
-    # report output
+
     REPORT_JSON_PATH = output_dir / "reports.json"
     REPORT_JSONL_PATH = output_dir / "reports.jsonl"
-    # Ensure directories exist
+
     for p in [
         OUTPUT_PATH,
         OUTPUT_JSONL_PATH,
@@ -558,24 +552,22 @@ def main() -> None:
         REPORT_JSONL_PATH,
     ]:
         ensure_parent_dir(p)
-    # ===== 1. Load markdown from database (one-time) =====
+
     material_content_map = build_material_content_map_from_db("SAM Mechanism Library")
     md_cache = {}
 
-    # ===== 2. Read pending pairs from database =====
-    # db_rows = load_pending_items(limit=1, factor_type="SAM")
+
     db_rows = load_pending_items(factor_type="SAM")
     if not db_rows:
         print("No records with status=pending currently, exiting directly")
         return
 
-    # Convert to your familiar item structure
     items = [(row["id"], db_row_to_item(row)) for row in db_rows]
 
     records = []
     reports = []
 
-    # JSONL uses append mode, supports resuming from breakpoints
+
     with open(OUTPUT_JSONL_PATH, "a", encoding="utf-8-sig") as fout_sft, \
          open(REPORT_JSONL_PATH, "a", encoding="utf-8-sig") as fout_report:
 
@@ -586,7 +578,7 @@ def main() -> None:
                 target = (item.get("target") or "").strip()
                 sam = item.get("SAM", "")
 
-                # Print regulation factor (for debugging)
+              
                 materials_for_print = []
                 for key in ("Passivator", "Additive", "SAM"):
                     vals = item.get(key) or []
@@ -601,14 +593,14 @@ def main() -> None:
                 print(f"Materials [{mat_info}]")
                 print(f"Question: {question}")
 
-                # ===== 3. Get background knowledge from database markdown =====
+                
                 background_knowledge = get_material_background_from_item(
                     item,
                     material_content_map,
                     md_cache
                 )
 
-                # ===== 4. First call: main analysis =====
+              
                 answer_content_analyze, reasoning_content_analyze = get_answer_and_thinking(
                     question=question,
                     control=control,
@@ -617,12 +609,12 @@ def main() -> None:
                     SAM=sam
                 )
 
-                # ===== Construct SFT input (keep completely consistent with your old version) =====
+                
                 safe_control = control.replace('"', '\\"')
                 safe_target = target.replace('"', '\\"')
                 input_text = f'"control": "{safe_control}", "target": "{safe_target}"'
 
-                # ===== 5. Second call: Abstract =====
+                
                 user_prompt_abstract = f"""
                 Method (key fabrication details):
                 {input_text}
@@ -638,7 +630,7 @@ def main() -> None:
                     user_prompt_abstract
                 )
 
-                # ===== 6. Third call: Conclusion Table =====
+                
                 user_prompt_table = f"""
                 [REAL INPUT]
                 Results & Discussion (performance & mechanisms):
@@ -654,7 +646,7 @@ def main() -> None:
                     user_prompt_table
                 )
 
-                # ===== 7. Assemble report =====
+              
                 report = {
                     "meta": {
                         "Sample_Information": {
@@ -676,7 +668,7 @@ def main() -> None:
                     "5_Supporting_Information": background_knowledge,
                 }
 
-                # ===== 8. Assemble SFT sample =====
+                
                 record = {
                     "instruction": question,
                     "input": input_text,
@@ -684,10 +676,10 @@ def main() -> None:
                         f"<think>{reasoning_content_analyze}</think>"
                         f"<answer>{answer_content_analyze}</answer>"
                     ),
-                    # "report": report,
+                  
                 }
 
-                # ===== 9. Real-time write to JSONL =====
+              
                 fout_sft.write(json.dumps(record, ensure_ascii=False) + "\n")
                 fout_report.write(json.dumps(report, ensure_ascii=False) + "\n")
                 fout_sft.flush()
@@ -696,14 +688,14 @@ def main() -> None:
                 records.append(record)
                 reports.append(report)
 
-                # Success → update status
+               
                 update_status(pair_id, "done")
 
             except Exception as e:
                 print(f"id={pair_id} processing failed: {e}")
                 update_status(pair_id, "error")
 
-    # ===== 10. Save complete JSON (array format) =====
+
     save_sft_records(records, OUTPUT_PATH)
     with open(REPORT_JSON_PATH, "w", encoding="utf-8-sig") as f:
         json.dump(reports, f, ensure_ascii=False, indent=4)

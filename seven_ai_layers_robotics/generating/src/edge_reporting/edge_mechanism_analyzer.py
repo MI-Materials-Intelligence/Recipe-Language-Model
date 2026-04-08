@@ -14,12 +14,9 @@ import requests
 from docx import Document
 import pymysql
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-# ================== Configuration Area ==================
-# Load configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-# Load DeepSeek configuration from config
+
 DEEPSEEK_CONFIG = {
     'api_key': config.deepseek.api_key,
     'base_url': config.deepseek.base_url,
@@ -28,7 +25,7 @@ DEEPSEEK_CONFIG = {
     'timeout': config.deepseek.timeout,
 }
 
-# Database configuration
+
 DB_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -38,34 +35,32 @@ DB_CONFIG = {
     'charset': config.generating_database.charset,
 }
 
-# DeepSeek API configuration
+
 DEEPSEEK_API_KEY = DEEPSEEK_CONFIG.get("api_key", "")
 API_URL_BASE = DEEPSEEK_CONFIG.get("base_url", "https://api.deepseek.com/v1/chat/completions")
-# Ensure API_URL includes the complete /chat/completions path
 if not API_URL_BASE.endswith("/chat/completions"):
     API_URL = API_URL_BASE.rstrip("/") + "/chat/completions"
 else:
     API_URL = API_URL_BASE
 MODEL_NAME = DEEPSEEK_CONFIG.get("model", "deepseek-reasoner")
 
-# JSON output root directory (subdirectories by type)
-# Automatically get current script directory and concatenate relative path to Generating/data/edge
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_ROOT_DIR = os.path.join(SCRIPT_DIR, "..", "..", "data", "edge")
 
-# Reports directory (fixed path)
+
 REPORTS_DIR = os.path.join(JSON_ROOT_DIR, "reports")
 
-# .docx file mapping: type -> docx filename
+
 DOCX_FILES_MAP = {
     "characterisation_pl_sam": "characterisation_pl_sam.docx",
     "characterisation_xrd_additives": "characterisation_xrd_additives.docx",
     "characterisation_xrd_passivators": "characterisation_xrd_passivators.docx",
     "characterisation_image_pvk": "characterisation_image_pvk.docx",
-    "experiments_cleaned_data": "experiments_cleaned_data.docx"  # default/generic
+    "experiments_cleaned_data": "experiments_cleaned_data.docx"  
 }
 
-MAX_WORKERS = 3  # DeepSeek may have rate limits, recommend ≤3
+MAX_WORKERS = 3  
 
 PROMPT_TEMPLATE = """
 You are an expert in perovskite crystallization physics, interface chemistry, defect passivation, molecular engineering, and structural/optical characterization.
@@ -155,7 +150,7 @@ Now analyze the following experimental description and answer with ONE paragraph
 {experiment}
 """
 
-# ================== Utility Functions ==================
+
 
 def read_docx_paragraphs(docx_path):
     doc = Document(docx_path)
@@ -315,7 +310,7 @@ def main():
                 rec['index'],
                 rec['type'],
                 rec['id'],
-                rec['location']  # This is the .docx path
+                rec['location']  
             )
             futures.append(fut)
 
