@@ -4,7 +4,6 @@ import requests
 def call_prepare_training():
     url = ""
 
-
     corpora_files = [
         (
             "corpora_info",
@@ -18,13 +17,11 @@ def call_prepare_training():
         ),
     ]
 
-
     data = {
         "item_name": "yymtest0324test33",
-        # "base_model_path": "/data/opt/LLM_Base_Model/Qwen3-30B-A3B-Thinking-2507/"
         "base_model_path": "/data/opt/LLM_lora_SFT/models/qwen3_32b_v8-4/",
         "DPO_train_config_template": "/data/exp_maning/optimization_API/examples/train_config_example.yaml",
-        "inference_config_template": "/data/exp_maning/optimization_API/examples/test_config_example.yaml"
+        "inference_config_template": "/data/exp_maning/optimization_API/examples/test_config_example.yaml",
     }
 
     response = requests.post(url, files=corpora_files, data=data)
