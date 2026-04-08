@@ -1,33 +1,4 @@
 from __future__ import annotations
-def run_characterisation_image_pvk(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Characterisation Image PVK pipeline.
-
-    Args:
-        seed: Override random seed (optional).
-        verbose: Print start / end logs.
-        
-    Returns:
-        None
-    """
-    if verbose:
-        print("▶ Running Characterisation Image PVK pipeline...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("Characterisation Image PVK pipeline finished.")
-
 import sys
 import json
 import random
@@ -860,7 +831,35 @@ def main() -> None:
     print("Done.")
     print("Output JSON:", OUTPUT_JSON)
     print("Records:", summary["n_rows_main"])
-
     pass
+
+def run_characterisation_image_pvk(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run Characterisation Image PVK pipeline.
+
+    Args:
+        seed: Override random seed (optional).
+        verbose: Print start / end logs.
+        
+    Returns:
+        None
+    """
+    if verbose:
+        print("▶ Running Characterisation Image PVK pipeline...")
+
+    if seed is not None:
+        import random
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("Characterisation Image PVK pipeline finished.")
 if __name__ == "__main__":
     run_characterisation_image_pvk()

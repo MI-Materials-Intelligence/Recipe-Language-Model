@@ -1,33 +1,4 @@
 from __future__ import annotations
-def run_characterisation_pl_sam(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Characterisation PL SAM pipeline.
-
-    Args:
-        seed: Override random seed (optional).
-        verbose: Print start / end logs.
-        
-    Returns:
-        None
-    """
-    if verbose:
-        print("▶ Running PL SAM pipeline...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("PL SAM pipeline finished.")
-
 import sys
 import json
 import random
@@ -850,6 +821,33 @@ def main() -> None:
     print("Output JSON:", output_json)
     print("Records:", len(records))
 
+def run_characterisation_pl_sam(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run Characterisation PL SAM pipeline.
 
+    Args:
+        seed: Override random seed (optional).
+        verbose: Print start / end logs.
+        
+    Returns:
+        None
+    """
+    if verbose:
+        print("▶ Running PL SAM pipeline...")
+
+    if seed is not None:
+        import random
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("PL SAM pipeline finished.")
 if __name__ == "__main__":
     run_characterisation_pl_sam()

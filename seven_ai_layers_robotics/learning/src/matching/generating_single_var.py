@@ -291,18 +291,6 @@ def save_matched_pairs_to_csv(
 
     Returns:
         None
-
-    Example:
-        >>> matched_pairs = [
-        ...     {
-        ...         'date': '2025-07-21',
-        ...         'index_1': 1,
-        ...         'index_2': 2,
-        ...         'diff_columns': ['FF', 'Voc'],
-        ...         'description_2025-07-21_1': 'Sample description'
-        ...     }
-        ... ]
-        >>> save_matched_pairs_to_csv(matched_pairs, "output.csv")
     """
     if not matched_pairs:
         print("Warning: matched_pairs is empty. No file will be written.")
