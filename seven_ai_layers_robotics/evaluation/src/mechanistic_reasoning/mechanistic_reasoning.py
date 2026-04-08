@@ -1,7 +1,6 @@
 ﻿import json
 import pickle
 import re
-import sys
 from pathlib import Path
 
 from flask import Blueprint, jsonify, request
@@ -10,7 +9,6 @@ from openai import OpenAI, AsyncOpenAI
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-sys.path.append(str(Path(__file__).resolve().parents[3]))
 from seven_ai_layers_robotics.config import config
 
 LLM_KEY = config.evaluation_llm.default_llm_key

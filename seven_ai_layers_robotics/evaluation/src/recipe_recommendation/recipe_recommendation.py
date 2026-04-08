@@ -71,7 +71,7 @@ def get_valid_number(string: str) -> str:
     matches = re.search(reg, string)
     if matches:
         return matches.group(0)
-    return 0
+    return '0'
 
 
 def get_formula_pvk(string: str) -> str:

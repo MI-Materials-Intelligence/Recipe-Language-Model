@@ -17,7 +17,7 @@ from docx import Document
 from sqlalchemy import create_engine
 
 from seven_ai_layers_robotics.config import config
-from templates_new_revised import (
+from seven_ai_layers_robotics.generating.src.edge_reporting.templates_new_revised import (
     get_intro_segment,
     perovskite_formula_segments,
     sam_formula_segments_single,

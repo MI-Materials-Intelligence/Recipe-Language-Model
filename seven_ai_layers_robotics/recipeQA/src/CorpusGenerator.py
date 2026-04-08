@@ -164,7 +164,7 @@ class CorpusGenerator:
             # Configure paths
             mechanism_dir = osp.join(self.data_dir, "mechanism")
             task_save_path = osp.join(self.data_dir, "tasks_from_db.json")
-            dist_save_root = osp.join(self.data_dir, "..","..", "Generating", "data", "single")
+            dist_save_root = osp.join(self.data_dir, "..","..", "generating", "data", "single")
             dataset_path = osp.join(self.data_dir, "single_var_dataset.json")
 
             # Apply custom configuration (if any)

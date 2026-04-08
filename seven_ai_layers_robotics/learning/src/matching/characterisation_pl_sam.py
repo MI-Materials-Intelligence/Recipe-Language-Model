@@ -66,12 +66,6 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
 import sys
 from pathlib import Path
 
-current_file = Path(__file__).resolve()
-project_root = current_file.parent.parent.parent.parent
-project_parent = project_root.parent
-if str(project_parent) not in sys.path:
-    sys.path.insert(0, str(project_parent))
-
 from seven_ai_layers_robotics.config import config
 
 MYSQL_CONFIG = {

@@ -13,12 +13,6 @@ import pandas as pd
 # Suppress pandas FutureWarning for fillna dtype incompatibility
 warnings.filterwarnings("ignore", category=FutureWarning, module="pandas")
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)  # Learning/src
-grandparent_dir = os.path.dirname(parent_dir)  # Learning
-if grandparent_dir not in sys.path:
-    sys.path.insert(0, grandparent_dir)
-
 from .perovskite_text_generator import generate_segmented_text, generate_text
 from ..cleaning.utils import save_json
 

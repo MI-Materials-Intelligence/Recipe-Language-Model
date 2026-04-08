@@ -65,25 +65,6 @@ class MIRecipeEvaluator:
             print("Failed to load database records:", e)
             return []
 
-    def send_to_http_api(self, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        """
-        Send evaluation data to HTTP API and get response.
-
-        Args:
-            data: Evaluation payload as dictionary.
-
-        Returns:
-            JSON response from API as dictionary, or None if request fails.
-        """
-        headers = {'Content-Type': 'application/json'}
-        try:
-            response = requests.post(self.api_url, json=data, timeout=300)
-            response.raise_for_status()
-            print("Score API called successfully")
-            return response.json()
-        except Exception as e:
-            print(f"Failed to call score API: {e}")
-            return None
 
     def get_evaluation_score(self, db_record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """

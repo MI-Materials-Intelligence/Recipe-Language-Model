@@ -1,17 +1,10 @@
 import json
 import re
-import sys
 import traceback
 from concurrent import futures
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-
-project_root = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(project_root))
-
-evaluation_src = Path(__file__).resolve().parent.parent / "Evaluation" / "src"
-sys.path.insert(0, str(evaluation_src))
 
 import pandas as pd
 import pymysql

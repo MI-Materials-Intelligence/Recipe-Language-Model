@@ -26,27 +26,18 @@ STEP_MODULES = {}
 ARE_MODULES_AVAILABLE = False
 
 try:
-    _edge_reporting_dir = os.path.join(WORK_DIR, 'edge_reporting')
-    if _edge_reporting_dir not in sys.path:
-        sys.path.insert(0, _edge_reporting_dir)
+    from seven_ai_layers_robotics.generating.src.edge_reporting import edge_report_generator
+    STEP_MODULES['step2'] = edge_report_generator
+except ImportError as e:
+    print(f"Warning: Unable to import edge_report_generator module. Error: {e}")
 
-    try:
-        import edge_report_generator
-        STEP_MODULES['step2'] = edge_report_generator
-    except ImportError as e:
-        print(f"Warning: Unable to import edge_report_generator module. Error: {e}")
+try:
+    from seven_ai_layers_robotics.generating.src.edge_reporting import edge_mechanism_analyzer
+    STEP_MODULES['step3'] = edge_mechanism_analyzer
+except ImportError as e:
+    print(f"Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
 
-    try:
-        import edge_mechanism_analyzer
-        STEP_MODULES['step3'] = edge_mechanism_analyzer
-    except ImportError as e:
-        print(f"Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
-
-    ARE_MODULES_AVAILABLE = len(STEP_MODULES) > 0
-
-except Exception as e:
-    ARE_MODULES_AVAILABLE = False
-    print(f"Warning: Unable to load step modules, some functionality will be unavailable. Error: {e}")
+ARE_MODULES_AVAILABLE = len(STEP_MODULES) > 0
 
 DEFAULT_DB_URI = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4"
 

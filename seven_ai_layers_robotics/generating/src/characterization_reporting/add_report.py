@@ -5,15 +5,12 @@ import json
 import os
 import random
 import re
-import sys
 from pathlib import Path
 
 import mysql.connector
 import numpy as np
 from openai import OpenAI
 
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
 MYSQL_CONFIG = {

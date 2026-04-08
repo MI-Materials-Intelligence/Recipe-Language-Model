@@ -39,13 +39,7 @@ def _load_recipeqa_config() -> Dict[str, Any]:
 
 RECIPEQA_CONFIG: Dict[str, Any] = _load_recipeqa_config()
 
-# Import configuration from app.config
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-recipeqa_root = script_dir.parent.parent  # report_to_qa -> RecipeQA
-if str(recipeqa_root) not in sys.path:
-    sys.path.insert(0, str(recipeqa_root))
+
 
 # Load LLM configuration from app.config
 LLM_CONFIG: Dict[str, Any] = RECIPEQA_CONFIG or {

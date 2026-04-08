@@ -10,13 +10,6 @@ from typing import Dict, Any, Optional
 import tomllib
 
 from pathlib import Path
-import sys
-
-CURRENT_FILE = Path(__file__).resolve()
-PROJECT_ROOT = CURRENT_FILE.parents[3]
-PROJECT_PARENT = PROJECT_ROOT.parent
-if str(PROJECT_PARENT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_PARENT))
 
 from seven_ai_layers_robotics.config import config as app_config
 
