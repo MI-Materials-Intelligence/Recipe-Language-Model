@@ -21,13 +21,11 @@ def run_cleaning(process_root: str, src_file_name: str = "") -> dict:
             - fp_dedup_path: Path to full-process-deduplicated CSV
             - no_dedup_path: Path to non-deduplicated CSV with group IDs
     """
-    # Step 1: Remove abnormal samples
     src_file = osp.join(process_root, src_file_name)
     output_file = osp.join(process_root, "re_formula_remove_abnormal.csv")
     remove_abnormal(src_file, output_file)
     print("Remove abnormal finished")
 
-    # Step 2: Deduplication processing
     formula_dedup_path = osp.join(process_root, "re_formula_dedup.csv")
     fp_dedup_path = osp.join(process_root, "re_fp_dedup.csv")
     no_dedup_path = osp.join(process_root, "re_no_dedup.csv")
@@ -52,7 +50,6 @@ def run_matching(process_root: str, cleaning_result: Optional[dict] = None) -> N
     Returns:
         None
     """
-    # If cleaning result not provided, use default paths
     if cleaning_result is None:
         formula_dedup_path = osp.join(process_root, "re_formula_dedup.csv")
         fp_dedup_path = osp.join(process_root, "re_fp_dedup.csv")
@@ -60,7 +57,6 @@ def run_matching(process_root: str, cleaning_result: Optional[dict] = None) -> N
         formula_dedup_path = cleaning_result["formula_dedup_path"]
         fp_dedup_path = cleaning_result["fp_dedup_path"]
 
-    # Step 3: Generate single variable matching pairs
     formula_output_dir = osp.join(process_root, "formula", "date")
     fp_output_dir = osp.join(process_root, "fp", "date")
     generate_single_var(
@@ -68,11 +64,9 @@ def run_matching(process_root: str, cleaning_result: Optional[dict] = None) -> N
     )
     print("Generate single var finished")
 
-    # Step 4: Merge results
     merge_results(osp.join(process_root, "formula"), osp.join(process_root, "fp"))
     print("Merge results finished")
 
-    # Step 5: Get difference classification
     get_single_var_diff_class(
         osp.join(process_root, "formula"), osp.join(process_root, "fp")
     )
@@ -89,13 +83,11 @@ def run(process_root: str, src_file_name: str = "") -> None:
     Returns:
         None
     """
-    # Stage 1: Data Cleaning
     print("=" * 50)
     print("Stage 1: Data Cleaning")
     print("=" * 50)
     cleaning_result = run_cleaning(process_root, src_file_name)
 
-    # Stage 2: Matching and Classification
     print("\n" + "=" * 50)
     print("Stage 2: Matching and Classification")
     print("=" * 50)

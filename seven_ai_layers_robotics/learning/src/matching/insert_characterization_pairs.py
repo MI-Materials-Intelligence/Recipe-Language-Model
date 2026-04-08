@@ -8,13 +8,9 @@ import mysql.connector
 from mysql.connector import Error
 from pathlib import Path
 
-# =========================
-# Import configuration from config
-# =========================
 import sys
 from pathlib import Path
 
-# Add project root to Python path to find config module
 current_file = Path(__file__).resolve()
 project_root = current_file.parent.parent.parent.parent
 if str(project_root) not in sys.path:
@@ -22,9 +18,6 @@ if str(project_root) not in sys.path:
 
 from config import config
 
-# ==========================
-# MySQL Configuration
-# ==========================
 MYSQL_CONFIG = {
     "host": config.learning_database.host,
     "user": config.learning_database.user,
@@ -36,10 +29,8 @@ MYSQL_CONFIG = {
 
 TABLE_NAME = "characterisation_match"
 
-# Working directory (default to parent directory of current script)
 WORK_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# JSON file input directory (under data directory)
 DATA_DIR = os.path.join(WORK_DIR,"..", "data")
 
 FILES = [
@@ -49,18 +40,13 @@ FILES = [
     os.path.join(DATA_DIR, "characterisation_xrd_passivators", "passivators_xrd_pairs.json"),
 ]
 
-# ==============================
-# JSON reading (array / multi-object concatenation)
-# ==============================
 def load_json_records(path: str) -> List[Dict]:
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
         content = f.read().strip()
 
-    # Case 1: Standard JSON array
     if content.startswith("["):
         return json.loads(content)
 
-    # Case 2: Multiple {} concatenation
     records = []
     buf = ""
     depth = 0
@@ -80,9 +66,6 @@ def load_json_records(path: str) -> List[Dict]:
     return records
 
 
-# ==============================
-# Pair hash (deduplication core)
-# ==============================
 def compute_pair_hash(record: dict) -> str:
     """
     Based on:
@@ -122,9 +105,6 @@ def compute_pair_hash(record: dict) -> str:
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
-# ==============================
-# Incremental insertion (IGNORE + hash)
-# ==============================
 def insert_records_incremental(
     conn,
     records: List[Dict],
@@ -190,9 +170,6 @@ def insert_records_incremental(
     cursor.close()
 
 
-# ==============================
-# Main logic
-# ==============================
 def main() -> None:
     conn = None
     try:
@@ -216,9 +193,6 @@ def main() -> None:
             print("\nMySQL connection closed")
 
 
-# ==============================
-# Pipeline / Agent entry point
-# ==============================
 def run(
     *,
     verbose: bool = True,
@@ -232,8 +206,5 @@ def run(
         print("Insert Characterization Pairs pipeline finished.")
 
 
-# ==============================
-# CLI
-# ==============================
 if __name__ == "__main__":
     run()

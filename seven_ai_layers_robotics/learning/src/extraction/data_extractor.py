@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Data Extractor
 Responsible for exporting data from database and converting to Excel format
@@ -18,11 +17,9 @@ def load_database_config() -> Dict[str, Any]:
     Returns:
         Dict[str, Any]: Database configuration dictionary
     """
-    # Get current module directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = None
 
-    # Search upward for project root config.toml
     for _ in range(5):
         potential_config = os.path.join(current_dir, '..', '..', '..', '..', 'config', 'config.toml')
         if os.path.exists(potential_config):
@@ -38,7 +35,6 @@ def load_database_config() -> Dict[str, Any]:
     with open(config_path, 'rb') as f:
         config = tomllib.load(f)
 
-    # Use learning_database configuration instead of database
     return config.get('learning_database', {})
 
 

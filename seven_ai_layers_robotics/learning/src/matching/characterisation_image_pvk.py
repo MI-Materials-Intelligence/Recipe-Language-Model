@@ -54,7 +54,6 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
     Returns:
         None
     """
-    # Safely create output directory (only when path is not empty)
     output_dir = os.path.dirname(output_csv)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
@@ -68,14 +67,12 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
 
         if not rows:
             print(f"Table `{table_name}` is empty.")
-            # Get column names
             cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
             columns_info = cursor.fetchall()
             all_columns = [col['Field'] for col in columns_info]
         else:
             all_columns = list(rows[0].keys())
 
-        # Exclude 'id' column (case insensitive)
         data_columns = [col for col in all_columns if col.lower() != 'id']
 
         with open(output_csv, "w", encoding="utf-8", newline='') as f:
@@ -94,13 +91,9 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
             cursor.close()
             conn.close()
 
-# =========================
-# Import configuration from config
-# =========================
 import sys
 from pathlib import Path
 
-# Add project root to Python path to find config module
 current_file = Path(__file__).resolve()
 project_root = current_file.parent.parent.parent.parent
 if str(project_root) not in sys.path:
@@ -117,18 +110,12 @@ MYSQL_CONFIG = {
     'charset': config.learning_database.charset,
 }
 
-# Replace with your actual table name
 TABLE_NAME = "characterisation_image_pvk"  # ← e.g., the table you imported before
 OUTPUT_CSV = "characterisation_image_pvk_db.csv"
 
 
-# export_table_to_csv_exclude_id(TABLE_NAME, OUTPUT_CSV, MYSQL_CONFIG)
 
-# Subsequent processing scripts can directly use:
 INPUT_CSV = OUTPUT_CSV
-# =========================
-# CONFIG (edit here)
-# =========================
 OUTPUT_JSON = "characterisation_image_pvk/characterisation_image_pvk_pairs.json"
 INDEX_COL = "index"                           # <-- your stable row id column
 DATE_COL = "date"                        # <-- date column name (optional)
@@ -139,8 +126,6 @@ QUESTION = (
     "defect detection, thereby influencing the device performance parameters (PCE, Voc, Jsc, FF)?"
 )
 
-# --- Pair definition space ---
-# We lock ALL formula + material concentration columns, and only allow "PROCESS_COLS" to be the differing column.
 FORMULA_COLS_ALL = [
     "Formula PVK",
     "Formula SAM 1", "Formula SAM 2", "Formula SAM 3",
@@ -154,9 +139,7 @@ MATERIAL_CONC_COLS_ALL = [
     "Concentration Passivator 1", "Concentration Passivator 2", "Concentration Passivator 3",
 ]
 
-# Process columns: the ONLY columns we allow to differ (missing cols will be ignored automatically)
 PROCESS_COLS = [
-    # perovskite spin/antisolvent/anneal
     "Spin Coating Speed PVK 1",
     "Spin Coating Time PVK 1",
     "Spin Coating Speed PVK 2",
@@ -165,7 +148,6 @@ PROCESS_COLS = [
     "Antisolvent Volume",
     "Annealed Temperature PVK",
     "Annealed Time PVK",
-    # (optional) passivator process, if your table contains these
     "Spin Coating Speed Passivator",
     "Spin Coating Time Passivator",
     "Passivator Dropping Timing",
@@ -174,44 +156,28 @@ PROCESS_COLS = [
     "Annealed Time Passivator",
 ]
 
-# Build the "concentration space" = material concentrations + process columns
 CONC_COLS_ALL = MATERIAL_CONC_COLS_ALL + PROCESS_COLS
 
-# We do NOT need formula-mode pairs for Process (disable by ignoring all formula columns)
 FORMULA_DIFF_IGNORE = list(FORMULA_COLS_ALL)
 
-# In concentration-mode, material concentration columns must match but are not allowed to be "the differing column"
 CONC_DIFF_IGNORE = list(MATERIAL_CONC_COLS_ALL)
 
-# --- Filtering rule metrics (from your process_pairs_evaluation.py) ---
 AREA_COL = "area_px2"
 GRAY_COL = "gray_mean"
 PCE_COL = "PCE"
 METRIC_COLS = [AREA_COL, GRAY_COL, PCE_COL]
 
 
-# Extra filter: keep only if target PCE >= this threshold
 TARGET_PCE_MIN = 10.0
-# Random seed for template sampling
 SEED = 42
 
-# Pair sources to export: for Process we only use "concentration"
-# Change to {"formula", "concentration"} if you want both modes
 PAIR_SOURCES = {"concentration"}
 
-# If >0, randomly downsample filtered pairs (per source)
 MAX_PAIRS_PER_SOURCE = 0
 
-# Write intermediate debug CSV files next to OUTPUT_JSON
-WRITE_DEBUG_CSV = True
-# =========================
-# END CONFIG
-# =========================
+WRITE_DIAGNOSTIC_CSV = False
 
 
-# -------------------------
-# 1) CSV I/O helpers
-# -------------------------
 def read_csv_auto(path: Path) -> pd.DataFrame:
     """Read CSV file with automatic encoding detection.
     
@@ -289,9 +255,6 @@ def normalize_date(v: Any) -> str:
         return ""
     return dt.strftime("%Y%m%d")
 
-# -------------------------
-# 2) Pair mining (only 1 col differs)
-# -------------------------
 def count_pairs_differing_in_one_column(
     df_in: pd.DataFrame,
     cols_all: List[str],
@@ -306,13 +269,11 @@ def count_pairs_differing_in_one_column(
     if not other_cols:
         return 0, []
 
-    # group by identical other_cols
     keys = df_in[other_cols].apply(lambda r: tuple(r.values.tolist()), axis=1)
     grouped = df_in.groupby(keys, dropna=False)
 
     records: List[Dict[str, Any]] = []
     for _, gdf in grouped:
-        # Need at least 2 distinct values in target_col
         if gdf[target_col].nunique(dropna=False) <= 1:
             continue
 
@@ -369,7 +330,6 @@ def build_pairs(
     for c in fcols + ccols:
         df[c] = normalize_series(df[c])
 
-    # ---- formula pairs (disabled for Process by ignoring all formula cols) ----
     formula_diff_cols = [c for c in fcols if c not in set(formula_diff_ignore)]
     formula_records_all: List[Dict[str, Any]] = []
     formula_breakdown: List[Dict[str, Any]] = []
@@ -379,7 +339,6 @@ def build_pairs(
         formula_records_all.extend(recs)
     pairs_formula_df = pd.DataFrame(formula_records_all)
 
-    # ---- concentration pairs: formulas + concentrations must match, except 1 differing conc col (process col) ----
     conc_diff_cols = [c for c in ccols if c not in set(conc_diff_ignore)]
     cols_for_space = fcols + ccols
 
@@ -403,9 +362,6 @@ def build_pairs(
     return pairs_formula_df, pairs_conc_df, summary
 
 
-# -------------------------
-# 3) Pair filtering rule (Process / image metrics)
-# -------------------------
 def rule_image_case(row1: pd.Series, row2: pd.Series, area_col: str, gray_col: str, pce_col: str) -> Optional[str]:
     """
     Rule aligned with process_pairs_evaluation.py:
@@ -471,9 +427,6 @@ def evaluate_pairs(
     return res
 
 
-# -------------------------
-# 4) Text generation via templates_lib
-# -------------------------
 def import_templates_lib():
     script_dir = Path(__file__).parent.resolve()
 
@@ -571,12 +524,10 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
 
     image_analysis_template = random.choice(T["image_analysis_segments"]) if T["image_analysis_segments"] else ""
 
-    # NOTE: For Process dataset, you likely don't want PL/XRD in the text; keep them available but unused by default.
     pl_analysis_template = random.choice(T["pl_analysis_segments"]) if T["pl_analysis_segments"] else ""
     xrd_analysis_12 = random.choice(T["xrd_analysis_segments_12"]) if T["xrd_analysis_segments_12"] else ""
     xrd_analysis_stress = random.choice(T["xrd_analysis_segments_stress"]) if T["xrd_analysis_segments_stress"] else ""
 
-    # SAM templates (optional)
     sam_formula_template = ""
     if gv(row, "Formula SAM 1") != "N/A":
         if gv(row, "Formula SAM 2") == "N/A" and gv(row, "Formula SAM 3") == "N/A":
@@ -586,7 +537,6 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         else:
             sam_formula_template = random.choice(T["sam_formula_segments_triple"])
 
-    # Additive templates (optional)
     additive_formula_template = ""
     if gv(row, "Formula Additive 1") != "N/A":
         if gv(row, "Formula Additive 2") == "N/A" and gv(row, "Formula Additive 3") == "N/A":
@@ -596,7 +546,6 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         else:
             additive_formula_template = random.choice(T["additive_formula_segments_triple"])
 
-    # Passivation templates (optional)
     passivation_material_template = ""
     passivation_spin_template = ""
     passivation_drop_template = ""
@@ -628,7 +577,6 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         "passivation_drop": passivation_drop_template,
         "passivation_anneal": passivation_anneal_template,
         "image_analysis": image_analysis_template,
-        # keep but not used by default:
         "pl_analysis": pl_analysis_template,
         "xrd_analysis_12": xrd_analysis_12,
         "xrd_analysis_stress": xrd_analysis_stress,
@@ -735,7 +683,6 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
                 )
             )
 
-    # Image metrics segment (optional, if your table has them)
     if (AREA_COL in row.index) and (GRAY_COL in row.index):
         if gv(row, AREA_COL) != "N/A" and gv(row, GRAY_COL) != "N/A":
             parts.append(
@@ -778,9 +725,6 @@ def safe_colname(x: Any) -> str:
     return s
 
 
-# -------------------------
-# 5) End-to-end main
-# -------------------------
 def maybe_downsample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
     if n <= 0 or df is None or df.empty or len(df) <= n:
         return df
@@ -791,9 +735,6 @@ def main() -> None:
     random.seed(SEED)
     np.random.seed(SEED)
 
-    # in_path = Path(INPUT_CSV)
-    # out_path = Path(OUTPUT_JSON)
-    # out_path.parent.mkdir(parents=True, exist_ok=True)
     script_dir = Path(__file__).parent.resolve()
 
     output_dir = script_dir.parent.parent / "data"
@@ -807,12 +748,10 @@ def main() -> None:
 
     export_table_to_csv_exclude_id(TABLE_NAME, output_csv, MYSQL_CONFIG)
 
-    # ---- read main table ----
     df_main = read_csv_auto(output_csv)
     df_main = strip_columns(df_main)
     df_main = ensure_index_col(df_main, INDEX_COL)
 
-    # ---- mine pairs ----
     pairs_formula_df, pairs_conc_df, summary = build_pairs(
         df_main=df_main,
         index_col=INDEX_COL,
@@ -822,7 +761,6 @@ def main() -> None:
         conc_diff_ignore=CONC_DIFF_IGNORE,
     )
 
-    # ---- filter by rule ----
     filtered_formula = pd.DataFrame()
     filtered_conc = pd.DataFrame()
     if "formula" in PAIR_SOURCES and not pairs_formula_df.empty:
@@ -846,25 +784,22 @@ def main() -> None:
             pce_col=PCE_COL,
         )
 
-    # ---- optional downsample ----
     filtered_formula = maybe_downsample(filtered_formula, MAX_PAIRS_PER_SOURCE, SEED) if not filtered_formula.empty else filtered_formula
     filtered_conc = maybe_downsample(filtered_conc, MAX_PAIRS_PER_SOURCE, SEED) if not filtered_conc.empty else filtered_conc
 
-    # ---- debug CSVs ----
-    if WRITE_DEBUG_CSV:
+    if WRITE_DIAGNOSTIC_CSV:
         out_path = output_json
-        debug_dir = output_dir / (output_dir.stem + "_debug")
-        debug_dir.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(summary["formula_breakdown"]).to_csv(debug_dir / "breakdown_formula.csv", index=False, encoding="utf-8-sig")
-        pd.DataFrame(summary["concentration_breakdown"]).to_csv(debug_dir / "breakdown_concentration.csv", index=False, encoding="utf-8-sig")
-        pairs_formula_df.to_csv(debug_dir / "pairs_formula_all.csv", index=False, encoding="utf-8-sig")
-        pairs_conc_df.to_csv(debug_dir / "pairs_concentration_all.csv", index=False, encoding="utf-8-sig")
+        diagnostic_dir = output_dir / (output_dir.stem + "_diagnostic")
+        diagnostic_dir.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(summary["formula_breakdown"]).to_csv(diagnostic_dir / "breakdown_formula.csv", index=False, encoding="utf-8-sig")
+        pd.DataFrame(summary["concentration_breakdown"]).to_csv(diagnostic_dir / "breakdown_concentration.csv", index=False, encoding="utf-8-sig")
+        pairs_formula_df.to_csv(diagnostic_dir / "pairs_formula_all.csv", index=False, encoding="utf-8-sig")
+        pairs_conc_df.to_csv(diagnostic_dir / "pairs_concentration_all.csv", index=False, encoding="utf-8-sig")
         if not filtered_formula.empty:
-            filtered_formula.to_csv(debug_dir / "pairs_formula_filtered.csv", index=False, encoding="utf-8-sig")
+            filtered_formula.to_csv(diagnostic_dir / "pairs_formula_filtered.csv", index=False, encoding="utf-8-sig")
         if not filtered_conc.empty:
-            filtered_conc.to_csv(debug_dir / "pairs_concentration_filtered.csv", index=False, encoding="utf-8-sig")
+            filtered_conc.to_csv(diagnostic_dir / "pairs_concentration_filtered.csv", index=False, encoding="utf-8-sig")
 
-    # ---- build JSON records ----
     T = import_templates_lib()
     data_idx = df_main.drop_duplicates(subset=[INDEX_COL], keep="first").fillna("N/A").set_index(INDEX_COL)
 
@@ -881,7 +816,6 @@ def main() -> None:
             if r1 not in data_idx.index or r2 not in data_idx.index:
                 continue
 
-            # decide which row becomes "control" based on condition_case
             case = pr.get("condition_case", None)
             if case == "row2":
                 ctrl_idx, tgt_idx = r2, r1
@@ -892,14 +826,12 @@ def main() -> None:
             row_target = data_idx.loc[tgt_idx]
 
 
-            # Extra filter: target PCE must be >= TARGET_PCE_MIN
             target_pce = to_float(row_target.get(PCE_COL, float("nan")))
             if not (target_pce >= TARGET_PCE_MIN):
                 continue
             control_text = row_to_text(row_control, T)
             target_text = row_to_text(row_target, T)
 
-            # Process list from differing_column
             proc_name = safe_colname(pr.get("differing_column", ""))
             process_list = [proc_name] if proc_name else []
 
@@ -921,11 +853,9 @@ def main() -> None:
     if "concentration" in PAIR_SOURCES and not filtered_conc.empty:
         emit_from_pairs("concentration", filtered_conc)
 
-    # ---- write JSON ----
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(all_records, f, ensure_ascii=False, indent=2)
 
-    # ---- summary ----
 
     print("Done.")
     print("Output JSON:", OUTPUT_JSON)

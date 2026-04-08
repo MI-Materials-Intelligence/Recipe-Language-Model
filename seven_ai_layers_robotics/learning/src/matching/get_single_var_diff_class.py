@@ -94,7 +94,6 @@ COLUMN_RELATION = [
         "Spin Coating Speed SAM",
         "Single Coating",
     ],
-    # TODO: Consider single coating
 ]
 
 
@@ -200,14 +199,12 @@ def parse_difference_desc(difference_desc: str):
     if not difference_desc.strip():
         return low_pce_full, high_pce_full
 
-    # split different columns
     changes = [item.strip() for item in difference_desc.split("|") if item.strip()]
 
     for change in changes:
         if "->" not in change or ":" not in change:
             continue  # skip wrong format
 
-        # split field and value
         field_part, value_part = change.split(":", 1)
         old_value, new_value = value_part.split("->", 1)
 
@@ -437,7 +434,6 @@ def get_middle_ten(sorted_list: List[int]) -> List[int]:
     start = max(0, mid - 5)
     end = start + 10
 
-    # Adjust if slicing goes out of bounds
     if end > n:
         end = n
         start = end - 10
@@ -485,7 +481,6 @@ def sanitize_filename_for_windows(name: str) -> str:
     Returns:
         Sanitized filename safe for Windows filesystem.
     """
-    # Replace Windows illegal characters: < > : " | ? * \ /
     safe_name = re.sub(r'[<>:"|?*\\/]', '_', name)
     safe_name = safe_name.strip(' .')
     return safe_name if safe_name else "unnamed"
