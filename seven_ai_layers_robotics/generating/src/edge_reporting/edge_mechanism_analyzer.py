@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Stage 2: Process records with status=1 in  one by one
+"""Stage 2: Process records with status=1 one by one.
+
 - Extract the experimental description with id from the .docx file specified by location
 - Call DeepSeek to generate mechanism analysis
 - Save as {type}_{id}.json
@@ -10,10 +10,12 @@ Stage 2: Process records with status=1 in  one by one
 import os
 import re
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import pymysql
 import requests
 from docx import Document
-import pymysql
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from seven_ai_layers_robotics.config import config
 
 
@@ -21,10 +23,7 @@ DEEPSEEK_CONFIG = {
     'api_key': config.deepseek.api_key,
     'base_url': config.deepseek.base_url,
     'model': config.deepseek.model,
-    'temperature': config.deepseek.temperature,
-    'timeout': config.deepseek.timeout,
 }
-
 
 DB_CONFIG = {
     'host': config.generating_database.host,
@@ -44,10 +43,8 @@ else:
     API_URL = API_URL_BASE
 MODEL_NAME = DEEPSEEK_CONFIG.get("model", "deepseek-reasoner")
 
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_ROOT_DIR = os.path.join(SCRIPT_DIR, "..", "..", "data", "edge")
-
 
 REPORTS_DIR = os.path.join(JSON_ROOT_DIR, "reports")
 
@@ -57,10 +54,10 @@ DOCX_FILES_MAP = {
     "characterisation_xrd_additives": "characterisation_xrd_additives.docx",
     "characterisation_xrd_passivators": "characterisation_xrd_passivators.docx",
     "characterisation_image_pvk": "characterisation_image_pvk.docx",
-    "experiments_cleaned_data": "experiments_cleaned_data.docx"  
+    "experiments_cleaned_data": "experiments_cleaned_data.docx"
 }
 
-MAX_WORKERS = 3  
+MAX_WORKERS = 3
 
 PROMPT_TEMPLATE = """
 You are an expert in perovskite crystallization physics, interface chemistry, defect passivation, molecular engineering, and structural/optical characterization.
@@ -151,12 +148,12 @@ Now analyze the following experimental description and answer with ONE paragraph
 """
 
 
-
-def read_docx_paragraphs(docx_path):
+def read_docx_paragraphs(docx_path) -> list:
     doc = Document(docx_path)
     return [p.text.strip() for p in doc.paragraphs if p.text.strip()]
 
-def split_experiments_by_number(paragraphs):
+
+def split_experiments_by_number(paragraphs) -> list:
     """Return [(index_str, text), ...]"""
     experiments = []
     current_block = []
@@ -178,7 +175,8 @@ def split_experiments_by_number(paragraphs):
         experiments.append((current_index, "\n".join(current_block).strip()))
     return experiments
 
-def find_experiment_by_id(paragraphs, target_id):
+
+def find_experiment_by_id(paragraphs, target_id) -> str:
     """Find the experimental description text with number target_id from .docx paragraphs"""
     try:
         target_id = str(int(float(target_id)))  # Compatible with 1.0 → "1"
@@ -191,7 +189,8 @@ def find_experiment_by_id(paragraphs, target_id):
             return text
     raise ValueError(f"Experimental description with number {target_id} not found in .docx")
 
-def call_deepseek_api(experiment_text):
+
+def call_deepseek_api(experiment_text) -> str:
     headers = {"Authorization": f"Bearer {DEEPSEEK_API_KEY}", "Content-Type": "application/json"}
     payload = {
         "model": MODEL_NAME,
@@ -203,7 +202,8 @@ def call_deepseek_api(experiment_text):
     content = resp.json()["choices"][0]["message"]["content"]
     return content.strip()
 
-def extract_summary_from_mechanism(mechanism_text):
+
+def extract_summary_from_mechanism(mechanism_text) -> str:
     lines = [l.rstrip() for l in mechanism_text.splitlines()]
     summary_lines = []
     started = False
@@ -223,7 +223,8 @@ def extract_summary_from_mechanism(mechanism_text):
         return " ".join(l for l in summary_lines if l).strip()
     return mechanism_text.strip()
 
-def build_json_obj(experiment_text, summary_text):
+
+def build_json_obj(experiment_text, summary_text) -> dict:
     return {
         "1_Abstract": {},
         "2_Introduction": experiment_text,
@@ -232,9 +233,8 @@ def build_json_obj(experiment_text, summary_text):
         "5_Supporting_Information": {"substance": "", "reference": ""}
     }
 
-# ================== Database Operations ==================
 
-def fetch_pending_records():
+def fetch_pending_records() -> list:
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor(pymysql.cursors.DictCursor)
     cursor.execute("SELECT `index`, `type`, `id`, `location` FROM `report_edge` WHERE `status` = 1")
@@ -243,7 +243,8 @@ def fetch_pending_records():
     conn.close()
     return records
 
-def mark_as_done(report_index):
+
+def mark_as_done(report_index: int) -> None:
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
     cursor.execute("UPDATE `report_edge` SET `status` = 2 WHERE `index` = %s", (report_index,))
@@ -251,9 +252,8 @@ def mark_as_done(report_index):
     cursor.close()
     conn.close()
 
-# ================== Single Record Processing Function ==================
 
-def process_single_record(report_index, record_type, record_id, docx_path):
+def process_single_record(report_index: int, record_type: str, record_id: str, docx_path: str) -> None:
     # 1. Construct JSON path
     json_dir = os.path.join(JSON_ROOT_DIR, record_type)
     json_path = os.path.join(json_dir, f"{record_id}.json")
@@ -292,9 +292,8 @@ def process_single_record(report_index, record_type, record_id, docx_path):
     # 6. Update status
     mark_as_done(report_index)
 
-# ================== Main Process ==================
 
-def main():
+def main() -> None:
     print(" Starting Stage 2: Processing records with status=1 in ...")
     records = fetch_pending_records()
     if not records:

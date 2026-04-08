@@ -5,7 +5,6 @@ import mysql.connector
 
 from seven_ai_layers_robotics.config import config
 
-# Category: Global Configuration
 MYSQL_CONFIG = {
     'host': config.generating_database.host,
     'port': config.generating_database.port,
@@ -14,8 +13,10 @@ MYSQL_CONFIG = {
     'database': config.generating_database.database,
     'charset': config.generating_database.charset,
 }
+TABLE_NAME = "characterisation_match"
 
-def compute_pair_hash_from_row(row):
+
+def compute_pair_hash_from_row(row: dict) -> str | None:
     """
     Calculate pair_hash from database row
     """
@@ -46,36 +47,48 @@ def compute_pair_hash_from_row(row):
     normalized = json.dumps(payload, ensure_ascii=False, sort_keys=True)
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
-def backfill_hash():
+def backfill_hash() -> None:
+    """Backfill content_hash for records where it is NULL."""
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("""
-        SELECT id, sample_id_1, sample_id_2, pair_source,
-               additive, passivator, sam, process
-        FROM characterisation_match
-        WHERE content_hash IS NULL
-    """)
-    rows = cursor.fetchall()
+    try:
+        cursor.execute(f"""
+            SELECT id, sample_id_1, sample_id_2, pair_source,
+                   additive, passivator, sam, process
+            FROM {TABLE_NAME}
+            WHERE content_hash IS NULL
+        """)
+        rows = cursor.fetchall()
 
-    print(f"Number of records requiring hash backfill: {len(rows)}")
+        print(f"Number of records requiring hash backfill: {len(rows)}")
 
-    update_sql = """
-        UPDATE characterisation_match
-        SET content_hash = %s
-        WHERE id = %s
-    """
+        update_sql = f"""
+            UPDATE {TABLE_NAME}
+            SET content_hash = %s
+            WHERE id = %s
+        """
 
-    for r in rows:
-        h = compute_pair_hash_from_row(r)
-        if h:
-            cursor.execute(update_sql, (h, r["id"]))
+        for r in rows:
+            h = compute_pair_hash_from_row(r)
+            if h:
+                cursor.execute(update_sql, (h, r["id"]))
 
-    conn.commit()
-    cursor.close()
-    conn.close()
+        conn.commit()
+        print(f"Successfully backfilled {len(rows)} records.")
+    except Exception as e:
+        print(f"Error during hash backfill: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def main() -> None:
+    """Main entry point for hash backfill operation."""
+    backfill_hash()
 
 
 if __name__ == "__main__":
-    backfill_hash()
+    main()
     

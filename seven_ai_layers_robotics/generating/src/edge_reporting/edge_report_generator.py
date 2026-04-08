@@ -1,42 +1,22 @@
 # -*- coding: utf-8 -*-
-"""
-DB → DataFrame → Automatic Experimental Description → Word(docx) + Write to report_edge (deduplication, status codes 0/1/2)
-Supports batch generation for multiple tables
+"""DB → DataFrame → Automatic Experimental Description → Word(docx) + Write to report_edge.
+
+Supports batch generation for multiple tables.
+- Deduplication via unique index
+- Status codes: 0=skipped, 1=generated, 2=failed
 """
 
 import os
-import io
-import sys
 import random
-import pandas as pd
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
 import pymysql
-from sqlalchemy import create_engine
 from docx import Document
+from sqlalchemy import create_engine
 
-# =========================
-# Database Configuration
-# =========================
-# Load configuration from app.config
 from seven_ai_layers_robotics.config import config
-
-MYSQL_CONFIG = {
-    'host': config.generating_database.host,
-    'port': config.generating_database.port,
-    'user': config.generating_database.user,
-    'password': config.generating_database.password,
-    'database': config.generating_database.database,
-    'charset': config.generating_database.charset,
-}
-DB_URI = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}:{MYSQL_CONFIG['port']}/{MYSQL_CONFIG['database']}?charset=utf8mb4"
-engine = create_engine(DB_URI)
-
-DB_CONFIG = MYSQL_CONFIG
-
-# =========================
-# Template Imports (keep original)
-# =========================
 from templates_new_revised import (
     get_intro_segment,
     perovskite_formula_segments,
@@ -65,9 +45,19 @@ from templates_new_revised import (
     xrd_analysis_segments_stress,
 )
 
-# =========================
-# Utility Functions
-# =========================
+MYSQL_CONFIG = {
+    'host': config.generating_database.host,
+    'port': config.generating_database.port,
+    'user': config.generating_database.user,
+    'password': config.generating_database.password,
+    'database': config.generating_database.database,
+    'charset': config.generating_database.charset,
+}
+DB_URI = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}:{MYSQL_CONFIG['port']}/{MYSQL_CONFIG['database']}?charset=utf8mb4"
+engine = create_engine(DB_URI)
+DB_CONFIG = MYSQL_CONFIG
+
+
 def choose_random(lst):
     """Select a random element from a list.
     
@@ -99,7 +89,8 @@ def format_number_int_like(x, ndigits=2):
         return str(int(round(x)))
     return f"{x:.{ndigits}f}".rstrip("0").rstrip(".")
 
-def format_multiple_materials(materials, label):
+
+def format_multiple_materials(materials, label) -> str:
     """Format multiple material names and concentrations into a descriptive string.
     
     Args:
@@ -119,7 +110,8 @@ def format_multiple_materials(materials, label):
         parts.append(f"{f} ({c})" if c else f"{f}")
     return f"The {label} included " + ", ".join(parts) + "." if parts else ""
 
-def read_table(table):
+
+def read_table(table) -> pd.DataFrame:
     """Read a database table into a pandas DataFrame.
     
     Args:
@@ -132,9 +124,7 @@ def read_table(table):
     df.columns = [str(c).strip() for c in df.columns]
     return df
 
-# =========================
-# Core Paragraph Generation Functions
-# =========================
+
 def safe_float(x, ndigits=None):
     """Safely convert a value to float with optional rounding.
     
@@ -151,7 +141,8 @@ def safe_float(x, ndigits=None):
     except Exception:
         return None
 
-def generate_paragraph(row, xrd_mode=None):
+
+def generate_paragraph(row, xrd_mode=None) -> str:
     """Generate experimental description paragraph from a data row.
     
     Args:
@@ -170,7 +161,6 @@ def generate_paragraph(row, xrd_mode=None):
         return ""
 
     intro = get_intro_segment(pce=pce, ff=ff, voc=voc, jsc=jsc)
-
     perovskite = choose_random(perovskite_formula_segments).format(
         formula_pvk=row['Formula PVK'], concentration_pvk=row['Concentration PVK']
     )
@@ -191,12 +181,10 @@ def generate_paragraph(row, xrd_mode=None):
         anneal_temp=row['Annealed Temperature PVK'],
         anneal_time=row['Annealed Time PVK']
     )
-
     parts = [intro, perovskite, process, antisolvent, anneal]
 
     def has_any(keys):
         return any(k in row and pd.notna(row[k]) and str(row[k]).strip() for k in keys)
-
     if has_any(["area_px2", "gray_mean"]):
         for tpl in image_analysis_segments:
             parts.append(tpl.format(area_px2=row.get("area_px2",""), gray_mean=row.get("gray_mean","")))
@@ -214,7 +202,6 @@ def generate_paragraph(row, xrd_mode=None):
                 xrd_intensity_12=f"{float(row['xrd_intensity_12.6']):.2f}",
                 xrd_fhwm_12=f"{float(row['xrd_fhwm_12.6']):.2f}"
             ))
-
     if xrd_mode == "passivators" and has_any(["xrd_intensity_4"]):
         for tpl in xrd_analysis_segments_stress:
             parts.append(tpl.format(
@@ -224,10 +211,8 @@ def generate_paragraph(row, xrd_mode=None):
 
     return " ".join(p for p in parts if p)
 
-# =========================
-#  Write Function (deduplication + status codes)
-# =========================
-def insert_single_report_records(table_name: str, record_ids: list, status_code: int, location: str):
+
+def insert_single_report_records(table_name: str, record_ids: list, status_code: int, location: str) -> None:
     """Insert single report records into database with deduplication.
     
     Args:
@@ -241,7 +226,6 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
     """
     if not record_ids:
         return
-
     conn = pymysql.connect(**DB_CONFIG, connect_timeout=30)
     cursor = conn.cursor()
 
@@ -259,12 +243,10 @@ def insert_single_report_records(table_name: str, record_ids: list, status_code:
 
     if inserted_count > 0:
         status_map = {0: "skipped", 1: "generated", 2: "failed"}
-        print(f"📊 Added {inserted_count} records to  (status={status_map[status_code]})")
+        print(f"Added {inserted_count} records to report_edge (status={status_map[status_code]})")
 
-# =========================
-# Ensure  has unique index
-# =========================
-def ensure_single_report_unique_index():
+
+def ensure_single_report_unique_index() -> None:
     """Ensure unique index exists on report_edge table for (type, id) combination.
     
     Creates the unique index if it doesn't exist to prevent duplicate entries.
@@ -283,14 +265,12 @@ def ensure_single_report_unique_index():
     exists = cursor.fetchone()[0] > 0
     if not exists:
         cursor.execute("ALTER TABLE `report_edge` ADD UNIQUE KEY `uniq_type_id` (`type`, `id`);")
-        print("Added unique index (type, id) to ")
+        print("Added unique index (type, id) to report_edge")
     cursor.close()
     conn.close()
 
-# =========================
-# DataFrame → Word + Record Status
-# =========================
-def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source_table=None):
+
+def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source_table=None) -> None:
     """Generate Word document from DataFrame and record status to database.
     
     Args:
@@ -311,9 +291,9 @@ def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source
     df = df.copy()
     df.columns = [str(c).strip() for c in df.columns]
 
-    generated_ids = []   # status=1
-    skipped_ids = []     # status=0
-    failed_ids = []      # status=2
+    generated_ids = []
+    skipped_ids = []
+    failed_ids = []
 
     if not index_col or index_col not in df.columns:
         index_col = None
@@ -347,13 +327,11 @@ def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source
             print(f"⚠️ Generation failed (ID={record_id}): {e}")
             failed_ids.append(record_id)
 
-    # Save document (ensure directory exists)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     doc.save(output_path)
     total = len(generated_ids) + len(skipped_ids) + len(failed_ids)
     print(f"Completed {source_table}: total {total} | generated {len(generated_ids)} | skipped {len(skipped_ids)} | failed {len(failed_ids)}")
 
-    # Write to single_report (insert only new records)
     if source_table:
         insert_single_report_records(source_table, generated_ids, 1, output_path)
         insert_single_report_records(source_table, skipped_ids, 0, output_path)
@@ -363,18 +341,16 @@ def generate_docx_from_df(df, output_path, xrd_mode=None, index_col=None, source
 # Batch Task Configuration
 # =========================
 TASKS = [
-    {"table": "characterisation_xrd_additives",   "output": "reports/characterisation_xrd_additives.docx",   "xrd_mode": "additives", "index_col": "index"},
+    {"table": "characterisation_xrd_additives", "output": "reports/characterisation_xrd_additives.docx", "xrd_mode": "additives", "index_col": "index"},
     {"table": "characterisation_xrd_passivators", "output": "reports/characterisation_xrd_passivators.docx", "xrd_mode": "passivators", "index_col": "index"},
-    {"table": "characterisation_image_pvk",   "output": "reports/characterisation_image_pvk.docx",   "xrd_mode": None, "index_col": "index"},
-    {"table": "characterisation_pl_sam",          "output": "reports/characterisation_pl_sam.docx",          "xrd_mode": None, "index_col": "index"},
+    {"table": "characterisation_image_pvk", "output": "reports/characterisation_image_pvk.docx", "xrd_mode": None, "index_col": "index"},
+    {"table": "characterisation_pl_sam", "output": "reports/characterisation_pl_sam.docx", "xrd_mode": None, "index_col": "index"},
     {"table": "experiments_cleaned_data", "output": "reports/experiments_cleaned_data.docx", "xrd_mode": None, "index_col": "No"},
 ]
 
-# =========================
-# Main
-# =========================
-if __name__ == "__main__":
-    # Ensure single_report table structure is correct
+
+def main() -> None:
+    """Main entry point for edge report generation."""
     ensure_single_report_unique_index()
 
     for task in TASKS:
@@ -389,3 +365,7 @@ if __name__ == "__main__":
             source_table=task["table"]
         )
     print("\nAll tasks completed!")
+
+
+if __name__ == "__main__":
+    main()

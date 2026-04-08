@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
 import sys
-import traceback
 from pathlib import Path
-import mysql.connector
-from openai import OpenAI
 
+import mysql.connector
+import numpy as np
+from openai import OpenAI
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
@@ -26,8 +27,6 @@ LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
 }
 
 client = OpenAI(
@@ -35,6 +34,7 @@ client = OpenAI(
     base_url=LLM_CONFIG["base_url"]
 )
 TABLE_NAME = "characterisation_match"
+
 
 def ensure_parent_dir(path: str) -> None:
     """Ensure the parent directory of the file path exists.
@@ -48,6 +48,7 @@ def ensure_parent_dir(path: str) -> None:
     parent = os.path.dirname(path)
     if parent and not os.path.exists(parent):
         os.makedirs(parent, exist_ok=True)
+
 
 def db_row_to_item(row: dict) -> dict:
     """Convert a database row to JSON item structure.
@@ -84,6 +85,7 @@ def db_row_to_item(row: dict) -> dict:
         item["Process"] = json.loads(row["process"]) if isinstance(row["process"], str) else row["process"]
 
     return item
+
 
 def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> list:
     """Read pending records of specified regulation factor type.
@@ -145,7 +147,6 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> li
     return rows
 
 
-
 def normalize_material_name(name: str) -> str:
     """Normalize material name by converting to uppercase and removing non-alphanumeric characters.
     
@@ -164,7 +165,6 @@ def normalize_material_name(name: str) -> str:
     if not isinstance(name, str):
         return ""
     return re.sub(r"[^A-Z0-9]+", "", name.upper())
-
 
 
 def build_material_content_map_from_db(category: str | None = None) -> dict:
@@ -217,6 +217,7 @@ def build_material_content_map_from_db(category: str | None = None) -> dict:
 
     return material_content_map
 
+
 def update_status(pair_id: int, status: str) -> None:
     """Update the status of a specific pair in database.
     
@@ -242,36 +243,6 @@ def update_status(pair_id: int, status: str) -> None:
     conn.commit()
     cursor.close()
     conn.close()
-
-
-def run_sam_report(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """Execute SAM pair to report generation pipeline.
-    
-    Args:
-        seed: Random seed for reproducibility. If None, uses default random state.
-        verbose: If True, prints start and completion messages.
-        
-    Returns:
-        None
-    """
-    if verbose:
-        print("▶ Running sam pair to report...")
-
-    if seed is not None:
-        import random
-        import numpy as np
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("Running sam pair to report finished.")
-
 
 
 def get_material_background_from_item(
@@ -333,7 +304,7 @@ def get_answer_and_thinking(
     target: str,
     background_knowledge: str,
     SAM: str,
-):
+) -> tuple[str, str]:
     """
     Main analysis: returns (answer_content_analyze, reasoning_content_analyze)
     """
@@ -409,7 +380,7 @@ def get_answer_and_thinking(
     return answer_content.strip(), reasoning_content.strip()
 
 
-def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
+def api_get_answer_and_thinking(system_prompt: str, user_prompt: str) -> tuple[str, str]:
     """
     Secondary call (abstract / table): input system + user, includes reasoning_content.
     Returns (answer_content, reasoning_content)
@@ -455,7 +426,7 @@ def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
     return answer_content.strip(), reasoning_content.strip()
 
 
-def save_sft_records(records, output_file_path: str):
+def save_sft_records(records, output_file_path: str) -> None:
     """
     records: format like
     [
@@ -471,8 +442,6 @@ def save_sft_records(records, output_file_path: str):
     with open(output_file_path, "w", encoding="utf-8-sig") as f:
         json.dump(records, f, ensure_ascii=False, indent=4)
     print(f"SFT training samples saved to: {output_file_path}")
-
-
 
 
 SYSTEM_PROMPT_ABSTRACT = (
@@ -530,10 +499,6 @@ DATA:
 
 
 def main() -> None:
-
-  
-
-
     script_dir = Path(__file__).parent.resolve()
     generating_root = script_dir.parent.parent  
     data_root = generating_root / "data"
@@ -706,6 +671,33 @@ def main() -> None:
     print(f"   - Report JSON array: {REPORT_JSON_PATH}")
     print(f"   - Report JSONL: {REPORT_JSONL_PATH}")
 
+
+
+def run_sam_report(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """Execute SAM pair to report generation pipeline.
+
+    Parameters
+    ----------
+    seed : int | None
+        Override random seed (optional).
+    verbose : bool
+        Print start / end logs.
+    """
+    if verbose:
+        print("▶ Running sam pair to report...")
+
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("Running sam pair to report finished.")
 
 
 if __name__ == "__main__":

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-perovskite_analyzer.py
-Perovskite Mechanism Analyzer - Single-file encapsulated module
+"""Perovskite Mechanism Analyzer - Single-file encapsulated module.
 
 Supports external invocation:
-    1. Import method: from perovskite_analyzer import PerovskiteAnalyzer
-    2. Command-line method: python perovskite_analyzer.py --config config.json
+    1. Import method: from single_report_prepare import PerovskiteAnalyzer
+    2. Command-line method: python single_report_prepare.py
 
-Author: Your Name
-Date: 2026
+Example Usage:
+    >>> from single_report_prepare import PerovskiteAnalyzer
+    >>> analyzer = PerovskiteAnalyzer()
+    >>> result = analyzer.run()
 """
 
 import os
@@ -17,33 +17,22 @@ import os.path as osp
 import json
 import random
 import re
+import sys
 import uuid
 import asyncio
 import argparse
+from pathlib import Path as PathLib
 from typing import Dict, Any, List, Optional, Union
 from collections import defaultdict
 from dataclasses import dataclass, field, asdict
-from openai import AsyncOpenAI
-import pymysql
+
 import mysql.connector
+import pymysql
 from mysql.connector import Error
+from openai import AsyncOpenAI
 
-# Import configuration loader
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-# Add generating/src to sys.path to use config_loader under Generating
-generating_src = script_dir.parent  # Variable_Reporting -> generating/src
-if str(generating_src) not in sys.path:
-    sys.path.insert(0, str(generating_src))
-
-# Import configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-
-# ============================================================================
-# Configuration Class (supports dict/JSON/default values)
-# ============================================================================
 
 @dataclass
 class DBConfig:
@@ -72,10 +61,12 @@ class DBConfig:
             object.__setattr__(self, 'database', cfg.get('database', ''))
 
     def to_dict(self) -> Dict[str, Any]:
+        """Convert configuration to dictionary."""
         return {k: v for k, v in asdict(self).items() if v is not None}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "DBConfig":
+        """Create configuration from dictionary."""
         return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
 
 
@@ -103,10 +94,12 @@ class LLMConfig:
                 object.__setattr__(self, 'base_url', cfg.get('base_url', 'https://dashscope.aliyuncs.com/compatible-mode/v1  '))
 
     def to_client_kwargs(self) -> Dict[str, Any]:
+        """Convert configuration to client kwargs."""
         return {"api_key": self.api_key, "base_url": self.base_url.rstrip("/") + "/"}
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "LLMConfig":
+        """Create configuration from dictionary."""
         return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
 
 
@@ -130,6 +123,7 @@ class PathConfig:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "PathConfig":
+        """Create configuration from dictionary."""
         return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
 
 
@@ -145,6 +139,7 @@ class AnalyzerConfig:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "AnalyzerConfig":
+        """Create configuration from dictionary."""
         return cls(
             db=DBConfig.from_dict(data.get("db", {})),
             llm=LLMConfig.from_dict(data.get("llm", {})),
@@ -154,23 +149,26 @@ class AnalyzerConfig:
 
     @classmethod
     def from_json(cls, json_path: str) -> "AnalyzerConfig":
+        """Create configuration from JSON file."""
         with open(json_path, "r", encoding="utf-8") as f:
             return cls.from_dict(json.load(f))
 
 
-# ============================================================================
-# 🛠️ Utility Functions (for internal use)
-# ============================================================================
 
 def _safe_filename(name: str) -> str:
+    """Convert name to safe filename."""
     name = (name or "").strip()
-    return re.sub(r'[\\/:\*\?"<>\|]+', '_', name)
+    return re.sub(r'[\\/:*?"<>|]+', '_', name)
+
 
 def _read_text_file(path: str) -> str:
+    """Read text file content."""
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
+
 def _atomic_write_json(path: str, data: Any) -> None:
+    """Atomically write JSON file."""
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     tmp = f"{path}.tmp.{os.getpid()}.{uuid.uuid4().hex}"
     with open(tmp, "w", encoding="utf-8") as f:
@@ -179,18 +177,24 @@ def _atomic_write_json(path: str, data: Any) -> None:
         os.fsync(f.fileno())
     os.replace(tmp, path)
 
+
 def _save_json_file(data: Any, file_path: str, indent: int = 2) -> None:
+    """Save data to JSON file."""
     parent_dir = os.path.dirname(file_path)
     if parent_dir:
         os.makedirs(parent_dir, exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=indent, ensure_ascii=False)
 
+
 def _read_json_file(file_path: str) -> Any:
+    """Read JSON file content."""
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def _read_files_by_extension(directory: str, extensions: List[str]) -> List[str]:
+    """Read files by extension from directory."""
     if not os.path.isdir(directory):
         return []
     out = []
@@ -200,7 +204,9 @@ def _read_files_by_extension(directory: str, extensions: List[str]) -> List[str]
                 out.append(os.path.join(root, file))
     return out
 
+
 def _normalize_material_key(name: str, mapping: Dict[str, str]) -> str:
+    """Normalize material name key."""
     if not name:
         return ""
     s = name.strip()
@@ -208,7 +214,6 @@ def _normalize_material_key(name: str, mapping: Dict[str, str]) -> str:
     return re.sub(r"[^A-Z0-9]+", "", s.upper())
 
 def _extract_material_names_from_filename(base: str, mapping: Dict[str, str]) -> List[str]:
-    """Extract material names from filename (simplified version, keeping core logic)"""
     s = (base or "").strip()
     if not s:
         return []
@@ -241,14 +246,12 @@ def _extract_material_names_from_filename(base: str, mapping: Dict[str, str]) ->
     return [_clean_token(s)]
 
 def _pure_id(s: str) -> str:
+    """Extract pure ID from string."""
     if s is None:
         return ""
     return str(s).split(",")[0].strip()
 
 
-# ============================================================================
-# Core Analyzer Class (external invocation entry point)
-# ============================================================================
 
 class PerovskiteAnalyzer:
     """
@@ -290,41 +293,13 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
 """
 
     def __init__(self, config: Optional[AnalyzerConfig] = None):
-        # Use default configuration or passed configuration
+        """Initialize PerovskiteAnalyzer with configuration."""
         self.config = config or AnalyzerConfig()
 
-        # If configuration has no values, load defaults from app.config
-        if self.config.db.host is None:
-            cfg = {
-                'host': config.generating_database.host,
-                'port': config.generating_database.port,
-                'user': config.generating_database.user,
-                'password': config.generating_database.password,
-                'database': config.generating_database.database,
-                'charset': config.generating_database.charset,
-            }
-            object.__setattr__(self.config.db, 'host', cfg.get('host', '0'))
-            object.__setattr__(self.config.db, 'port', cfg.get('port', ))
-            object.__setattr__(self.config.db, 'user', cfg.get('user', 'root'))
-            object.__setattr__(self.config.db, 'password', cfg.get('password', ''))
-            object.__setattr__(self.config.db, 'database', cfg.get('database', ''))
-
-        if self.config.llm.api_key is None:
-            cfg = {
-                'api_key': config.generating_llm.dashscope_api_key,
-                'base_url': config.generating_llm.base_url,
-                'model': config.generating_llm.dashscope_model,
-            }
-            object.__setattr__(self.config.llm, 'api_key', cfg.get('api_key', ''))
-            object.__setattr__(self.config.llm, 'base_url', cfg.get('base_url', 'https://dashscope.aliyuncs.com/compatible-mode/v1  '))
-            object.__setattr__(self.config.llm, 'model', cfg.get('model', 'qwen-plus'))
-
-        self._client = AsyncOpenAI(**self.config.llm.to_client_kwargs())
         self._semaphore = asyncio.Semaphore(self.config.llm.max_concurrent)
         self._md_text_cache: Dict[str, str] = {}
         self._md_map: Dict[tuple, str] = {}
         self._init_knowledge_map()
-        print(f"[INFO] Database config: {self.config.db.host}:{self.config.db.port}/{self.config.db.database}")
 
     def _init_knowledge_map(self):
         """Initialize knowledge base mapping"""
@@ -365,7 +340,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         }
 
     def fetch_tasks(self, num_thres: int = 100) -> List[Dict[str, Any]]:
-        """Fetch pending tasks from database"""
+        """Fetch pending tasks from database."""
         conn = pymysql.connect(**self.config.db.to_dict())
         try:
             with conn.cursor() as cursor:
@@ -430,7 +405,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         return tasks
 
     async def _process_single(self, item: Dict[str, Any], save_root: str, success_ids: list) -> None:
-        """Process single task (async)"""
+        """Process single task asynchronously."""
         record_id = item.get("record_id")
         if not record_id:
             return
@@ -485,14 +460,14 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
                     await asyncio.sleep(self.config.llm.retry_base_delay * attempt + random.uniform(0, 1))
 
     async def inference(self, tasks: List[Dict[str, Any]]) -> List[int]:
-        """Execute batch inference"""
+        """Execute batch inference asynchronously."""
         os.makedirs(self.config.paths.dist_save_root, exist_ok=True)
         success_ids = []
         await asyncio.gather(*[self._process_single(t, self.config.paths.dist_save_root, success_ids) for t in tasks], return_exceptions=True)
         return success_ids
 
-    def update_status(self, record_ids: List[int], status: int):
-        """Batch update database status"""
+    def update_status(self, record_ids: List[int], status: int) -> None:
+        """Batch update database status."""
         if not record_ids:
             return
         conn = mysql.connector.connect(**self.config.db.to_dict())
@@ -508,7 +483,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             conn.close()
 
     def build_dataset(self, output_path: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Build final dataset"""
+        """Build final dataset."""
         output_path = output_path or self.config.paths.dataset_path
         out = []
         files = _read_files_by_extension(self.config.paths.dist_save_root, extensions=[".json"])
@@ -528,8 +503,8 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         print(f"[INFO] dataset size: {len(out)} -> {output_path}")
         return out
 
-    def rebuild_knowledge(self, output_root: Optional[str] = None):
-        """Rebuild Markdown knowledge base from database"""
+    def rebuild_knowledge(self, output_root: Optional[str] = None) -> None:
+        """Rebuild Markdown knowledge base from database."""
         output_root = output_root or self.config.paths.expert_data_root
         os.makedirs(output_root, exist_ok=True)
 
@@ -608,13 +583,11 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             print(f"[WARN] Skipping knowledge rebuild")
 
     async def run_async(self, rebuild_knowledge: bool = True) -> Dict[str, Any]:
-        """Async version of main entry point (recommended for Agent/Tool scenarios)"""
-        # Rebuild knowledge base first (if needed) to ensure latest mechanism data
+        """Async version of main entry point (recommended for Agent/Tool scenarios)."""
         if rebuild_knowledge:
             self.rebuild_knowledge()
             print("[INFO] Knowledge base rebuilt")
 
-        # Reinitialize knowledge graph (load newly generated .md files)
         self._md_text_cache.clear()
         self._md_map.clear()
         self._init_knowledge_map()
@@ -644,10 +617,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         }
 
     def run(self, rebuild_knowledge: bool = True) -> Dict[str, Any]:
-        """Synchronous version of main entry point - compatible with all runtime environments"""
-        import asyncio
-
-        # Rebuild knowledge base first (if needed)
+        """Synchronous version of main entry point."""
         if rebuild_knowledge:
             self.rebuild_knowledge()
             print("[INFO] Knowledge base rebuilt")
@@ -664,16 +634,13 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
 
         all_ids = [t["record_id"] for t in tasks]
 
-        # Run async inference in a compatible way
         try:
             loop = asyncio.get_running_loop()
-            # Existing event loop: run in thread
             import concurrent.futures
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(asyncio.run, self.inference(tasks))
                 success_ids = future.result()
         except RuntimeError:
-            # No event loop: run directly
             success_ids = asyncio.run(self.inference(tasks))
 
         self.update_status(success_ids, status=1)
@@ -692,9 +659,7 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             "dataset_path": self.config.paths.dataset_path,
         }
 
-# ============================================================================
-#  Command-line entry point (optional)
-# ============================================================================
+# Command-line entry point
 
 def _parse_args():
     parser = argparse.ArgumentParser(description="Perovskite Mechanism Analyzer")
@@ -705,16 +670,14 @@ def _parse_args():
     return parser.parse_args()
 
 
-def main():
-    """Simple and direct entry point - no parameters required"""
+def main() -> None:
+    """Simple and direct entry point."""
     print("=" * 60)
     print("Perovskite Mechanism Analyzer")
     print("=" * 60)
 
-    # Direct instantiation and run
     analyzer = PerovskiteAnalyzer()
 
-    # Execute full pipeline (rebuild knowledge base by default)
     result = analyzer.run(rebuild_knowledge=True)
 
     print(f"\nPipeline completed!")

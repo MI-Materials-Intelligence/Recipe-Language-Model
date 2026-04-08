@@ -1,16 +1,24 @@
-# Single Report Module
-"""
-Single-Variable Perovskite Report Generation Module
+# -*- coding: utf-8 -*-
+"""Variable Reporting Module for Perovskite Solar Cell Analysis.
+
+This module provides tools for generating single-variable perovskite reports,
+including mechanism analysis and automated report generation.
 
 Main Classes:
-    PerovskiteAnalyzer: Perovskite mechanism analyzer
-    ReportGenerator: Report generator
+    PerovskiteAnalyzer: Perovskite mechanism analyzer for analyzing experimental data.
+    ReportGenerator: Automated report generator with configurable templates.
+    ReportConfig: Configuration class for report generation parameters.
 
 Example Usage:
-    >>> from app.tool.RLM.generate.single_report_module import PerovskiteAnalyzer, ReportGenerator
+    >>> from seven_ai_layers_robotics.generating.src.variable_reporting import (
+    ...     PerovskiteAnalyzer,
+    ...     ReportGenerator,
+    ...     ReportConfig
+    ... )
     >>> analyzer = PerovskiteAnalyzer()
     >>> result = await analyzer.run_async()
-    >>> generator = ReportGenerator()
+    >>> config = ReportConfig()
+    >>> generator = ReportGenerator(config=config)
     >>> stats = generator.run()
 """
 
@@ -20,5 +28,5 @@ from .single_report import ReportGenerator, ReportConfig
 __all__ = [
     "PerovskiteAnalyzer",
     "ReportGenerator",
-    "ReportConfig"
+    "ReportConfig",
 ]

@@ -2,16 +2,15 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
-import traceback
+import sys
 from pathlib import Path
 
 import mysql.connector
-from openai import OpenAI
 import numpy as np
+from openai import OpenAI
 
-
-import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
@@ -28,8 +27,6 @@ LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
 }
 
 client = OpenAI(
@@ -39,36 +36,6 @@ client = OpenAI(
 TABLE_NAME = "characterisation_match"
 
 
-def run_process_report(
-    *,
-    seed: int | None = None,
-    verbose: bool = True,
-) -> None:
-    """
-    Run Process pair to report pipeline.
-
-    Parameters
-    ----------
-    seed : int | None
-        Override random seed (optional).
-    verbose : bool
-        Print start / end logs.
-    """
-    if verbose:
-        print("▶ Running process pair to report...")
-
-    if seed is not None:
-        import random
-        random.seed(seed)
-        np.random.seed(seed)
-
-    main()
-
-    if verbose:
-        print("Running process pair to report finished.")
-
-
-# Category: Constants
 SYSTEM_PROMPT_ABSTRACT = (
     "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
     "Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. "
@@ -121,12 +88,16 @@ PCE: 15.76% → 18.35% (+2.59 pct)
 DATA:
 - Use ONLY numbers and mechanisms from the user's input.
 '''
-def save_reports(reports, output_file_path: str):
+
+
+def save_reports(reports, output_file_path: str) -> None:
+    """Save reports to JSON file."""
     with open(output_file_path, "w", encoding="utf-8-sig") as f:
         json.dump(reports, f, ensure_ascii=False, indent=4)
     print(f"Report list saved to: {output_file_path}")
 
-def save_sft_records(records, output_file_path: str):
+
+def save_sft_records(records, output_file_path: str) -> None:
     """
     records: Format as follows
     [
@@ -143,6 +114,7 @@ def save_sft_records(records, output_file_path: str):
         json.dump(records, f, ensure_ascii=False, indent=4)
     print(f"SFT training samples saved to: {output_file_path}")
 
+
 def normalize_material_name(name: str) -> str:
     """
     Material name normalization:
@@ -154,7 +126,8 @@ def normalize_material_name(name: str) -> str:
         return ""
     return re.sub(r"[^A-Z0-9]+", "", name.upper())
 
-def ensure_parent_dir(path: str):
+
+def ensure_parent_dir(path: str) -> None:
     """
     Ensure parent directory of file path exists
     """
@@ -162,7 +135,8 @@ def ensure_parent_dir(path: str):
     if parent and not os.path.exists(parent):
         os.makedirs(parent, exist_ok=True)
 
-def build_material_content_map_from_db(category: str | None = None):
+
+def build_material_content_map_from_db(category: str | None = None) -> dict:
     """
     Read Markdown content from expert_mechanisms table, optionally filter by category.
 
@@ -214,7 +188,8 @@ def build_material_content_map_from_db(category: str | None = None):
 
     return material_content_map
 
-def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
+
+def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> list:
     """
     Load pending records of specified regulation factor type
     factor_type: "SAM", "Additive", "Passivator", "Process"
@@ -262,8 +237,9 @@ def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
     cursor.close()
     conn.close()
 
-    print(f"📥 Loaded {factor_type} type pending records count: {len(rows)}")
+    print(f"Loaded {factor_type} type pending records count: {len(rows)}")
     return rows
+
 
 def db_row_to_item(row: dict) -> dict:
     """
@@ -297,7 +273,8 @@ def db_row_to_item(row: dict) -> dict:
 
     return item
 
-def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
+
+def api_get_answer_and_thinking(system_prompt: str, user_prompt: str) -> tuple[str, str]:
     """
     For secondary calls (abstract / table, etc.):
     Input system + user, return (answer_content, reasoning_content)
@@ -341,6 +318,7 @@ def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
             answer_content += delta.content
 
     return answer_content.strip(), reasoning_content.strip()
+
 
 def get_answer_and_thinking(
     question: str,
@@ -426,7 +404,6 @@ def get_answer_and_thinking(
     return answer_content.strip(), reasoning_content.strip()
 
 
-
 def get_material_background_from_item(
     item: dict,
     material_content_map: dict,
@@ -477,7 +454,8 @@ def get_material_background_from_item(
     else:
         return ""
 
-def update_status(pair_id: int, status: str):
+
+def update_status(pair_id: int, status: str) -> None:
     """
     Update status of a specific pair
     status: pending / processing / done / error
@@ -497,10 +475,9 @@ def update_status(pair_id: int, status: str):
     conn.commit()
     cursor.close()
     conn.close()
+
+
 def main() -> None:
-
-
-
     script_dir = Path(__file__).parent.resolve()
 
     generating_root = script_dir.parent.parent  
@@ -557,7 +534,7 @@ def main() -> None:
                     else:
                         if vals:
                             materials_for_print.append(vals)
-                    mat_info = ",".join(materials_for_print)
+                mat_info = ",".join(materials_for_print)
 
 
                 print(f"\n========== Item {idx + 1} ==========")
@@ -683,6 +660,33 @@ def main() -> None:
             print(f"SFT JSONL real-time written to file: {OUTPUT_JSONL_PATH}")
             print(f"Report JSONL real-time written to file: {REPORT_JSONL_PATH}")
 
+
+def run_process_report(
+    *,
+    seed: int | None = None,
+    verbose: bool = True,
+) -> None:
+    """
+    Run Process pair to report pipeline.
+
+    Parameters
+    ----------
+    seed : int | None
+        Override random seed (optional).
+    verbose : bool
+        Print start / end logs.
+    """
+    if verbose:
+        print("▶ Running process pair to report...")
+
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+
+    main()
+
+    if verbose:
+        print("Running process pair to report finished.")
 
 
 if __name__ == "__main__":

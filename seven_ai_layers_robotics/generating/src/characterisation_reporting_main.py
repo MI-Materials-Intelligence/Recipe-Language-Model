@@ -1,25 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-Characterisation Report Automated Processing Pipeline
-Supports: Fetching pending data from the database -> Generating reports -> Saving to the data directory
+"""Characterisation Report Automated Processing Pipeline.
+
+Supports: Fetching pending data from the database -> Generating reports -> Saving to the data directory.
 
 Usage:
-    1. Direct execution: python this_script.py
-    2. External import: from this_script import CharacterisationReportPipeline; pipeline = CharacterisationReportPipeline(); pipeline.run()
+    1. Direct execution: python characterisation_reporting_main.py
+    2. External import: from characterisation_reporting_main import CharacterisationReportPipeline
 """
 
 import os
 import sys
 from typing import Any, Dict, Optional
 
-
-_script_dir = os.path.dirname(os.path.abspath(__file__))
-if _script_dir not in sys.path:
-    sys.path.insert(0, _script_dir)
-
-
 from seven_ai_layers_robotics.config import config
-
 
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
@@ -37,48 +30,35 @@ LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
 }
 
+REPORT_GENERATORS = {}
+
 try:
-   
-    REPORT_GENERATORS = {}
+    from characterization_reporting.sam_report import run_sam_report
+    REPORT_GENERATORS['sam'] = run_sam_report
+except ImportError as e:
+    print(f"Warning: Unable to import SAM report generator. Error: {e}")
 
+try:
+    from characterization_reporting.add_report import run_add_report
+    REPORT_GENERATORS['additive'] = run_add_report
+except ImportError as e:
+    print(f"Warning: Unable to import Additive report generator. Error: {e}")
 
-    try:
-        from characterization_reporting.sam_report import run_sam_report
-        REPORT_GENERATORS['sam'] = run_sam_report
-    except ImportError as e:
-        print(f" Warning: Unable to import SAM report generator. Error: {e}")
+try:
+    from characterization_reporting.pass_report import run_pass_report
+    REPORT_GENERATORS['passivator'] = run_pass_report
+except ImportError as e:
+    print(f"Warning: Unable to import Passivator report generator. Error: {e}")
 
-  
-    try:
-        from characterization_reporting.add_report import run_add_report
-        REPORT_GENERATORS['additive'] = run_add_report
-    except ImportError as e:
-        print(f"Warning: Unable to import Additive report generator. Error: {e}")
+try:
+    from characterization_reporting.process_report import run_process_report
+    REPORT_GENERATORS['process'] = run_process_report
+except ImportError as e:
+    print(f"Warning: Unable to import Process report generator. Error: {e}")
 
-    
-    try:
-        from characterization_reporting.pass_report import run_pass_report
-        REPORT_GENERATORS['passivator'] = run_pass_report
-    except ImportError as e:
-        print(f"Warning: Unable to import Passivator report generator. Error: {e}")
-
-    
-    try:
-        from characterization_reporting.process_report import run_process_report
-        REPORT_GENERATORS['process'] = run_process_report
-    except ImportError as e:
-        print(f"Warning: Unable to import Process report generator. Error: {e}")
-
-    ARE_GENERATORS_AVAILABLE = len(REPORT_GENERATORS) > 0
-
-except Exception as e:
-    ARE_GENERATORS_AVAILABLE = False
-    print(f"Warning: Unable to load report generators, report generation functionality will be unavailable. Error: {e}")
-
+ARE_GENERATORS_AVAILABLE = len(REPORT_GENERATORS) > 0
 
 
 class CharacterisationReportPipeline:
@@ -117,11 +97,10 @@ class CharacterisationReportPipeline:
             bool: Success status of the pipeline execution.
         """
         if not ARE_GENERATORS_AVAILABLE:
-            raise ImportError("Report generator modules not found, unable to execute report generation.")
+            raise ImportError("Report generator modules not found")
 
         try:
             if report_type == 'all':
-                
                 for gen_type, generator_func in REPORT_GENERATORS.items():
                     print(f"\n{'='*60}")
                     print(f"Starting to generate {gen_type.upper()} type report...")
@@ -134,7 +113,6 @@ class CharacterisationReportPipeline:
                         print(f"{gen_type.upper()} type report generation failed: {e}")
                         continue
             else:
-                
                 if report_type not in REPORT_GENERATORS:
                     raise ValueError(f"Unsupported report type: {report_type}, available types: {list(REPORT_GENERATORS.keys())}")
 
@@ -150,10 +128,7 @@ class CharacterisationReportPipeline:
 
         except Exception as e:
             print(f"Process interrupted: {e}")
-            import traceback
-            traceback.print_exc()
             return False
-
 
 
 if __name__ == "__main__":

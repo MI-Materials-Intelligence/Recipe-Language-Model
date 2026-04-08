@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+"""Template segments for generating experimental descriptions in edge reporting.
+
+This module contains:
+- Metric mappings
+- Question templates for different material combinations
+- Text segments for perovskite, SAM, additive, passivator formulations
+- Process, antisolvent, and annealing procedure templates
+- Characterization analysis segments (Image, PL, XRD)
+- Conclusion generation utilities
+"""
+
 import random
 
 metric_full_map = {
@@ -6,6 +18,7 @@ metric_full_map = {
     "Jsc": "short-circuit current density (JSC)",
     "FF": "fill factor (FF)"
 }
+
 
 Q_passivator_combination_templates = [
     "What effect do surface passivators have on the {metrics} of perovskite solar cells?",
@@ -33,6 +46,7 @@ Q_SAM_combination_templates = [
     "What mechanisms underlie the improvements of {metrics} induced by SAM treatments in perovskite cells?",
 ]
 
+
 Q_Additive_combination_templates = [
     "What effect do precursor additives have on the {metrics} of perovskite solar cells?",
     "How do precursor additives influence the {metrics} in perovskite solar cell performance?",
@@ -46,7 +60,8 @@ Q_Additive_combination_templates = [
     "What mechanisms underlie the improvements of {metrics} induced by precursor additive treatments in perovskite cells?",
 ]
 
-def get_intro_segment(pce, ff, voc, jsc, prepared_term="was fabricated"):
+
+def get_intro_segment(pce, ff, voc, jsc, prepared_term="was fabricated") -> str:
     intro_segments = [
         "Based on a systematically tuned set of experimental parameters, this perovskite solar cell {prepared_term}, ultimately achieving a PCE of {pce}%, FF of {ff}%, Voc of {voc} V, and Jsc of {jsc} mA/cm².",
         "Drawing upon carefully optimized conditions, the perovskite device {prepared_term}, resulting in a PCE of {pce}%, with a fill factor of {ff}%, an open-circuit voltage of {voc} V, and a short-circuit current density of {jsc} mA/cm².",

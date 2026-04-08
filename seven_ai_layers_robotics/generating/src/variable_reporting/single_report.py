@@ -1,37 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-Perovskite Report Generator
-Generate structured scientific research reports (Abstract + Introduction + Results & Discussion + Conclusion Table + Supporting Information)
+"""Perovskite Report Generator.
+
+Generate structured scientific research reports:
+- Abstract
+- Introduction
+- Results & Discussion
+- Conclusion Table
+- Supporting Information
 
 Use DashScope OpenAI-compatible API to generate Abstract and Conclusion Table.
-
-
 """
 
 import json
 import re
-import os
+import argparse
+from pathlib import Path as PathLib
 from pathlib import Path
 from typing import Any, Dict, Tuple, List, Optional
 from dataclasses import dataclass, field
+
 from openai import OpenAI
 
-# Import configuration loader
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-# Add generating/src to sys.path to use config_loader under Generating
-generating_src = script_dir.parent  # Variable_Reporting -> generating/src
-if str(generating_src) not in sys.path:
-    sys.path.insert(0, str(generating_src))
-
-# Import configuration from app.config
 from seven_ai_layers_robotics.config import config
 
-
-# ============================================================================
-# Configuration Class (supports dict/code override)
-# ============================================================================
 
 @dataclass
 class ReportConfig:
@@ -69,39 +60,44 @@ class ReportConfig:
 
     @classmethod
     def from_dict(cls, cfg: Optional[Dict[str, Any]]) -> "ReportConfig":
+        """Create configuration from dictionary."""
         if not cfg:
             return cls()
         return cls(**{k: v for k, v in cfg.items() if k in cls.__dataclass_fields__})
 
     @classmethod
     def from_json(cls, json_path: str) -> "ReportConfig":
+        """Create configuration from JSON file."""
         with open(json_path, "r", encoding="utf-8") as f:
             return cls.from_dict(json.load(f))
 
 
-# ============================================================================
-# Utility Functions
-# ============================================================================
 
 def read_json(p: Path) -> Any:
+    """Read JSON file."""
     with p.open("r", encoding="utf-8") as f:
         return json.load(f)
 
+
 def write_json(p: Path, obj: Any) -> None:
+    """Write object to JSON file."""
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=2)
 
+
 def extract_digits(s: Any) -> str:
-    """Extract digits from '38847,control device' / '38847' / 38847 → '38847'"""
+    """Extract digits from string.
+    """
     if s is None:
         return ""
     s = str(s).strip()
     m = re.search(r"\d+", s)
     return m.group(0) if m else ""
 
+
 def find_answer_part(obj: Any) -> List[str]:
-    """Recursively extract all answer_part fields"""
+    """Recursively extract all answer_part fields."""
     found: List[str] = []
     if isinstance(obj, dict):
         if "answer_part" in obj:
@@ -115,8 +111,9 @@ def find_answer_part(obj: Any) -> List[str]:
             found.extend(find_answer_part(it))
     return found
 
+
 def extract_answer_part_from_json(data: Any) -> str:
-    """Extract and deduplicate answer_part from potentially nested dict/list"""
+    """Extract and deduplicate answer_part from potentially nested dict/list."""
     parts = find_answer_part(data)
     seen, uniq = set(), []
     for p in parts:
@@ -125,36 +122,36 @@ def extract_answer_part_from_json(data: Any) -> str:
             seen.add(p)
     return "\n\n".join(uniq).strip()
 
+
 def parse_answer_filename(stem: str) -> Tuple[str, str]:
-    """Parse answer filename → (id1, id2)"""
+    """Parse answer filename to extract (id1, id2)."""
     if "_" not in stem:
         return (extract_digits(stem), "")
     a, b = stem.split("_", 1)
     return (extract_digits(a), extract_digits(b))
 
+
 def build_answer_index_by_pair(answer_dir: Path) -> Dict[Tuple[str, str], str]:
-    """Build (id1, id2) → answer_part index"""
+    """Build (id1, id2) to answer_part index."""
     idx: Dict[Tuple[str, str], str] = {}
     for fp in sorted(answer_dir.glob("*.json")):
         id1, id2 = parse_answer_filename(fp.stem)
         try:
             data = read_json(fp)
         except Exception as e:
-            print(f"⚠️ Answer JSON read failed: {fp.name} err={e}")
+            print(f"Answer JSON read failed: {fp.name} err={e}")
             continue
         answer_part = extract_answer_part_from_json(data)
         idx[(id1, id2)] = answer_part
     return idx
 
 
-# ============================================================================
-# DashScope LLM Wrapper
-# ============================================================================
 
 class DashScopeLLM:
-    """DashScope OpenAI-compatible API client"""
+    """DashScope OpenAI-compatible API client."""
 
     def __init__(self, config: ReportConfig):
+        """Initialize DashScope client."""
         if not config.api_key or config.api_key.startswith("sk-xxx"):
             raise ValueError("Please configure a valid DASHSCOPE_API_KEY")
 
@@ -165,7 +162,7 @@ class DashScopeLLM:
         self.model = config.model
 
     def _chat_stream(self, system_prompt: str, user_prompt: str) -> Tuple[str, str]:
-        """Stream call, return (answer_content, reasoning_content)"""
+        """Stream call, return (answer_content, reasoning_content)."""
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -191,7 +188,7 @@ class DashScopeLLM:
         return answer_content.strip(), reasoning_content.strip()
 
     def generate_abstract(self, method_text: str, result_discussion_text: str) -> str:
-        """Generate Abstract (single paragraph, 250-300 words)"""
+        """Generate Abstract (single paragraph, 250-300 words)."""
         system = (
             "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
             "Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. "
@@ -228,7 +225,7 @@ Do not add any explanations before or after the abstract.
         return answer
 
     def generate_conclusion_table(self, result_discussion_text: str) -> str:
-        """Generate Conclusion Markdown Table"""
+        """Generate Conclusion Markdown Table."""
         system = r"""
 You are a technical writing assistant for perovskite solar cells.
 
@@ -278,12 +275,9 @@ Start your answer with the header row:
         return answer
 
 
-# ============================================================================
-# Report Builder
-# ============================================================================
 
 class ReportBuilder:
-    """Build a single structured report"""
+    """Build a single structured report."""
 
     @staticmethod
     def build(
@@ -300,7 +294,6 @@ class ReportBuilder:
         method_text = f"{control_fp}\n\n{optimized_fp}".strip()
         rd_text = (result_discussion or "").strip()
 
-        # Conditional generation of Abstract and Table
         abstract, table_md = "", ""
         if llm and method_text and rd_text:
             abstract = llm.generate_abstract(method_text, rd_text)
@@ -322,14 +315,12 @@ class ReportBuilder:
         }
 
 
-# ============================================================================
-# Main Entry Class (core for external calls)
-# ============================================================================
 
 class ReportGenerator:
-    """Report Generator - main entry point"""
+    """Report Generator - main entry point."""
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
+        """Initialize ReportGenerator with configuration."""
         self.config = ReportConfig.from_dict(config)
         self.llm = DashScopeLLM(self.config)
 
@@ -337,32 +328,27 @@ class ReportGenerator:
             task_json_path: Optional[str] = None,
             answer_folder: Optional[str] = None,
             output_dir: Optional[str] = None) -> Dict[str, int]:
-        """
-        Execute report generation process
+        """Execute report generation process.
 
         Parameters:
-            task_json_path: Task JSON path (override config)
-            answer_folder: Answer file directory (override config)
-            output_dir: Output directory (override config)
+            task_json_path: Task JSON path (override config).
+            answer_folder: Answer file directory (override config).
+            output_dir: Output directory (override config).
 
         Returns:
-            Statistics dict: {"total": N, "matched": N, "missing": N, "skipped": N}
+            Statistics dict: {"total": N, "matched": N, "missing": N, "skipped": N}.
         """
-        # Apply parameter overrides
         task_path = Path(task_json_path or self.config.task_json_path)
         ans_dir = Path(answer_folder or self.config.answer_folder)
         out_dir = Path(output_dir or self.config.output_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        # Load tasks
         task_data = read_json(task_path)
         if not isinstance(task_data, list):
             raise ValueError("task.json top level must be a list")
 
-        # Build answer index
         answer_index = build_answer_index_by_pair(ans_dir)
 
-        # Statistics
         stats = {"total": len(task_data), "matched": 0, "missing": 0, "skipped": 0}
 
         for i, item in enumerate(task_data):
@@ -380,10 +366,8 @@ class ReportGenerator:
                 stats["missing"] += 1
                 continue
 
-            # Exact match + fallback reverse match
             rd = answer_index.get((id1, id2)) or answer_index.get((id2, id1)) or ""
 
-            # Build report
             report = ReportBuilder.build(
                 task_item=item,
                 result_discussion=rd,
@@ -391,7 +375,6 @@ class ReportGenerator:
                 skip_if_empty=self.config.skip_if_no_result,
             )
 
-            # Save
             out_path = out_dir / f"{id1}_{id2}.json"
             write_json(out_path, report)
 
@@ -402,15 +385,15 @@ class ReportGenerator:
                 stats["missing"] += 1
                 print(f"{out_path.name} (no answer_part)")
 
-        # Summary
         print(f"\nSUMMARY: total={stats['total']}, matched={stats['matched']}, missing={stats['missing']}, skipped={stats['skipped']}")
         print(f"Output: {out_dir.resolve()}")
         return stats
 
     def rebuild_from_answers(self, answer_folder: str, output_dir: str) -> int:
-        """
-        Rebuild reports from answer files only (no LLM call, for debugging/re-run)
-        Returns the number of generated reports
+        """Rebuild reports from answer files only (no LLM call, for debugging/re-run).
+        
+        Returns:
+            Number of generated reports.
         """
         ans_dir = Path(answer_folder)
         out_dir = Path(output_dir)
@@ -424,10 +407,9 @@ class ReportGenerator:
             try:
                 data = read_json(fp)
                 rd = extract_answer_part_from_json(data)
-            except:
+            except Exception:
                 continue
 
-            # Build minimal report
             report = {
                 "source_file": str(fp),
                 "meta_info": {},
@@ -444,9 +426,7 @@ class ReportGenerator:
         return count
 
 
-# ============================================================================
-#  Command-line Entry (optional)
-# ============================================================================
+# Command-line Entry
 
 def _parse_args():
     import argparse
@@ -458,7 +438,9 @@ def _parse_args():
     parser.add_argument("--rebuild-only", action="store_true", help="Only rebuild from answers (no LLM)")
     return parser.parse_args()
 
-def main():
+
+def main() -> None:
+    """Main entry point."""
     args = _parse_args()
     config = ReportConfig.from_json(args.config) if args.config else ReportConfig()
 

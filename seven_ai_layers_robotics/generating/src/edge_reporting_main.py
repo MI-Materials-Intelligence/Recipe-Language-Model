@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-Edge Report Automated Data Processing Pipeline
+"""Edge Report Automated Data Processing Pipeline.
 
+This module provides an automated pipeline for data cleaning, generating experimental
+description reports, and calling DeepSeek for mechanism analysis.
 """
 
 import os
 import sys
 from typing import Any, Dict, Optional
-
-
-_script_dir = os.path.dirname(os.path.abspath(__file__))
-if _script_dir not in sys.path:
-    sys.path.insert(0, _script_dir)
-
 
 from seven_ai_layers_robotics.config import config
 
@@ -24,48 +19,36 @@ DB_CONFIG = {
     'database': config.generating_database.database,
     'charset': config.generating_database.charset,
 }
-DEFAULT_DB_URI = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4"
-
-WORK_DIR = _script_dir
+WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
 STEP_MODULES = {}
 ARE_MODULES_AVAILABLE = False
 
 try:
-    
-    _edge_reporting_dir = os.path.join(_script_dir, 'edge_reporting')
+    _edge_reporting_dir = os.path.join(WORK_DIR, 'edge_reporting')
     if _edge_reporting_dir not in sys.path:
         sys.path.insert(0, _edge_reporting_dir)
 
-    
     try:
         import edge_report_generator
         STEP_MODULES['step2'] = edge_report_generator
-        
     except ImportError as e:
         print(f"Warning: Unable to import edge_report_generator module. Error: {e}")
-        import traceback
-        traceback.print_exc()
 
-    
     try:
         import edge_mechanism_analyzer
         STEP_MODULES['step3'] = edge_mechanism_analyzer
     except ImportError as e:
         print(f"Warning: Unable to import edge_mechanism_analyzer module. Error: {e}")
-        import traceback
-        traceback.print_exc()
 
     ARE_MODULES_AVAILABLE = len(STEP_MODULES) > 0
 
 except Exception as e:
     ARE_MODULES_AVAILABLE = False
     print(f"Warning: Unable to load step modules, some functionality will be unavailable. Error: {e}")
-    import traceback
-    traceback.print_exc()
 
-
+DEFAULT_DB_URI = f"mysql+pymysql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}?charset=utf8mb4"
 
 
 class EdgeReportPipeline:
@@ -99,11 +82,6 @@ class EdgeReportPipeline:
 
         self._initialize_step_modules()
 
-    def _initialize_step_modules(self):
-        """Dynamically inject configuration into each step module."""
-        self._setup_step2()
-        self._setup_step3()
-
     def _setup_step2(self):
         """Configure Step 2 module"""
         if 'step2' not in STEP_MODULES:
@@ -131,15 +109,11 @@ class EdgeReportPipeline:
         if hasattr(s3, 'API_URL'):
             s3.API_URL = s3.API_URL.strip()
 
-
     def run_step2(self, verbose: bool = True) -> None:
         """Execute Step 2 to generate experimental description report.
         
         Args:
             verbose: Whether to print detailed logs. Defaults to True.
-            
-        Raises:
-            ImportError: If edge_report_generator module is not found.
         """
         if 'step2' not in STEP_MODULES:
             raise ImportError("edge_report_generator module not found")
@@ -165,9 +139,6 @@ class EdgeReportPipeline:
         
         Args:
             verbose: Whether to print detailed logs. Defaults to True.
-            
-        Raises:
-            ImportError: If edge_mechanism_analyzer module is not found.
         """
         if 'step3' not in STEP_MODULES:
             raise ImportError("edge_mechanism_analyzer module not found")
@@ -193,10 +164,8 @@ class EdgeReportPipeline:
 
         try:
             if steps == 'all':
-         
                 step_list = ['step2', 'step3']
             else:
-                
                 step_list = [s.strip() for s in steps.split(',')]
 
             for step_name in step_list:
@@ -213,11 +182,7 @@ class EdgeReportPipeline:
 
         except Exception as e:
             print(f"Process interrupted: {e}")
-            import traceback
-            traceback.print_exc()
             return False
-
-
 
 
 if __name__ == "__main__":

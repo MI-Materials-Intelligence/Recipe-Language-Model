@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-"""
-Variable Report Automated Data Processing Pipeline
+"""Variable Report Automated Data Processing Pipeline.
 
+This module provides an automated pipeline for data preparation, generating
+variable reports, and saving to the data directory.
+
+Usage:
+    1. Direct execution: python variable_reporting_main.py
+    2. External import: from variable_reporting_main import VariableReportPipeline
 """
 
 import os
 import sys
 from typing import Any, Dict, Optional
-
-
-_script_dir = os.path.dirname(os.path.abspath(__file__))
-if _script_dir not in sys.path:
-    sys.path.insert(0, _script_dir)
-
 
 from seven_ai_layers_robotics.config import config
 
@@ -29,21 +28,16 @@ LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
 }
 
 
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-
 try:
-
     IS_VARIABLE_REPORT_AVAILABLE = False
 
-
-    _var_reporting_dir = os.path.join(_script_dir, 'Variable_Reporting')
+    _var_reporting_dir = os.path.join(WORK_DIR, 'Variable_Reporting')
     if _var_reporting_dir not in sys.path:
         sys.path.insert(0, _var_reporting_dir)
 
@@ -100,7 +94,6 @@ class VariableReportPipeline:
             raise ImportError("Variable_Reporting module not found, unable to execute report generation.")
 
         try:
-         
             if steps in ['all', 'prepare']:
                 print(f"\n{'='*60}")
                 print("Starting data preparation (mechanism analysis)...")
@@ -144,8 +137,6 @@ class VariableReportPipeline:
 
         except Exception as e:
             print(f"Process interrupted: {e}")
-            import traceback
-            traceback.print_exc()
             return False
 
 
@@ -155,7 +146,6 @@ if __name__ == "__main__":
     print("=" * 60)
     print("Variable Report Pipeline")
     print("=" * 60)
-
 
     pipeline = VariableReportPipeline()
     success = pipeline.run(steps='all', rebuild_knowledge=True, verbose=True)

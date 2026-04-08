@@ -6,7 +6,6 @@ import os
 import random
 import re
 import sys
-import traceback
 from pathlib import Path
 
 import mysql.connector
@@ -29,8 +28,6 @@ LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
 }
 
 client = OpenAI(
@@ -38,6 +35,8 @@ client = OpenAI(
     base_url=LLM_CONFIG["base_url"]
 )
 TABLE_NAME = "characterisation_match"
+
+
 def update_status(pair_id: int, status: str):
     """
     Update the status of a specific pair
@@ -90,6 +89,8 @@ def build_material_file_map(md_dir: str):
         print(f"[WARN] No .md files found in directory {md_dir_path}, please check the path.")
 
     return material_file_map
+
+
 def get_material_background_from_item(
     item: dict,
     material_content_map: dict,

@@ -2,17 +2,18 @@ from __future__ import annotations
 
 import json
 import os
+import random
 import re
+import sys
+import threading
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import mysql.connector
-import threading
+import numpy as np
 from openai import OpenAI
 
-# Category: Global Configuration
-import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 from seven_ai_layers_robotics.config import config
 
@@ -28,8 +29,6 @@ LLM_CONFIG = {
     'api_key': config.generating_llm.dashscope_api_key,
     'base_url': config.generating_llm.base_url,
     'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
 }
 
 client = OpenAI(
@@ -37,6 +36,9 @@ client = OpenAI(
     base_url=LLM_CONFIG["base_url"]
 )
 TABLE_NAME = "characterisation_match"
+
+SFT_FILE_LOCK = threading.Lock()
+REPORT_FILE_LOCK = threading.Lock()
 
 
 SYSTEM_PROMPT_ABSTRACT = (
@@ -174,7 +176,7 @@ def get_answer_and_thinking(
 
     return answer_content.strip(), reasoning_content.strip()
 
-def load_pending_items(limit: int | None = None, factor_type: str = "SAM"):
+def load_pending_items(limit: int | None = None, factor_type: str = "SAM") -> list:
     """
     Load pending records of specified regulation factor type
     factor_type: "SAM", "Additive", "Passivator", "Process"
@@ -256,6 +258,8 @@ def db_row_to_item(row: dict) -> dict:
         item["Process"] = json.loads(row["process"]) if isinstance(row["process"], str) else row["process"]
 
     return item
+
+
 def get_material_background_from_item(
     item: dict,
     material_content_map: dict,
@@ -306,50 +310,18 @@ def get_material_background_from_item(
     else:
         return ""
 
-import sys
-from pathlib import Path as PathLib
-script_dir = PathLib(__file__).parent
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-from seven_ai_layers_robotics.config import config
 
-# Load configuration from app.config
-MYSQL_CONFIG = {
-    'host': config.generating_database.host,
-    'port': config.generating_database.port,
-    'user': config.generating_database.user,
-    'password': config.generating_database.password,
-    'database': config.generating_database.database,
-    'charset': config.generating_database.charset,
-}
-llm_config = {
-    'api_key': config.generating_llm.dashscope_api_key,
-    'base_url': config.generating_llm.base_url,
-    'model': config.generating_llm.dashscope_model,
-    'temperature': config.generating_llm.temperature,
-    'timeout': config.generating_llm.timeout,
-}
-
-client = OpenAI(
-    api_key=llm_config["api_key"],
-    base_url=llm_config["base_url"]
-)
-
-TABLE_NAME = "characterisation_match"
-
-# === Lock: for safe JSONL file writing ===
-sft_file_lock = threading.Lock()
-report_file_lock = threading.Lock()
-
-# === Utility functions (unchanged) ===
 def normalize_material_name(name: str) -> str:
     if not isinstance(name, str):
         return ""
     return re.sub(r"[^A-Z0-9]+", "", name.upper())
 
+
 def ensure_parent_dir(path: str):
     parent = os.path.dirname(path)
     if parent and not os.path.exists(parent):
         os.makedirs(parent, exist_ok=True)
+
 
 def build_material_content_map_from_db(category: str | None = None):
     conn = mysql.connector.connect(**MYSQL_CONFIG)
@@ -379,14 +351,17 @@ def build_material_content_map_from_db(category: str | None = None):
     conn.close()
     return material_content_map
 
-def update_status(pair_id: int, status: str):
+
+def update_status(pair_id: int, status: str) -> None:
     conn = mysql.connector.connect(**MYSQL_CONFIG)
     cursor = conn.cursor()
     cursor.execute(f"UPDATE {TABLE_NAME} SET status = %s WHERE id = %s", (status, pair_id))
     conn.commit()
     cursor.close()
     conn.close()
-def api_get_answer_and_thinking(system_prompt: str, user_prompt: str):
+
+
+def api_get_answer_and_thinking(system_prompt: str, user_prompt: str) -> tuple[str, str]:
     """
     Secondary call (abstract / table): input system + user, with built-in reasoning_content.
     Return (answer_content, reasoning_content)
@@ -437,7 +412,7 @@ def process_single_item(
     item: dict,
     material_content_map: dict,
     output_paths: dict,
-):
+) -> tuple[dict | None, dict | None]:
     try:
         question = (item.get("question") or "").strip()
         control = (item.get("control") or "").strip()
@@ -533,12 +508,12 @@ Start your answer with the header row:
         }
 
         
-        with sft_file_lock:
+        with SFT_FILE_LOCK:
             with open(output_paths["sft_jsonl"], "a", encoding="utf-8-sig") as f:
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
                 f.flush()
 
-        with report_file_lock:
+        with REPORT_FILE_LOCK:
             with open(output_paths["report_jsonl"], "a", encoding="utf-8-sig") as f:
                 f.write(json.dumps(report, ensure_ascii=False) + "\n")
                 f.flush()
@@ -555,7 +530,6 @@ Start your answer with the header row:
 
 def main() -> None:
     script_dir = Path(__file__).parent.resolve()
-    
     generating_root = script_dir.parent.parent  
     data_root = generating_root / "data"
     output_dir = data_root / "characterisation_xrd_passivators"
@@ -571,12 +545,11 @@ def main() -> None:
     
     for p in [paths["sft_jsonl"], paths["report_jsonl"]]:
         ensure_parent_dir(p)
-        open(p, "w").close()  
+        open(p, "w").close()
 
     
     material_content_map = build_material_content_map_from_db("Passivator Mechanism Library")
 
-    
     db_rows = load_pending_items(factor_type="Passivator")
     if not db_rows:
         print("No pending records, exiting")
@@ -588,7 +561,6 @@ def main() -> None:
     records = []
     reports = []
 
-    
     max_workers = 4
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -603,7 +575,6 @@ def main() -> None:
                 records.append(record)
                 reports.append(report)
 
-    
     with open(paths["sft_json"], "w", encoding="utf-8-sig") as f:
         json.dump(records, f, ensure_ascii=False, indent=4)
     with open(paths["report_json"], "w", encoding="utf-8-sig") as f:
@@ -614,6 +585,7 @@ def main() -> None:
     print(f"Report JSON: {paths['report_json']}")
     print(f"SFT JSONL: {paths['sft_jsonl']}")
     print(f"Report JSONL: {paths['report_jsonl']}")
+
 
 def run_pass_report(
     *,
