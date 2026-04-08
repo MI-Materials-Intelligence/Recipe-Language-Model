@@ -65,16 +65,7 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
 import sys
 from pathlib import Path
 
-<<<<<<< HEAD
 from seven_ai_layers_robotics.config import config
-=======
-current_file = Path(__file__).resolve()
-project_root = current_file.parent.parent.parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
-
-from config import config
->>>>>>> c1414f421ab322055b33a46985de8b1d115e04c1
 
 MYSQL_CONFIG = {
     'host': config.learning_database.host,
