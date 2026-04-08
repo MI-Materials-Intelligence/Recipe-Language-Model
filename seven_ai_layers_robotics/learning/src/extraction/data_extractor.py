@@ -9,33 +9,26 @@ import pandas as pd
 from typing import Dict, Any, Optional
 import tomllib
 
+from pathlib import Path
+import sys
+
+CURRENT_FILE = Path(__file__).resolve()
+PROJECT_ROOT = CURRENT_FILE.parents[3]
+PROJECT_PARENT = PROJECT_ROOT.parent
+if str(PROJECT_PARENT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_PARENT))
+
+from seven_ai_layers_robotics.config import config as app_config
 
 def load_database_config() -> Dict[str, Any]:
-    """
-    Load database configuration from config/config.toml in project root
-
-    Returns:
-        Dict[str, Any]: Database configuration dictionary
-    """
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = None
-
-    for _ in range(5):
-        potential_config = os.path.join(current_dir, '..', '..', '..', '..', 'config', 'config.toml')
-        if os.path.exists(potential_config):
-            config_path = potential_config
-            break
-        current_dir = os.path.dirname(current_dir)
-
-    if not config_path or not os.path.exists(config_path):
-        raise FileNotFoundError(
-            "config/config.toml configuration file not found. Please ensure the file exists in the config directory under project root."
-        )
-
-    with open(config_path, 'rb') as f:
-        config = tomllib.load(f)
-
-    return config.get('learning_database', {})
+    return {
+        "host": app_config.learning_database.host,
+        "port": app_config.learning_database.port,
+        "user": app_config.learning_database.user,
+        "password": app_config.learning_database.password,
+        "database": app_config.learning_database.database,
+        "charset": app_config.learning_database.charset,
+    }
 
 
 class DataExtractor:

@@ -120,7 +120,8 @@ def generate_dedup_data(data_path):
             - df_with_group_id: Original data with group IDs
     """
     df = pd.read_csv(data_path)
-    df = df.fillna("NA")
+    fill_cols = sorted(set(FORMULA_COLUMNS + FP_COLUMNS))
+    df[fill_cols] = df[fill_cols].fillna("NA")
 
     df["formula"] = df.apply(
         lambda row: "".join([format_number(col, row[col]) for col in PVK_ELE_COLUMNS]),
