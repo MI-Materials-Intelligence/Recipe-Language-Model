@@ -265,9 +265,10 @@ def process_single_record(report_index: int, record_type: str, record_id: str, d
         return
 
     # 3. Read .docx and extract corresponding paragraph
-    # Determine which .docx file to use based on type
-    docx_filename = DOCX_FILES_MAP.get(record_type, "experiments_cleaned_data.docx")
-    docx_path_fixed = os.path.join(REPORTS_DIR, docx_filename)
+    docx_path_fixed = docx_path
+    if not docx_path_fixed:
+        docx_filename = DOCX_FILES_MAP.get(record_type, "experiments_cleaned_data.docx")
+        docx_path_fixed = os.path.join(REPORTS_DIR, docx_filename)
 
     if not os.path.exists(docx_path_fixed):
         raise FileNotFoundError(f".docx file does not exist: {docx_path_fixed} (type={record_type})")
