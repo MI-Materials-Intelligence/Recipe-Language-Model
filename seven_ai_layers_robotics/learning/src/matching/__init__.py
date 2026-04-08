@@ -2,7 +2,6 @@
 Matching module for single variable matching and classification.
 """
 
-# Single variable matching functions
 from .generating_single_var import generate_single_var
 from .get_single_var_diff_class import get_single_var_diff_class
 from .merge_results import merge_results

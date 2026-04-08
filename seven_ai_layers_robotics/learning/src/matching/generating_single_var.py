@@ -9,7 +9,6 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
-# Ensure correct package path can be found in multi-process environment
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)  # Learning/src
 grandparent_dir = os.path.dirname(parent_dir)  # Learning
@@ -309,7 +308,6 @@ def save_matched_pairs_to_csv(
         print("Warning: matched_pairs is empty. No file will be written.")
         return
 
-    # Filter out keys with the specified prefix
     filtered_pairs = []
     for pair in matched_pairs:
         filtered_pair = {
@@ -319,10 +317,8 @@ def save_matched_pairs_to_csv(
         }
         filtered_pairs.append(filtered_pair)
 
-    # Get fieldnames from the first dictionary
     fieldnames = filtered_pairs[0].keys()
 
-    # Write to CSV
     try:
         with open(output_file, mode="w", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -338,7 +334,6 @@ def process_date(i, dates, grouped, n, output_dir, only_formula=True):
     if os.path.exists(json_filename):
         print(f"skip: {json_filename}")
         return
-    # try:
     current_date_group = (
         grouped.get_group(dates[i])
         .sort_values(by="PCE", ascending=False)
@@ -386,8 +381,6 @@ def get_data(exp_data_path):
     df["date"] = pd.to_datetime(df["date"], format="%Y%m%d", errors="coerce")
 
 
-    # object_cols = df.select_dtypes(include=["object"]).columns
-    # df[object_cols] = df[object_cols].fillna("")
     df.fillna("", inplace=True)
 
     df["Formula PVK"] = df["formula"]
@@ -406,7 +399,6 @@ def get_single_var_pair(group1, group2, feature_columns, exp_date):
     for i, j in product(group1.iterrows(), group2.iterrows()):
         row_i_full = i[1]
         row_j_full = j[1]
-        #  ensure index i has a larger PCE
         if row_i_full["PCE"] < row_j_full["PCE"]:
             high_pce_full, low_pce_full = row_j_full, row_i_full  # swap
         elif row_i_full["PCE"] > row_j_full["PCE"]:

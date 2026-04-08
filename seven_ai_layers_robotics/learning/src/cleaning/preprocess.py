@@ -99,13 +99,12 @@ def format_number(element, num):
         Formatted string representation of element with number.
     """
     if num == 0:
-        return ""  # Do not keep this element
+        return ""
     if element == "Pb" and num == 1:
-        return "Pb"  # Pb1 → Pb
+        return "Pb"
     if num == int(num):
-        return f"{element}{int(num)}"  # e.g., I1 → I1
-    else:
-        return f"{element}{str(num).rstrip('0').rstrip('.')}"  # e.g., Cs0.05 → Cs0.05
+        return f"{element}{int(num)}"
+    return f"{element}{str(num).rstrip('0').rstrip('.')}"
 
 
 def generate_dedup_data(data_path):
@@ -120,7 +119,6 @@ def generate_dedup_data(data_path):
             - df_dedup: Deduplicated by full process columns
             - df_with_group_id: Original data with group IDs
     """
-    # df = pd.read_excel(data_path)
     df = pd.read_csv(data_path)
     df = df.fillna("NA")
 
@@ -170,4 +168,3 @@ def preprocess(
     save_dataframe_to_csv(df_formula_dedup, formula_dedup_path)
     save_dataframe_to_csv(df_fp_dedup, fp_dedup_path)
     save_dataframe_to_csv(df_with_group_id, no_dedup_path)
-

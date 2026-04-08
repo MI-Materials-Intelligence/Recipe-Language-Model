@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 
+
 def parse_formula_column(df: pd.DataFrame, column_name: str = "Formula PVK") -> pd.DataFrame:
     """
     Parses a chemical formula column in the format <Element><Value> (e.g., Cs0.08MA0.22...)
@@ -14,25 +15,19 @@ def parse_formula_column(df: pd.DataFrame, column_name: str = "Formula PVK") -> 
     Returns:
         The original DataFrame with six new columns added for each element (Cs, MA, FA, Pb, I, Br).
     """
-    # Define the target elements
     target_elements = ['Cs', 'MA', 'FA', 'Pb', 'I', 'Br']
     
-    # Compile a regex pattern to match element-value pairs
     pattern = re.compile(r'(Cs|MA|FA|Pb|I|Br)([0-9.]+)')
     
-    # Function to extract element values from a formula string
     def extract_elements(formula: str) -> dict:
         matches = pattern.findall(formula)
         element_dict = {elem: float(val) for elem, val in matches}
-        # Ensure all elements are present, fill missing with 0
         for elem in target_elements:
             element_dict.setdefault(elem, 0.0)
         return element_dict
     
-    # Apply extraction to each row and create a new DataFrame
     element_data = df[column_name].apply(extract_elements).apply(pd.Series)
     
-    # Concatenate original DataFrame with new element columns
     result_df = pd.concat([df, element_data[target_elements]], axis=1)
     
     return result_df
@@ -52,18 +47,15 @@ def load_data_with_encoding_fallback(file_path: str) -> pd.DataFrame:
     """
     import os
     
-    # Check file extension to determine format
     file_ext = os.path.splitext(file_path)[1].lower()
     
     if file_ext in ['.xlsx', '.xls']:
-        # Excel file - use openpyxl engine explicitly
         try:
             return pd.read_excel(file_path, engine='openpyxl')
         except Exception as e:
             print(f"Error reading Excel file: {e}")
             raise
     else:
-        # CSV file - try multiple encodings
         encodings = ["utf-8", "utf-8-sig", "latin-1"]
         last_error = None
         
@@ -76,7 +68,6 @@ def load_data_with_encoding_fallback(file_path: str) -> pd.DataFrame:
         if last_error:
             raise last_error
     
-    # Fallback (should not reach here)
     raise ValueError(f"Unsupported file format: {file_ext}")
 
 
@@ -93,7 +84,6 @@ def create_validation_mask_by_sample_no(
             - validation_mask: Combined validation mask for all ranges
             - range_masks: Dictionary of individual range masks
     """
-    # Define validation criteria for different No ranges
     validation_criteria = [
         {
             'range': (0, 7680),
@@ -125,7 +115,6 @@ def create_validation_mask_by_sample_no(
         }
     ]
     
-    # Initialize masks
     validation_mask = pd.Series(False, index=df.index)
     range_masks = {}
     
@@ -136,7 +125,6 @@ def create_validation_mask_by_sample_no(
         voc_min, voc_max = criteria['voc_range']
         jsc_min, jsc_max = criteria['jsc_range']
         
-        # Create mask for current range
         range_mask = (
             (df["No"] >= range_start) & (df["No"] <= range_end) &
             (df["PCE"] > pce_min) & (df["PCE"] < pce_max) &
@@ -162,23 +150,18 @@ def remove_abnormal(input_path: str, output_path: str) -> None:
     """
     df = load_data_with_encoding_fallback(input_path)
     
-    # Store original row count
     original_rows = len(df)
     
-    # === 2. Create validation masks based on No ranges ===
     validation_mask, range_masks = create_validation_mask_by_sample_no(df)
     
-    # === 3. Apply filtering ===
     df_filtered = df[validation_mask].copy()
     filtered_rows = len(df_filtered)
     removed_rows = original_rows - filtered_rows
     
-    # === 4. Calculate statistics for each range ===
     range_stats = {}
     for range_name, mask in range_masks.items():
         range_stats[range_name] = mask.sum()
     
-    # === 5. Print statistics ===
     print(" Filtering Statistics:")
     print(f" Original dataset rows: {original_rows}")
     print(f" Valid samples after filtering: {filtered_rows}")
@@ -186,14 +169,11 @@ def remove_abnormal(input_path: str, output_path: str) -> None:
     print("\n Samples by No range:")
     
     for range_name, count in range_stats.items():
-        # Format range name for better readability
         clean_range_name = range_name.replace('range_', 'No ').replace('_', '-')
         print(f"   {clean_range_name}: {count} samples")
 
-    # === 6. Parse chemical formula column and add element columns ===
     df_filtered = parse_formula_column(df_filtered, column_name="Formula PVK")
     
-    # === 7. Save results ===
     df_filtered.to_csv(output_path, index=False)
     print(f"\n Filtered data saved to: {output_path}")
 

@@ -54,7 +54,6 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
     Returns:
         None
     """
-    # Safely create output directory (only when path is not empty)
     output_dir = os.path.dirname(output_csv)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
@@ -68,14 +67,12 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
 
         if not rows:
             print(f"⚠️ Table `{table_name}` is empty.")
-            # Get column names
             cursor.execute(f"SHOW COLUMNS FROM `{table_name}`")
             columns_info = cursor.fetchall()
             all_columns = [col['Field'] for col in columns_info]
         else:
             all_columns = list(rows[0].keys())
 
-        # Exclude 'id' column (case insensitive)
         data_columns = [col for col in all_columns if col.lower() != 'id']
 
         with open(output_csv, "w", encoding="utf-8", newline='') as f:
@@ -94,13 +91,9 @@ def export_table_to_csv_exclude_id(table_name: str, output_csv: str, mysql_confi
             cursor.close()
             conn.close()
 
-# =========================
-# Import configuration from config
-# =========================
 import sys
 from pathlib import Path
 
-# Add project root to Python path to find config module
 current_file = Path(__file__).resolve()
 project_root = current_file.parent.parent.parent.parent
 if str(project_root) not in sys.path:
@@ -117,14 +110,11 @@ MYSQL_CONFIG = {
     'charset': config.learning_database.charset,
 }
 
-# Replace with your actual table name
 TABLE_NAME = "characterisation_xrd_passivators"  # ← e.g., the table you imported before
 OUTPUT_CSV = "characterisation_xrd_passivators_db.csv"
 
 
-# export_table_to_csv_exclude_id(TABLE_NAME, OUTPUT_CSV, MYSQL_CONFIG)
 
-# Subsequent processing scripts can directly use:
 INPUT_CSV = OUTPUT_CSV         # <-- your csv total table
 OUTPUT_JSON = "characterisation_xrd_passivators/characterisation_xrd_passivators_pairs.json"
 INDEX_COL = "index"                         # <-- your stable row id column
@@ -135,7 +125,6 @@ QUESTION = (
     "change in XRD characterization when passivating agents are used for surface treatment of perovskite?"
 )
 
-# Pair definition space (for passivators)
 FORMULA_COLS = [
     "Formula PVK",
     "Formula Passivator 1", "Formula Passivator 2", "Formula Passivator 3",
@@ -145,34 +134,22 @@ CONC_COLS = [
     "Concentration Passivator 1", "Concentration Passivator 2", "Concentration Passivator 3",
 ]
 
-# In formula-mode, these columns must match but will not be counted as "the differing column"
 FORMULA_DIFF_IGNORE = ["Formula PVK"]
 
-# Metrics used by filtering rule (rule from your passivator_pairs_evaluation.py)
 INTENSITY_COL = "xrd_intensity_4"
 STRESS_COL = "xrd_Stress"
 PCE_COL = "PCE"
 METRIC_COLS = [INTENSITY_COL, STRESS_COL, PCE_COL]
 
-# Random seed for template sampling
 SEED = 42
 
-# Pair sources to export: choose any subset of {"formula", "concentration"}
 PAIR_SOURCES = {"formula", "concentration"}
 
-# If >0, randomly downsample the filtered pairs per source
 MAX_PAIRS_PER_SOURCE = 0
 
-# Write intermediate debug CSV files next to OUTPUT_JSON
-WRITE_DEBUG_CSV = True
-# =========================
-# END CONFIG
-# =========================
+WRITE_DIAGNOSTIC_CSV = False
 
 
-# -------------------------
-# 1) CSV I/O helpers
-# -------------------------
 def read_csv_auto(path: Path) -> pd.DataFrame:
     """Read CSV file with automatic encoding detection.
     
@@ -250,9 +227,6 @@ def normalize_date(v: Any) -> str:
         return ""
     return dt.strftime("%Y%m%d")
 
-# -------------------------
-# 2) Pair mining (only 1 col differs)
-# -------------------------
 def count_pairs_differing_in_one_column(
     df_in: pd.DataFrame,
     cols_all: List[str],
@@ -284,7 +258,6 @@ def count_pairs_differing_in_one_column(
                         if r1 == r2:
                             continue
 
-                        # canonical ordering for de-duplication
                         rr1, rr2 = (r1, r2) if str(r1) < str(r2) else (r2, r1)
 
                         records.append(
@@ -320,7 +293,6 @@ def build_pairs(
     for c in fcols + ccols:
         df[c] = normalize_series(df[c])
 
-    # formula pairs: only 1 formula col differs (excluding ignore list)
     formula_diff_cols = [c for c in fcols if c not in set(formula_diff_ignore)]
     formula_records_all: List[Dict[str, Any]] = []
     formula_breakdown: List[Dict[str, Any]] = []
@@ -332,7 +304,6 @@ def build_pairs(
 
     pairs_formula_df = pd.DataFrame(formula_records_all)
 
-    # concentration pairs: formulas same; only 1 conc col differs
     cols_for_space = fcols + ccols
     conc_records_all: List[Dict[str, Any]] = []
     conc_breakdown: List[Dict[str, Any]] = []
@@ -356,9 +327,6 @@ def build_pairs(
     return pairs_formula_df, pairs_conc_df, summary
 
 
-# -------------------------
-# 3) Pair filtering rule (passivator)
-# -------------------------
 def rule_xrd4_stress_case(
     row1: pd.Series, row2: pd.Series,
     intensity_col: str, stress_col: str, pce_col: str
@@ -430,9 +398,6 @@ def evaluate_pairs(
     return res
 
 
-# -------------------------
-# 4) Text generation via templates_lib (same template mechanism you used)
-# -------------------------
 def import_templates_lib():
     script_dir = Path(__file__).parent.resolve()
  
@@ -533,7 +498,6 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
     xrd_analysis_12 = random.choice(T["xrd_analysis_segments_12"]) if T["xrd_analysis_segments_12"] else ""
     xrd_analysis_stress = random.choice(T["xrd_analysis_segments_stress"]) if T["xrd_analysis_segments_stress"] else ""
 
-    # SAM templates
     sam_formula_template = ""
     if gv(row, "Formula SAM 1") != "N/A":
         if gv(row, "Formula SAM 2") == "N/A" and gv(row, "Formula SAM 3") == "N/A":
@@ -543,7 +507,6 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         else:
             sam_formula_template = random.choice(T["sam_formula_segments_triple"])
 
-    # Additive templates (kept as optional because your table may include it)
     additive_formula_template = ""
     if gv(row, "Formula Additive 1") != "N/A":
         if gv(row, "Formula Additive 2") == "N/A" and gv(row, "Formula Additive 3") == "N/A":
@@ -553,7 +516,6 @@ def build_templates_for_row(row: pd.Series, T: Dict[str, Any]) -> Dict[str, str]
         else:
             additive_formula_template = random.choice(T["additive_formula_segments_triple"])
 
-    # Passivation templates
     passivation_material_template = ""
     passivation_spin_template = ""
     passivation_drop_template = ""
@@ -691,7 +653,6 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
                 )
             )
 
-    # RGB (optional)
     rgb_keys = ["area_px2", "gray_mean"]
     if all(k in row.index for k in rgb_keys) and all(gv(row, k) != "N/A" for k in rgb_keys):
         if templates.get("image_analysis"):
@@ -702,7 +663,6 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
                 )
             )
 
-    # PL (optional)
     pl_keys = ["peak_time", "decay_slope"]
     if all(k in row.index for k in pl_keys) and all(gv(row, k) != "N/A" for k in pl_keys):
         if templates.get("pl_analysis"):
@@ -713,7 +673,6 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
                 )
             )
 
-    # XRD 12.6° (optional)
     if templates.get("xrd_analysis_12"):
         if gv(row, "xrd_intensity_12.6") != "N/A" and gv(row, "xrd_fhwm_12.6") != "N/A":
             parts.append(
@@ -723,7 +682,6 @@ def generate_output_text(row: pd.Series, templates: Dict[str, str]) -> str:
                 )
             )
 
-    # XRD stress / low-dim peak around 4° (the key one for your passivator question)
     if templates.get("xrd_analysis_stress"):
         if gv(row, "xrd_Stress") != "N/A":
             parts.append(
@@ -741,9 +699,6 @@ def row_to_text(row: pd.Series, T: Dict[str, Any]) -> str:
     return generate_output_text(row, templates)
 
 
-# -------------------------
-# 5) Passivator list extraction
-# -------------------------
 def _normalize_material(x: Any) -> Optional[str]:
     if x is None:
         return None
@@ -776,9 +731,6 @@ def ordered_union(a: List[str], b: List[str]) -> List[str]:
     return out
 
 
-# -------------------------
-# 6) Build JSON records (Passivator, not Additive)
-# -------------------------
 def pairs_to_records(
     pairs_df: pd.DataFrame,
     df_indexed: pd.DataFrame,
@@ -793,7 +745,6 @@ def pairs_to_records(
         if (r1 not in df_indexed.index) or (r2 not in df_indexed.index):
             continue
 
-        # control = the row that satisfies the condition_case
         case = pr.get("condition_case", None)
         if case == "row2":
             ctrl_idx, tgt_idx = r2, r1
@@ -824,9 +775,6 @@ def pairs_to_records(
     return records
 
 
-# -------------------------
-# 7) Run
-# -------------------------
 def main() -> None:
     random.seed(SEED)
     np.random.seed(SEED)
@@ -846,9 +794,6 @@ def main() -> None:
     export_table_to_csv_exclude_id(TABLE_NAME, output_csv, MYSQL_CONFIG)
 
 
-    # input_csv = Path(INPUT_CSV)
-    # output_json = Path(OUTPUT_JSON)
-    # output_json.parent.mkdir(parents=True, exist_ok=True)
 
     df = read_csv_auto(output_csv)
     df = strip_columns(df)
@@ -893,7 +838,7 @@ def main() -> None:
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump(records, f, ensure_ascii=False, indent=2)
 
-    if WRITE_DEBUG_CSV:
+    if WRITE_DIAGNOSTIC_CSV:
         stem = output_json.with_suffix("")
         pairs_formula.to_csv(stem.as_posix() + "_pairs_formula_raw.csv", index=False, encoding="utf-8-sig")
         pairs_conc.to_csv(stem.as_posix() + "_pairs_conc_raw.csv", index=False, encoding="utf-8-sig")

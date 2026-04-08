@@ -135,14 +135,12 @@ def parse_output_content(text: str) -> list[dict]:
     Returns:
         List of dictionaries representing parsed entries.
     """
-    # Extract content inside <output> tags
     match = re.search(r"<output>(.*?)</output>", text, re.DOTALL)
     if not match:
         return []
 
     content = match.group(1).strip()
 
-    # Split into paragraphs (by double newlines)
     sections = [section.strip() for section in content.split("\n\n") if section.strip()]
 
     result = []
@@ -152,7 +150,6 @@ def parse_output_content(text: str) -> list[dict]:
         if not lines:
             continue
 
-        # If "### mechanism chain", process mechanism descriptions
         if lines[0].startswith("###"):
             mechanism_title = lines[0].replace("###", "").strip()
             mechanism_points = []
@@ -161,14 +158,11 @@ def parse_output_content(text: str) -> list[dict]:
                 if line:
                     mechanism_points.append(line)
 
-            # Add to the last entry
             if result:
                 result[-1][mechanism_title] = mechanism_points
-                # If starts with ##, indicates a new paragraph
         elif lines[0].startswith("##"):
             entry = {"Title": lines[0].replace("##", "").strip()}
 
-            # Parse subsequent fields
             for line in lines[1:]:
                 field_match = re.match(r"-\s+\*\*(.+?)\*\*:\s+(.+)", line)
                 if field_match:
@@ -195,10 +189,8 @@ def extract_markdown_blocks(
     Returns:
         str | list[str] | None: Extracted markdown content(s), or None if not found.
     """
-    # Regex pattern to match ```markdown ... ```
     pattern = r"<answer>\s*(.*?)\s*<answer>"
 
-    # Use re.DOTALL to match newlines inside the block
     matches = re.findall(pattern, text, re.DOTALL)
 
     if not matches:
@@ -219,7 +211,6 @@ def parse_markdown_table(markdown: str):
     """
     lines = [line.strip() for line in markdown.strip().split("\n") if line.strip()]
 
-    # Find header line (first line starting and ending with '|')
     header_line = next(
         (line for line in lines if line.startswith("|") and line.endswith("|")), None
     )
@@ -228,7 +219,6 @@ def parse_markdown_table(markdown: str):
 
     headers = [h.strip() for h in header_line.strip("|").split("|")]
 
-    # Skip header and separator line
     start_idx = lines.index(header_line) + 2
     data_lines = lines[start_idx:]
 
@@ -237,7 +227,6 @@ def parse_markdown_table(markdown: str):
         if not line.startswith("|") or not line.endswith("|"):
             continue
         cells = [cell.strip() for cell in line.strip("|").split("|")]
-        # Pad cells if some are missing
         while len(cells) < len(headers):
             cells.append("")
         row = dict(zip(headers, cells))
@@ -254,9 +243,7 @@ def markdown_to_json(md_text):
     while i < len(lines):
         line = lines[i].strip()
 
-        # Parse Differences table
         if line.lower().startswith("## differences"):
-            # Skip header and separator lines
             i += 3
             while i < len(lines) and lines[i].strip():
                 row = [cell.strip() for cell in lines[i].split("|")[1:-1]]
@@ -271,12 +258,10 @@ def markdown_to_json(md_text):
                 )
                 i += 1
 
-        # Parse Mechanism Analysis
         elif line.lower().startswith("## mechanism analysis"):
             i += 1
             while i < len(lines):
                 line = lines[i].strip()
-                # Detect subsection title
                 if line.startswith("### "):
                     section_title = line[4:].strip()
                     mechanism_list = []
@@ -284,7 +269,6 @@ def markdown_to_json(md_text):
                     while i < len(lines) and lines[i].strip().startswith(
                         tuple("123456789")
                     ):
-                        # Remove list number and dot
                         item = re.sub(r"^\d+\.\s*", "", lines[i].strip())
                         mechanism_list.append(item)
                         i += 1
@@ -358,7 +342,6 @@ def contains_target_expression(
     flags = 0 if case_sensitive else re.IGNORECASE
 
     for pattern in patterns:
-        # Escape special characters and use word boundaries
         escaped = re.escape(pattern)
         if re.search(rf"\b{escaped}\b", text, flags=flags):
             return True
@@ -444,14 +427,12 @@ def get_all_json_files(directory: str, recursive: bool = True) -> List[str]:
     json_files = []
 
     if recursive:
-        # Walk through directory tree
         for root, _, files in os.walk(directory):
             for file in files:
                 if file.lower().endswith(".json"):
                     full_path = os.path.join(root, file)
                     json_files.append(full_path)
     else:
-        # List files in the top-level directory only
         for file in os.listdir(directory):
             full_path = os.path.join(directory, file)
             if os.path.isfile(full_path) and file.lower().endswith(".json"):
@@ -588,7 +569,6 @@ def save_json(data: Any, file_path: str, indent: int = 4) -> None:
         OSError: If there is an error writing to the file system.
     """
     try:
-        # Ensure the directory exists
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         with open(file_path, "w", encoding="utf-8") as f:

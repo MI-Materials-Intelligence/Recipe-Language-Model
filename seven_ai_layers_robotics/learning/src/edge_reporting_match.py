@@ -1,18 +1,16 @@
-# -*- coding: utf-8 -*-
 """
 Edge Report Data Automated Processing Pipeline
 Supports: DB export -> Cleaning and deduplication -> Write-back to DB
 
 Usage:
     1. Run directly: python this_script.py
-    2. Import externally: from this_script import EdgeReportPipeline; pipeline = EdgeReportPipeline(); pipeline.run_full_process(src_table="experiments_data", target_table="experiments_cleaned_data")
+    2. Import externally: from this_script import EdgeReportPipeline; pipeline = EdgeReportPipeline(); pipeline.run_full_process(src_table="experiments_data")
 """
 
 import os
 import sys
 from typing import Any, Dict, Optional
 
-# Load database configuration from app.config
 try:
     from seven_ai_layers_robotics.config import config
     DB_CONFIG = {
@@ -34,22 +32,16 @@ except Exception as e:
         'charset': 'utf8mb4'
     }
 
-# Working directory and data output paths
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# Import data extractor module
 try:
-    # Use relative imports to avoid path issues in multi-process environments
     from .extraction.edge_report_extractor import EdgeReportExtractor
     EXTRACTOR_AVAILABLE = True
 except ImportError as e:
     EXTRACTOR_AVAILABLE = False
     print(f"WARNING: Unable to import EdgeReportExtractor, data extraction functionality will be unavailable. Error: {e}")
 
-# ==============================
-# Core class definition
-# ==============================
 
 class EdgeReportPipeline:
     """Edge Report Data Automated Processing Pipeline.
@@ -74,7 +66,6 @@ class EdgeReportPipeline:
         os.makedirs(self.work_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
 
-        # Initialize data extractor
         if EXTRACTOR_AVAILABLE:
             self.data_extractor = EdgeReportExtractor(self.db_config)
 
@@ -97,7 +88,6 @@ class EdgeReportPipeline:
             )
 
         try:
-            # Use EdgeReportExtractor for complete processing, all output to data directory
             target_table = "experiments_cleaned_data"
             self.data_extractor.extract_and_process(src_table, target_table, self.data_dir)
 
@@ -109,10 +99,6 @@ class EdgeReportPipeline:
             return False
 
 
-# ==============================
-# Main entry point (script direct execution)
-# ==============================
-
 if __name__ == "__main__":
     print("=" * 60)
     print("Edge Report Data Automated Processing Pipeline")
@@ -121,9 +107,8 @@ if __name__ == "__main__":
     print(f"Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
     print("=" * 60)
 
-    # Initialize and execute
     pipeline = EdgeReportPipeline()
-    success = pipeline.run_full_process(src_table="experiments_data", target_table="experiments_cleaned_data")
+    success = pipeline.run_full_process(src_table="experiments_data")
 
     if not success:
         print("\nWorkflow execution failed, please check logs.")

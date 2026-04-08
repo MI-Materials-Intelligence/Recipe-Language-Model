@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Characterization Data Automated Processing Pipeline
 Supports: PL SAM, Image Process, Additive XRD, Passivator XRD data extraction -> JSON generation -> Database insertion
@@ -8,13 +7,10 @@ Usage:
     2. Import externally: from this_script import CharacterizationDataPipeline; pipeline = CharacterizationDataPipeline(); pipeline.run_all()
 """
 
-import json
 import os
 import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-# Load database configuration from app.config
 try:
     from seven_ai_layers_robotics.config import config
     DB_CONFIG = {
@@ -36,13 +32,10 @@ except Exception as e:
         'charset': 'utf8mb4'
     }
 
-# Working directory and data output paths
 WORK_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(WORK_DIR, "..", "data")
 
-# Import characterization data processing modules
 try:
-    # Use absolute imports instead of relative imports to avoid path issues in multi-process environments
     from .matching.characterisation_pl_sam import run_characterisation_pl_sam
     from .matching.characterisation_image_pvk import run_characterisation_image_pvk
     from .matching.additive_xrd import run_additive_xrd
@@ -62,7 +55,6 @@ except ImportError as e:
     ADDITIVE_XRD_AVAILABLE = False
     PASSIVATOR_XRD_AVAILABLE = False
     INSERT_PAIRS_AVAILABLE = False
-
 
 
 class CharacterizationDataPipeline:
@@ -87,11 +79,9 @@ class CharacterizationDataPipeline:
         self.work_dir = work_dir if work_dir else WORK_DIR
         self.data_dir = DATA_DIR
 
-        # Ensure directories exist
         os.makedirs(self.work_dir, exist_ok=True)
         os.makedirs(self.data_dir, exist_ok=True)
 
-        # Module availability status
         self.module_status = {
             'characterisation_pl_sam': characterisation_pl_sam_AVAILABLE,
             'characterisation_image_pvk': characterisation_image_pvk_AVAILABLE,
@@ -230,7 +220,6 @@ class CharacterizationDataPipeline:
             True if all steps succeeded, False otherwise.
         """
         try:
-            # Execute all characterization data processing workflows and database insertion
             results = self.run_all(
                 include_characterisation_pl_sam=True,
                 include_characterisation_image_pvk=True,
@@ -240,7 +229,6 @@ class CharacterizationDataPipeline:
                 verbose=True
             )
 
-            # Check if all steps succeeded
             if all(results.values()):
                 print("\nFull workflow completed successfully!")
                 return True
@@ -252,13 +240,15 @@ class CharacterizationDataPipeline:
             print(f"Workflow interrupted: {e}")
             return False
 
-    def run_all(self,
-                include_characterisation_pl_sam: bool = True,
-                include_characterisation_image_pvk: bool = True,
-                include_additive_xrd: bool = True,
-                include_passivator_xrd: bool = True,
-                include_db_insertion: bool = True,
-                verbose: bool = True) -> Dict[str, bool]:
+    def run_all(
+        self,
+        include_characterisation_pl_sam: bool = True,
+        include_characterisation_image_pvk: bool = True,
+        include_additive_xrd: bool = True,
+        include_passivator_xrd: bool = True,
+        include_db_insertion: bool = True,
+        verbose: bool = True,
+    ) -> Dict[str, bool]:
         """
         Execute complete data processing and database insertion workflow
         :param include_characterisation_pl_sam: Whether to include PL SAM processing
@@ -279,7 +269,6 @@ class CharacterizationDataPipeline:
 
         results = {}
 
-        # Execute each characterization data processing workflow
         if include_characterisation_pl_sam:
             results['characterisation_pl_sam'] = self.run_characterisation_pl_sam_pipeline(verbose=verbose)
 
@@ -292,11 +281,9 @@ class CharacterizationDataPipeline:
         if include_passivator_xrd:
             results['passivator_xrd'] = self.run_passivator_xrd_pipeline(verbose=verbose)
 
-        # Execute database insertion
         if include_db_insertion:
             results['database_insertion'] = self.run_database_insertion(verbose=verbose)
 
-        # Summary results
         if verbose:
             print("\n" + "="*80)
             print("Execution Results Summary")
@@ -318,12 +305,6 @@ class CharacterizationDataPipeline:
         return results
 
 
-
-
-# ==============================
-# Main entry point (script direct execution)
-# ==============================
-
 if __name__ == "__main__":
     print("=" * 80)
     print("Characterization Data Automated Processing Pipeline")
@@ -332,7 +313,6 @@ if __name__ == "__main__":
     print(f"Database: {DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}")
     print("=" * 80)
 
-    # Initialize and execute
     pipeline = CharacterizationDataPipeline()
     success = pipeline.run_full_process()
 
