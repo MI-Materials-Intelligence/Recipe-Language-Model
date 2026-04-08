@@ -1,5 +1,5 @@
-import subprocess
 import shlex
+import subprocess
 from typing import List
 
 from app.config import get_config
@@ -7,7 +7,10 @@ from app.config import get_config
 TRAINING_COMMAND = (
     "CUDA_VISIBLE_DEVICES={gpu_list} llamafactory-cli train {config_path}"
 )
-INFERENCE_COMMAND = "CUDA_VISIBLE_DEVICES={gpu_id} API_PORT={api_port} llamafactory-cli api {config_path}"
+INFERENCE_COMMAND = (
+    "CUDA_VISIBLE_DEVICES={gpu_id} API_PORT={api_port} "
+    "llamafactory-cli api {config_path}"
+)
 CONDA_ENV = get_config().CONDA_ENV
 
 
@@ -28,8 +31,6 @@ def run_in_tmux(
         log_file (str, optional): Path to a log file to redirect output. Default is None.
         check_existing (bool): If True, will skip starting if the tmux session already exists.
     """
-
-    # Check if the tmux session already exists
     if check_existing:
         check_cmd = ["tmux", "has-session", "-t", session_name]
         result = subprocess.run(
@@ -39,23 +40,20 @@ def run_in_tmux(
             print(f"[INFO] tmux session '{session_name}' already exists. Skipping.")
             return
 
-    # Build the full command with conda run
-    full_command = f"cd {get_config().LLAMA_FACTORY_ROOT} && conda run -n {shlex.quote(conda_env)} {command}"
+    full_command = (
+        f"cd {get_config().LLAMA_FACTORY_ROOT} "
+        f"&& conda run -n {shlex.quote(conda_env)} {command}"
+    )
 
-    print(f"[DEBUG] Full command to run in tmux: {full_command}")
+    if log_file:
+        full_command += f" > {shlex.quote(log_file)} 2>&1"
 
-    # Optionally redirect output to a log file
-    # if log_file:
-    #     full_command += f" > {shlex.quote(log_file)} 2>&1"
-
-    # Build the tmux command to start a new detached session
     tmux_command = (
         f'tmux new-session -d -s {shlex.quote(session_name)} "{full_command}"'
     )
 
     print(f"[INFO] Starting tmux session '{session_name}' with command: {tmux_command}")
 
-    # Execute the tmux command
     subprocess.run(tmux_command, shell=True, executable="/bin/bash")
 
     print(f"[OK] Started tmux session '{session_name}' running: {command}")
@@ -135,26 +133,20 @@ def check_and_cleanup_tmux_session(session_name: str) -> bool:
     Returns:
         bool: True if session was terminated because the process finished, False otherwise.
     """
-
-    # Step 1: Check if the tmux session exists
     check_cmd = ["tmux", "has-session", "-t", session_name]
     result = subprocess.run(
         check_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     if result.returncode != 0:
-        # Session doesn't exist
         return True
 
-    # Step 2: Get the PID of the process running in the pane
     try:
         pane_pid_cmd = ["tmux", "list-panes", "-t", session_name, "-F", "#{pane_pid}"]
         output = subprocess.check_output(pane_pid_cmd, text=True).strip()
         if not output:
-            # No process found
             subprocess.run(["tmux", "kill-session", "-t", session_name])
             return True
 
-        # Check if the process is still running
         pid = output.strip()
         ps_cmd = ["ps", "-p", pid]
         ps_result = subprocess.run(
@@ -162,13 +154,10 @@ def check_and_cleanup_tmux_session(session_name: str) -> bool:
         )
 
         if ps_result.returncode != 0:
-            # Process not running -> kill session
             subprocess.run(["tmux", "kill-session", "-t", session_name])
             return True
         else:
-            # Process is still running
             return False
     except subprocess.CalledProcessError:
-        # Something went wrong, assume session is inactive and kill it
         subprocess.run(["tmux", "kill-session", "-t", session_name])
         return True
