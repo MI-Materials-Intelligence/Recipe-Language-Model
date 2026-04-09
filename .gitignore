@@ -15,5 +15,10 @@ __pycache__/
 
 !**/evaluation/data/
 
+!**/fine_tuning/data/
+!**/optimization/data/
+
 
 !**/evaluation/data/**
+!**/fine_tuning/data/**
+!**/optimization/data/**
