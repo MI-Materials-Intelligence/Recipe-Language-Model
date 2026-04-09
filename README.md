@@ -96,10 +96,12 @@ This project is released under the MIT License.
 If you find this work useful, please cite:
 
 ```bibtex
-@misc{miagent_2026,
-  author={MI-Materials-Intelligence},
+@article{chen2026rlm,
+  title={Agentic Robotic Boxes for Perovskite Solar Cell Fabrication with Recipe Language Model},
+  author={Chen, Zijian and Yu, Wenjin and Wu, Chuang and Chen, Feibei and Wang, Zixuan and Zhou, Chao and You, Yimeng and Li, Shaojie and Zhu, Qiyuan and Ma, Ning and Sun, Yao and Li, Donghui and Fanady, Billy and Jiang, Shengchou and Yan, Zhongliang and Zhou, Shumin and Li, Liang and Hsieh, Chang-Yu and Bai, Yang and Xiao, Lixin and Chung, Chi-yung and Chan, Ching-chuen and Cui, Zhanfeng and Gr{\"a}tzel, Michael and Zhao, Haitao},
+  journal={Engineering},
   year={2026},
-  howpublished={\url{https://github.com/MI-Materials-Intelligence/Recipe-Language-Model}}
+  doi={10.1016/j.eng.2026.04.002}
 }
 ```
 ---
