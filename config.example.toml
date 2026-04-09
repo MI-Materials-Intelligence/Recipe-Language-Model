@@ -15,6 +15,51 @@ password = "your_password"
 database = "exp_data"
 charset = "utf8mb4"
 
+# Module-specific database configurations (optional, inherit from global [database] if not specified)
+# Uncomment and modify these sections if a module needs a different database
+#
+# [learning_database]
+# host = "127.0.0.1"
+# port = 3306
+# user = "root"
+# password = "your_password"
+# database = "exp_data"
+# charset = "utf8mb4"
+#
+# [generating_database]
+# host = "127.0.0.1"
+# port = 3306
+# user = "root"
+# password = "your_password"
+# database = "exp_data"
+# charset = "utf8mb4"
+#
+# [generating_output_database]
+# host = "127.0.0.1"
+# port = 3306
+# user = "root"
+# password = "your_password"
+# database = "exp_data"
+# charset = "utf8mb4"
+#
+# [reasoning_database]
+# host = "127.0.0.1"
+# port = 3306
+# user = "root"
+# password = "your_password"
+# database = "exp_data"
+# charset = "utf8mb4"
+# table = "experiments_data_daily"
+#
+# [reasoning_output_database]
+# host = "127.0.0.1"
+# port = 3306
+# user = "root"
+# password = "your_password"
+# database = "exp_data"
+# charset = "utf8mb4"
+# table = "report_optimised"
+
 # LLM vision configuration
 [llm.vision]
 model = "qwen-plus"
@@ -27,15 +72,6 @@ temperature = 0.0
 [runflow]
 use_data_analysis_agent = false
 
-# Learning module database configuration
-[learning_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-
 # Learning module LLM configuration
 [learning_llm]
 model = "qwen-plus"
@@ -43,24 +79,6 @@ base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 api_key = "sk-YOUR_API_KEY_HERE"
 max_tokens = 4096
 temperature = 0.0
-
-# Generating module input database configuration
-[generating_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-
-# Generating module output database configuration
-[generating_output_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
 
 # Generating module LLM configuration
 [generating_llm]
@@ -85,26 +103,6 @@ dashscope_api_key = "sk-YOUR_API_KEY_HERE"
 dashscope_model = "qwen-plus"
 temperature = 0.4
 timeout = 60
-
-# Reasoning module input database configuration
-[reasoning_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-table = "experiments_data_daily"
-
-# Reasoning module output database configuration
-[reasoning_output_database]
-host = "127.0.0.1"
-port = 3306
-user = "root"
-password = "your_password"
-database = "exp_data"
-charset = "utf8mb4"
-table = "report_optimised"
 
 # Reasoning module LLM configuration
 [reasoning_llm]
@@ -202,3 +200,17 @@ base_url = "https://api.deepseek.com/v1/chat/completions"
 model = "deepseek-reasoner"
 temperature = 0.3
 timeout = 120
+
+# Optimization module API configuration
+[optimization_api]
+base_url = "http://localhost:8000"
+timeout = 60
+base_model_path = "/path/to/base-model/"
+dpo_train_config_template = "/path/to/train_config_example.yaml"
+inference_config_template = "/path/to/test_config_example.yaml"
+
+# Optimization module LLM configuration
+[optimization_llm]
+base_url = "http://localhost:13338/v1/chat/completions"
+model = "qwen3-32b"
+temperature = 0.7

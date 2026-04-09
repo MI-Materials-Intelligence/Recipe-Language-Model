@@ -5,22 +5,22 @@
 In the optimization layer, the RLM to be optimised and preference pairs of positive and negative samples are taken as the input of this layer. Through atomic skill of Direct Preference Optimisation (DPO), an optimised RLM is obtained as output. This layer further aligns the model towards preference-consistent and high-performance recipe recommendation.
 
 
-## Layer Structure
+## Layer Structure with Atomic Skills
 
 ```
-Optimization/
+optimization/
+├── __init__.py
+├── README.md
+├── data/                              
 └── src/
-    ├── prepare_training.py
-    ├── run_training.py
-    └── optimization_api/
+    ├── DPOTrainDataExporter.py       
+    └── optimization_api/            
         ├── app/
-        │   ├── __init__.py
         │   ├── api/
         │   │   └── endpoints.py
         │   ├── models/
         │   │   └── schemas.py
         │   ├── services/
-        │   │   ├── __init__.py
         │   │   ├── auto_running.py
         │   │   ├── config_template.py
         │   │   └── prepare_training.py
@@ -39,6 +39,8 @@ Optimization/
         ├── train_meta_info/
         │   ├── api_test.json
         │   ├── api_test_new.json
+        │   ├── api_test_new_1.json
+        │   ├── api_test_new_2.json
         │   ├── inference.yaml
         │   └── qwena30_lora_dpo.yaml
         ├── README.md
@@ -83,15 +85,21 @@ Optimization/
 4. **Deploy Service**  
    Deploy the optimization_api service on the server first (refer to `src/optimization_api/README.md` for details).
 
-5. **Run Training**  
+5. **Run Optimization Pipeline**  
+   Execute the complete optimization pipeline from project root:
    ```bash
-   cd seven_ai_layers_robotics/optimization/src/
-   python prepare_training.py     # Prepare training data
-   python run_training.py        # Run DPO training
+   python main.py optimization --item-name test1
    ```
+   
+   This will automatically execute three workflows:
+   - Export training data from database
+   - Call training preparation API
+   - Optimize questions and write back to database
 
-### Key Modules for Executing Task
+### Key Modules
 
-- **prepare_training.py**: Prepare DPO training data
-- **run_training.py**: Execute DPO training
-- **optimization_api**: DPO optimization API service
+- **DPOTrainDataExporter**: Complete optimization pipeline including:
+  - Export MIRecipe records to CSV
+  - Call training preparation API
+  - Optimize questions using LLM and write results back to database
+- **optimization_api**: DPO training API service for model training

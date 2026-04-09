@@ -7,10 +7,10 @@ This module provides functionality for:
 - Template-based paragraph construction
 """
 
-from .edge_report_generator import EdgeReportGenerator
-from .edge_mechanism_analyzer import EdgeMechanismAnalyzer
+from . import edge_report_generator
+from . import edge_mechanism_analyzer
 
 __all__ = [
-    "EdgeReportGenerator",
-    "EdgeMechanismAnalyzer",
+    "edge_report_generator",
+    "edge_mechanism_analyzer",
 ]

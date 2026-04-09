@@ -25,10 +25,10 @@ Before running the service, define the following environment variables in `confi
 
 ```env
 CONDA_ENV: "llamafactory_new"
-LLAMA_FACTORY_ROOT: "/home/maning/git/LLaMA-Factory_20251215/LlamaFactory/"
-BASE_MODEL_ROOT: "/data/opt/LLM_Base_Model/Qwen2.5-0.5B-Instruct/"
-TRAIN_META_INFO_ROOT: "/data/exp_maning/optimization_API/train_meta_info"
-LORA_OUTPUT_ROOT: "/data/opt/LLM_lora_SFT/saves/DPO_LORA/"
+LLAMA_FACTORY_ROOT: "/path/to/LLaMA-Factory/"
+BASE_MODEL_ROOT: "/path/to/base-model/"
+TRAIN_META_INFO_ROOT: "./train_meta_info"
+LORA_OUTPUT_ROOT: "/path/to/lora-output/"
 
 ```
 
@@ -75,7 +75,7 @@ Base URL: `http://<host>:<port>/` (e.g., `http://localhost:8000/`)
             (
                 "MIRecipe",
                 open(
-                    "/data/exp_maning/optimization_API/test/MIRecipe.csv",
+                    "/path/to/MIRecipe.csv",
                     "rb",
                 ),
             ),
@@ -85,9 +85,9 @@ Base URL: `http://<host>:<port>/` (e.g., `http://localhost:8000/`)
 
     data = {
         "item_name": "<item_name>",
-        "base_model_path": "/data/opt/LLM_Base_Model/Qwen3-32B/",
-        "DPO_train_config_template": "/data/exp_maning/optimization_API/test/train_config_example.yaml",
-        "inference_config_template": "/data/exp_maning/optimization_API/test/test_config_example.yaml"
+        "base_model_path": "/path/to/base-model/",
+        "DPO_train_config_template": "/path/to/train_config_example.yaml",
+        "inference_config_template": "/path/to/test_config_example.yaml"
     }
 
     response = requests.post(url, files=corpora_files, data=data)

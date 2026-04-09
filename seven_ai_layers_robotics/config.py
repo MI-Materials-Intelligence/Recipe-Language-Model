@@ -430,6 +430,22 @@ class RecipeQALLMSettings(BaseModel):  # ✅ NEW
     timeout: int = Field(60, description="Request timeout in seconds")
 
 
+class OptimizationAPISettings(BaseModel):  
+    """Configuration for Optimization API module"""
+    base_url: str = Field("http://localhost:8000", description="Optimization API base URL")
+    timeout: int = Field(60, description="Request timeout in seconds")
+    base_model_path: str = Field("/path/to/base-model/", description="Base model path for training")
+    dpo_train_config_template: str = Field("/path/to/train_config_example.yaml", description="DPO train config template path")
+    inference_config_template: str = Field("/path/to/test_config_example.yaml", description="Inference config template path")
+
+
+class OptimizationLLMSettings(BaseModel):  
+    """Configuration for Optimization module LLM"""
+    base_url: str = Field("http://localhost:13338", description="LLM API base URL")
+    model: str = Field("qwen3-32b", description="LLM model name")
+    temperature: float = Field(0.7, description="Sampling temperature")
+
+
 class DeepSeekSettings(BaseModel):  # ✅ NEW
     """Configuration for DeepSeek LLM"""
     api_key: str = Field("", description="DeepSeek API key")
@@ -474,6 +490,8 @@ class AppConfig(BaseModel):
     evaluation: Optional[EvaluationSettings] = Field(None, description="Evaluation Module Settings")  
     recipeqa_llm: Optional[RecipeQALLMSettings] = Field(None, description="RecipeQA LLM")  
     deepseek: Optional[DeepSeekSettings] = Field(None, description="DeepSeek LLM")  
+    optimization_api: Optional[OptimizationAPISettings] = Field(None, description="Optimization API")  
+    optimization_llm: Optional[OptimizationLLMSettings] = Field(None, description="Optimization LLM")  
     class Config:
         arbitrary_types_allowed = True
 
@@ -530,32 +548,30 @@ class Config:
             charset=_env("DB_CHARSET", db_cfg.get("charset", "utf8mb4")),
         )
 
+        # Helper function to get database config with fallback to global database
+        def get_db_config(module_key: str, table_default: Optional[str] = None) -> dict:
+            """Get module-specific database config, falling back to global database config."""
+            module_db = raw_config.get(module_key, {}) or {}
+            return {
+                "host": module_db.get("host", db_cfg.get("host", "127.0.0.1")),
+                "port": module_db.get("port", db_cfg.get("port", 3306)),
+                "user": module_db.get("user", db_cfg.get("user", "root")),
+                "password": module_db.get("password", db_cfg.get("password", "")),
+                "database": module_db.get("database", db_cfg.get("database", "")),
+                "charset": module_db.get("charset", db_cfg.get("charset", "utf8mb4")),
+                "table": module_db.get("table", table_default or ""),
+            }
+
      
         # Load Reasoning module configuration
-        reasoning_db_cfg = raw_config.get("reasoning_database", {}) or {}
-        reasoning_output_db_cfg = raw_config.get("reasoning_output_database", {}) or {}
+        reasoning_db_config = get_db_config("reasoning_database", "experiments_data_daily")
+        reasoning_output_db_config = get_db_config("reasoning_output_database", "report_optimised")
         reasoning_llm_cfg = raw_config.get("reasoning_llm", {}) or {}
         reasoning_gen_cfg = raw_config.get("reasoning_generation", {}) or {}
 
-        reasoning_database_settings = ReasoningDatabaseSettings(
-            host=reasoning_db_cfg.get("host", "127.0.0.1"),
-            port=reasoning_db_cfg.get("port", 3306),
-            user=reasoning_db_cfg.get("user", "root"),
-            password=reasoning_db_cfg.get("password", ""),
-            database=reasoning_db_cfg.get("database", ""),
-            charset=reasoning_db_cfg.get("charset", "utf8mb4"),
-            table=reasoning_db_cfg.get("table", "experiments_data_daily"),
-        )
+        reasoning_database_settings = ReasoningDatabaseSettings(**reasoning_db_config)
 
-        reasoning_output_database_settings = ReasoningOutputDatabaseSettings(
-            host=reasoning_output_db_cfg.get("host", reasoning_db_cfg.get("host", "127.0.0.1")),
-            port=reasoning_output_db_cfg.get("port", reasoning_db_cfg.get("port", 3306)),
-            user=reasoning_output_db_cfg.get("user", reasoning_db_cfg.get("user", "root")),
-            password=reasoning_output_db_cfg.get("password", reasoning_db_cfg.get("password", "")),
-            database=reasoning_output_db_cfg.get("database", reasoning_db_cfg.get("database", "")),
-            charset=reasoning_output_db_cfg.get("charset", "utf8mb4"),
-            table=reasoning_output_db_cfg.get("table", "report_optimised"),
-        )
+        reasoning_output_database_settings = ReasoningOutputDatabaseSettings(**reasoning_output_db_config)
 
         reasoning_llm_settings = ReasoningLLMSettings(
             base_url=reasoning_llm_cfg.get("base_url", "http://localhost:8000"),
@@ -571,28 +587,14 @@ class Config:
         )
 
         # Load Generating module configuration
-        generating_db_cfg = raw_config.get("generating_database", {}) or {}
-        generating_output_db_cfg = raw_config.get("generating_output_database", {}) or {}
+        generating_db_config = get_db_config("generating_database")
+        generating_output_db_config = get_db_config("generating_output_database")
         generating_llm_cfg = raw_config.get("generating_llm", {}) or {}
         generating_gen_cfg = raw_config.get("generating_generation", {}) or {}
 
-        generating_database_settings = GeneratingDatabaseSettings(
-            host=generating_db_cfg.get("host", "127.0.0.1"),
-            port=generating_db_cfg.get("port", 3306),
-            user=generating_db_cfg.get("user", "root"),
-            password=generating_db_cfg.get("password", ""),
-            database=generating_db_cfg.get("database", ""),
-            charset=generating_db_cfg.get("charset", "utf8mb4"),
-        )
+        generating_database_settings = GeneratingDatabaseSettings(**generating_db_config)
 
-        generating_output_database_settings = GeneratingOutputDatabaseSettings(
-            host=generating_output_db_cfg.get("host", generating_db_cfg.get("host", "127.0.0.1")),
-            port=generating_output_db_cfg.get("port", generating_db_cfg.get("port", 3306)),
-            user=generating_output_db_cfg.get("user", generating_db_cfg.get("user", "root")),
-            password=generating_output_db_cfg.get("password", generating_db_cfg.get("password", "")),
-            database=generating_output_db_cfg.get("database", generating_db_cfg.get("database", "")),
-            charset=generating_output_db_cfg.get("charset", "utf8mb4"),
-        )
+        generating_output_database_settings = GeneratingOutputDatabaseSettings(**generating_output_db_config)
 
         generating_llm_settings = GeneratingLLMSettings(
             base_url=generating_llm_cfg.get("base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
@@ -606,17 +608,10 @@ class Config:
         )
 
         # Load Learning module configuration
-        learning_db_cfg = raw_config.get("learning_database", {}) or {}
+        learning_db_config = get_db_config("learning_database")
         learning_llm_cfg = raw_config.get("learning_llm", {}) or {}
 
-        learning_database_settings = LearningDatabaseSettings(
-            host=learning_db_cfg.get("host", "127.0.0.1"),
-            port=learning_db_cfg.get("port", 3306),
-            user=learning_db_cfg.get("user", "root"),
-            password=learning_db_cfg.get("password", ""),
-            database=learning_db_cfg.get("database", ""),
-            charset=learning_db_cfg.get("charset", "utf8mb4"),
-        )
+        learning_database_settings = LearningDatabaseSettings(**learning_db_config)
 
         learning_llm_settings = LearningLLMSettings(
             model=learning_llm_cfg.get("model", "qwen-plus"),
@@ -635,6 +630,9 @@ class Config:
         recipeqa_llm_cfg = raw_config.get("recipeqa_llm", {}) or {}
         # Load DeepSeek configuration
         deepseek_cfg = raw_config.get("deepseek", {}) or {}
+        # Load Optimization module configuration
+        optimization_api_cfg = raw_config.get("optimization_api", {}) or {}
+        optimization_llm_cfg = raw_config.get("optimization_llm", {}) or {}
 
         evaluation_llm_settings = EvaluationLLMSettings(
             deepseek_api_key=evaluation_llm_cfg.get("deepseek_api_key", ""),
@@ -715,6 +713,17 @@ class Config:
             model=deepseek_cfg.get("model", "deepseek-reasoner"),
             temperature=deepseek_cfg.get("temperature", 0.3),
             timeout=deepseek_cfg.get("timeout", 120),
+        )
+
+        optimization_api_settings = OptimizationAPISettings(
+            base_url=optimization_api_cfg.get("base_url", "http://localhost:8000"),
+            timeout=optimization_api_cfg.get("timeout", 60),
+        )
+
+        optimization_llm_settings = OptimizationLLMSettings(
+            base_url=optimization_llm_cfg.get("base_url", "http://localhost:13338"),
+            model=optimization_llm_cfg.get("model", "qwen3-32b"),
+            temperature=optimization_llm_cfg.get("temperature", 0.7),
         )
 
         generating_generation_settings = GeneratingGenerationSettings(
@@ -820,6 +829,8 @@ class Config:
             "evaluation": evaluation_settings,  
             "recipeqa_llm": recipeqa_llm_settings,  
             "deepseek": deepseek_settings,  
+            "optimization_api": optimization_api_settings,  
+            "optimization_llm": optimization_llm_settings,  
             "llm": {
                 "default": default_settings,
                 **{
@@ -938,6 +949,14 @@ class Config:
     @property
     def deepseek(self) -> DeepSeekSettings:  
         return self._config.deepseek
+
+    @property
+    def optimization_api(self) -> OptimizationAPISettings:  
+        return self._config.optimization_api
+
+    @property
+    def optimization_llm(self) -> OptimizationLLMSettings:  
+        return self._config.optimization_llm
 
     def get_evaluation_data_path(self, relative_path: str) -> Path:
         """Get the full path for evaluation data files

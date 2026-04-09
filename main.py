@@ -54,6 +54,7 @@ import asyncio
 from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
 
 from seven_ai_layers_robotics.evaluation import MIRecipeEvaluator
+from seven_ai_layers_robotics.optimization import DPOTrainDataExporter
 
 def run_learning_pipeline(args):
     """Execute learning module pipelines"""
@@ -157,6 +158,34 @@ def run_evaluation(args):
         return False
 
 
+def run_optimization(args):
+    """Execute optimization module - DPO training data export and preparation"""
+    print("\n Running DPO Training Data Exporter...")
+    
+    try:
+        exporter = DPOTrainDataExporter()
+        
+    
+        csv_path = exporter.run_pipeline(
+            item_name=args.item_name,
+            call_training=True,
+            optimize_questions=True,
+            optimization_limit=10,
+            system_prompt="You are an expert in perovskite materials."
+        )
+        
+        if csv_path:
+            print(f"\n Optimization completed.")
+            return True
+        else:
+            print("\n Optimization failed.")
+            return False
+            
+    except Exception as e:
+        print(f"Error in optimization: {e}")
+        return False
+
+
 def main():
     """Main entry point with argument parsing"""
     parser = argparse.ArgumentParser(
@@ -169,6 +198,7 @@ Examples:
   %(prog)s recipeqa
   %(prog)s reasoning --total-runs 15
   %(prog)s evaluation
+  %(prog)s optimization --item-name test1
         """
     )
     
@@ -225,6 +255,16 @@ Examples:
     # Evaluation module
     evaluation_parser = subparsers.add_parser('evaluation', help='Evaluation module - Recipe evaluation')
     evaluation_parser.set_defaults(func=run_evaluation)
+    
+    # Optimization module
+    optimization_parser = subparsers.add_parser('optimization', help='Optimization module - DPO training data export')
+    optimization_parser.add_argument(
+        '--item-name',
+        type=str,
+        default='api_test',
+        help='Item identifier for tracking (default: api_test)'
+    )
+    optimization_parser.set_defaults(func=run_optimization)
     
     # Parse arguments
     args = parser.parse_args()

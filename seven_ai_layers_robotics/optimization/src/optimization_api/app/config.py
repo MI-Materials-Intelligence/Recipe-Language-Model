@@ -16,5 +16,5 @@ class AppConfig(BaseModel):
 
 @lru_cache()
 def get_config() -> AppConfig:
-    config_data = read_yml("/data/exp_maning/optimization_API/example_config.yml")
+    config_data = read_yml("./example_config.yml")
     return AppConfig(**config_data)

@@ -13,7 +13,7 @@ lora_rank: 8
 lora_target: all
 lr_scheduler_type: cosine
 max_samples: 10000000000
-model_name_or_path: /data/opt/LLM_Base_Model/Qwen3-32B/
+model_name_or_path: /path/to/base-model/
 num_train_epochs: 8.0
 output_dir: ""
 overwrite_cache: true
