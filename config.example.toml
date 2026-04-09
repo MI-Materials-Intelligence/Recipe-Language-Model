@@ -106,7 +106,7 @@ timeout = 60
 
 # Fine-tuning module API configuration
 [finetuning_api]
-base_url = "http://localhost:8000"
+base_url = "http://localhost:8001"
 timeout = 60
 base_model_path = "/path/to/base-model/"
 dpo_train_config_template = "/path/to/train_config_example.yaml"
