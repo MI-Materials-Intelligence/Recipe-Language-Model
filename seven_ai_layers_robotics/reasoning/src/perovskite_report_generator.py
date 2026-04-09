@@ -10,6 +10,7 @@ import pandas as pd
 import pymysql
 import requests
 from openai import OpenAI
+from sqlalchemy import create_engine
 from seven_ai_layers_robotics.config import config
 from seven_ai_layers_robotics.reasoning.src.prompts import ReportPrompts
 from seven_ai_layers_robotics.reasoning.src.totext_db import (
@@ -520,10 +521,13 @@ class PerovskiteReportGenerator:
             data_dir = Path(__file__).resolve().parent.parent / "data"
             data_dir.mkdir(parents=True, exist_ok=True)
 
-            conn = pymysql.connect(**self.output_db_config)
+            # Use SQLAlchemy engine for pandas compatibility
+            db_url = f"mysql+pymysql://{self.output_db_config['user']}:{self.output_db_config.get('password', '')}@{self.output_db_config['host']}:{self.output_db_config.get('port', 3306)}/{self.output_db_config['database']}"
+            engine = create_engine(db_url)
+            
             query = "SELECT * FROM report_optimised"
-            df = pd.read_sql(query, conn)
-            conn.close()
+            df = pd.read_sql(query, engine)
+            engine.dispose()
 
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             csv_filename = f"report_optimised_{timestamp}.csv"

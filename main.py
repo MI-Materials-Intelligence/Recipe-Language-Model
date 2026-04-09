@@ -55,6 +55,7 @@ from seven_ai_layers_robotics.reasoning import PerovskiteReportGenerator
 
 from seven_ai_layers_robotics.evaluation import MIRecipeEvaluator
 from seven_ai_layers_robotics.optimization import DPOTrainDataExporter
+from seven_ai_layers_robotics.fine_tuning import SFTTrainDataExporter
 
 def run_learning_pipeline(args):
     """Execute learning module pipelines"""
@@ -186,6 +187,38 @@ def run_optimization(args):
         return False
 
 
+def run_fine_tuning(args):
+    """Execute fine-tuning module - SFT training data export and pipeline"""
+    print("\n Running SFT Training Data Exporter...")
+    
+    try:
+        exporter = SFTTrainDataExporter()
+        
+        results = exporter.run_pipeline(
+            item_name=args.item_name,
+            launch_training=False,
+            launch_inference=False,
+            max_wait_minutes=60,
+            check_interval=20
+        )
+        
+        if results:
+            print(f"\n Fine-tuning pipeline completed.")
+            print(f"Item name: {results['item_name']}")
+            print(f"Prepare training: {results['prepare_training']}")
+            print(f"Training: {results['training']}")
+            print(f"Training status: {results['training_status']}")
+            print(f"Inference: {results['inference']}")
+            return True
+        else:
+            print("\n Fine-tuning pipeline failed.")
+            return False
+            
+    except Exception as e:
+        print(f"Error in fine-tuning: {e}")
+        return False
+
+
 def main():
     """Main entry point with argument parsing"""
     parser = argparse.ArgumentParser(
@@ -199,6 +232,7 @@ Examples:
   %(prog)s reasoning --total-runs 15
   %(prog)s evaluation
   %(prog)s optimization --item-name test1
+  %(prog)s fine-tuning --item-name test1
         """
     )
     
@@ -265,6 +299,16 @@ Examples:
         help='Item identifier for tracking (default: api_test)'
     )
     optimization_parser.set_defaults(func=run_optimization)
+    
+    # Fine-tuning module
+    fine_tuning_parser = subparsers.add_parser('fine-tuning', help='Fine-tuning module - SFT training data export')
+    fine_tuning_parser.add_argument(
+        '--item-name',
+        type=str,
+        default='sft_test',
+        help='Item identifier for training job (default: sft_test)'
+    )
+    fine_tuning_parser.set_defaults(func=run_fine_tuning)
     
     # Parse arguments
     args = parser.parse_args()

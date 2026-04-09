@@ -8,9 +8,7 @@ In the optimization layer, the RLM to be optimised and preference pairs of posit
 ## Layer Structure with Atomic Skills
 
 ```
-optimization/
-├── __init__.py
-├── README.md
+Optimization/
 ├── data/                              
 └── src/
     ├── DPOTrainDataExporter.py       

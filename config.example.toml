@@ -104,6 +104,14 @@ dashscope_model = "qwen-plus"
 temperature = 0.4
 timeout = 60
 
+# Fine-tuning module API configuration
+[finetuning_api]
+base_url = "http://localhost:8000"
+timeout = 60
+base_model_path = "/path/to/base-model/"
+dpo_train_config_template = "/path/to/train_config_example.yaml"
+inference_config_template = "/path/to/test_config_example.yaml"
+
 # Reasoning module LLM configuration
 [reasoning_llm]
 base_url = "http://localhost:8000"

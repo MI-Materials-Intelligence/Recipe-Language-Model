@@ -1,0 +1,9 @@
+[
+  {
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Explain LoRA in one sentence."},
+      {"role": "assistant", "content": "LoRA is a parameter-efficient fine-tuning method that trains a small set of additional low-rank weights."}
+    ]
+  }
+]

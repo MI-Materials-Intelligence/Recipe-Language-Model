@@ -446,6 +446,15 @@ class OptimizationLLMSettings(BaseModel):
     temperature: float = Field(0.7, description="Sampling temperature")
 
 
+class FineTuningAPISettings(BaseModel):  
+    """Configuration for Fine-tuning module API"""
+    base_url: str = Field("http://localhost:8000", description="Fine-tuning API base URL")
+    timeout: int = Field(60, description="Request timeout in seconds")
+    base_model_path: str = Field("/path/to/base-model/", description="Base model path for training")
+    dpo_train_config_template: str = Field("/path/to/train_config_example.yaml", description="DPO train config template path")
+    inference_config_template: str = Field("/path/to/test_config_example.yaml", description="Inference config template path")
+
+
 class DeepSeekSettings(BaseModel):  # ✅ NEW
     """Configuration for DeepSeek LLM"""
     api_key: str = Field("", description="DeepSeek API key")
@@ -492,6 +501,7 @@ class AppConfig(BaseModel):
     deepseek: Optional[DeepSeekSettings] = Field(None, description="DeepSeek LLM")  
     optimization_api: Optional[OptimizationAPISettings] = Field(None, description="Optimization API")  
     optimization_llm: Optional[OptimizationLLMSettings] = Field(None, description="Optimization LLM")  
+    finetuning_api: Optional[FineTuningAPISettings] = Field(None, description="Fine-tuning API")  
     class Config:
         arbitrary_types_allowed = True
 
@@ -633,6 +643,9 @@ class Config:
         # Load Optimization module configuration
         optimization_api_cfg = raw_config.get("optimization_api", {}) or {}
         optimization_llm_cfg = raw_config.get("optimization_llm", {}) or {}
+        
+        # Load Fine-tuning module configuration
+        finetuning_api_cfg = raw_config.get("finetuning_api", {}) or {}
 
         evaluation_llm_settings = EvaluationLLMSettings(
             deepseek_api_key=evaluation_llm_cfg.get("deepseek_api_key", ""),
@@ -724,6 +737,11 @@ class Config:
             base_url=optimization_llm_cfg.get("base_url", "http://localhost:13338"),
             model=optimization_llm_cfg.get("model", "qwen3-32b"),
             temperature=optimization_llm_cfg.get("temperature", 0.7),
+        )
+
+        finetuning_api_settings = FineTuningAPISettings(
+            base_url=finetuning_api_cfg.get("base_url", "http://localhost:8000"),
+            timeout=finetuning_api_cfg.get("timeout", 60),
         )
 
         generating_generation_settings = GeneratingGenerationSettings(
@@ -831,6 +849,7 @@ class Config:
             "deepseek": deepseek_settings,  
             "optimization_api": optimization_api_settings,  
             "optimization_llm": optimization_llm_settings,  
+            "finetuning_api": finetuning_api_settings,  
             "llm": {
                 "default": default_settings,
                 **{
@@ -957,6 +976,10 @@ class Config:
     @property
     def optimization_llm(self) -> OptimizationLLMSettings:  
         return self._config.optimization_llm
+
+    @property
+    def finetuning_api(self) -> FineTuningAPISettings:  
+        return self._config.finetuning_api
 
     def get_evaluation_data_path(self, relative_path: str) -> Path:
         """Get the full path for evaluation data files

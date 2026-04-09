@@ -6,36 +6,38 @@ In the fine-tuning layer, the base model (Qwen3-32B) together with the RecipeQA 
 
 
 
-## Layer Structure
+## Layer Structure with Atomic Skills
 
 ```
-Fine_Tuning/
+Fine_tuning/
+├── data/                           # Training datasets
 └── src/
-    ├── llama-api-main/                 # LLaMA-Factory API wrapper
-    │   ├── app/
-    │   │   ├── api/
-    │   │   │   └── endpoints.py
-    │   │   ├── models/
-    │   │   │   └── schemas.py
-    │   │   ├── services/
-    │   │   │   ├── auto_running.py
-    │   │   │   ├── config_template.py
-    │   │   │   └── prepare_training.py
-    │   │   ├── config.py
-    │   │   ├── main.py
-    │   │   └── utils.py
-    │   ├── test/
-    │   │   ├── check_inference.py
-    │   │   ├── check_training.py
-    │   │   ├── prepare_training.py
-    │   │   ├── run_inference.py
-    │   │   ├── run_training.py
-    │   │   ├── test_corpora.json
-    │   │   └── test_tmux.py
-    │   ├── README.md
-    │   ├── example_config.yml
-    │   └── requirements.txt
-    └── test_fine_tuning.py             # End-to-end test script
+    ├── SFTTrainDataExporter.py     # Complete fine-tuning pipeline orchestrator
+    └── llama-api/                 
+        ├── app/
+        │   ├── api/
+        │   │   └── endpoints.py
+        │   ├── models/
+        │   │   └── schemas.py
+        │   ├── services/
+        │   │   ├── auto_running.py
+        │   │   ├── config_template.py
+        │   │   └── prepare_training.py
+        │   ├── config.py
+        │   ├── main.py
+        │   └── utils.py
+        ├── test/
+        │   ├── check_inference.py
+        │   ├── check_training.py
+        │   ├── prepare_training.py
+        │   ├── run_inference.py
+        │   ├── run_training.py
+        │   ├── test_corpora.json
+        │   └── test_tmux.py
+        ├── config.yml
+        ├── example_config.yml
+        ├── requirements.txt
+        └── README.md
 ```
 
 ## Input Demo
@@ -70,18 +72,18 @@ Fine_Tuning/
 3. **Configure Settings**  
    Copy `config.example.toml` to `config.toml` and edit with your database connection and API keys.
 
-4. **Deploy Service**  
-   Deploy the llama-api-main service on the server first (refer to `llama-api-main/README.md` for details).
+4. **Deploy API Service**  
+   Deploy the `llama-api` service on your server before running training. This service provides the API endpoints for training preparation, model training, and inference. See `llama-api/README.md` for detailed deployment instructions.
 
-5. **Run Training**  
+5. **Run Fine-Tuning Pipeline**  
+   Use the main entry point to execute the fine-tuning workflow:
    ```bash
-   cd seven_ai_layers_robotics/fine_tuning/src/
-   python prepare_training.py     # Prepare training data
-   python run_training.py        # Run training
+   python main.py fine-tuning --item-name <your_item_name>
    ```
+   The `--item-name` parameter is the only required argument. All other settings use sensible defaults.
 
-### Key Modules for Executing Task
+### Key Modules
 
-- **prepare_training.py**: Prepare training data
-- **run_training.py**: Execute training
-- **llama-api-main/**: LoRA fine-tuning API service
+- **SFTTrainDataExporter.py**: Complete fine-tuning pipeline orchestrator (data merging, training preparation, training execution, and inference management)
+- **llama-api-main/**: LoRA fine-tuning API service based on LLaMA-Factory
+

@@ -1,0 +1,12 @@
+[
+  {
+    "instruction": "Introduce yourself.",
+    "input": "",
+    "output": "I am an assistant used to demonstrate the LLaMA-Factory API service."
+  },
+  {
+    "instruction": "Translate the following sentence into English.",
+    "input": "The weather is great today.",
+    "output": "The weather is great today."
+  }
+]

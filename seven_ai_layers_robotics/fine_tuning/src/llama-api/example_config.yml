@@ -1,0 +1,14 @@
+CONDA_ENV: "llama_f"
+VLLM_ENV: "vllm_qwen3_0101"
+LLAMA_FACTORY_ROOT: "/path/to/LLaMA-Factory"
+BASE_MODEL_DICT:
+  "deepseek3":
+    "model_path": "/path/to/DeepSeek-V3-0324/"
+    "template": "deepseek3"
+  "qwen3":
+    "model_path": "/path/to/Qwen-3-14B/"
+    "template": "qwen3"
+TRAIN_META_INFO_ROOT: "/path/to/LLaMA-API/train_meta_info"
+LORA_OUTPUT_ROOT: "/path/to/LLM_lora_SFT/saves"
+MERGED_OUTPUT_ROOT: "/path/to/LLM_lora_SFT/merged"
+CORPORA_UPLOAD_ROOT: "/path/to/LLaMA-API/uploaded_corpora"
