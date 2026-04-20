@@ -8,87 +8,96 @@ Generate structured scientific research reports:
 - Conclusion Table
 - Supporting Information
 
-Use DashScope OpenAI-compatible API to generate Abstract and Conclusion Table.
+Features added:
+- ThreadPool parallel execution
+- Skip existing report JSON
+- Force rerun option
+- Progress control
+- Range control
+- Per-task isolation and error handling
 """
 
 import json
 import re
+import time
 import argparse
 from pathlib import Path as PathLib
 from pathlib import Path
 from typing import Any, Dict, Tuple, List, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
 
 from openai import OpenAI
-
 from seven_ai_layers_robotics.config import config
 
+
+# =========================
+# Config
+# =========================
 
 @dataclass
 class ReportConfig:
     """Report generation configuration"""
-    # DashScope API configuration (loaded from config file)
-    api_key: str = None  # 🔐 Modify as needed
+    api_key: str = None
     base_url: str = None
     model: str = "qwen-plus"
 
+    # generation options
+    skip_if_no_result: bool = True
+
     def __post_init__(self):
-        """Load default values from app.config after initialization"""
         if self.api_key is None or self.base_url is None:
             cfg = {
-                'api_key': config.generating_llm.dashscope_api_key,
-                'base_url': config.generating_llm.base_url,
-                'model': config.generating_llm.dashscope_model,
+                "api_key": config.generating_llm.dashscope_api_key,
+                "base_url": config.generating_llm.base_url,
+                "model": config.generating_llm.dashscope_model,
             }
             if self.api_key is None:
-                object.__setattr__(self, 'api_key', cfg.get('api_key', ''))
+                object.__setattr__(self, "api_key", cfg.get("api_key", ""))
             if self.base_url is None:
-                object.__setattr__(self, 'base_url', cfg.get('base_url', 'https://dashscope.aliyuncs.com/compatible-mode/v1  '))
-            if self.model == "qwen-plus":  # If not explicitly set, use model from config file
-                object.__setattr__(self, 'model', cfg.get('model', 'qwen-plus'))
+                object.__setattr__(
+                    self,
+                    "base_url",
+                    cfg.get("base_url", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+                )
+            if self.model == "qwen-plus":
+                object.__setattr__(self, "model", cfg.get("model", "qwen-plus"))
 
-        # Convert relative paths to absolute paths relative to Generating directory after initialization
         generating_dir = PathLib(__file__).resolve().parents[2]
 
-        # Path configuration
-        object.__setattr__(self, 'task_json_path', str(generating_dir / "data\\tasks_from_db.json"))
-        object.__setattr__(self, 'answer_folder', str(generating_dir / "data\\single"))  # single directory
-        object.__setattr__(self, 'output_dir', str(generating_dir / "data\\ReportJSON"))
-
-    # Generation options
-    skip_if_no_result: bool = True  # If Result_Discussion is empty, skip Abstract/Table generation
+        object.__setattr__(self, "task_json_path", str(generating_dir / "data\\tasks_from_db.json"))
+        object.__setattr__(self, "answer_folder", str(generating_dir / "data\\single"))
+        object.__setattr__(self, "output_dir", str(generating_dir / "data\\ReportJSON"))
 
     @classmethod
     def from_dict(cls, cfg: Optional[Dict[str, Any]]) -> "ReportConfig":
-        """Create configuration from dictionary."""
         if not cfg:
             return cls()
         return cls(**{k: v for k, v in cfg.items() if k in cls.__dataclass_fields__})
 
     @classmethod
     def from_json(cls, json_path: str) -> "ReportConfig":
-        """Create configuration from JSON file."""
         with open(json_path, "r", encoding="utf-8") as f:
             return cls.from_dict(json.load(f))
 
 
+# =========================
+# Utils
+# =========================
 
 def read_json(p: Path) -> Any:
-    """Read JSON file."""
     with p.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def write_json(p: Path, obj: Any) -> None:
-    """Write object to JSON file."""
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=2)
 
 
 def extract_digits(s: Any) -> str:
-    """Extract digits from string.
-    """
     if s is None:
         return ""
     s = str(s).strip()
@@ -97,7 +106,6 @@ def extract_digits(s: Any) -> str:
 
 
 def find_answer_part(obj: Any) -> List[str]:
-    """Recursively extract all answer_part fields."""
     found: List[str] = []
     if isinstance(obj, dict):
         if "answer_part" in obj:
@@ -113,7 +121,6 @@ def find_answer_part(obj: Any) -> List[str]:
 
 
 def extract_answer_part_from_json(data: Any) -> str:
-    """Extract and deduplicate answer_part from potentially nested dict/list."""
     parts = find_answer_part(data)
     seen, uniq = set(), []
     for p in parts:
@@ -124,7 +131,6 @@ def extract_answer_part_from_json(data: Any) -> str:
 
 
 def parse_answer_filename(stem: str) -> Tuple[str, str]:
-    """Parse answer filename to extract (id1, id2)."""
     if "_" not in stem:
         return (extract_digits(stem), "")
     a, b = stem.split("_", 1)
@@ -132,37 +138,47 @@ def parse_answer_filename(stem: str) -> Tuple[str, str]:
 
 
 def build_answer_index_by_pair(answer_dir: Path) -> Dict[Tuple[str, str], str]:
-    """Build (id1, id2) to answer_part index."""
     idx: Dict[Tuple[str, str], str] = {}
     for fp in sorted(answer_dir.glob("*.json")):
         id1, id2 = parse_answer_filename(fp.stem)
         try:
             data = read_json(fp)
         except Exception as e:
-            print(f"Answer JSON read failed: {fp.name} err={e}")
+            print(f"[WARN] Answer JSON read failed: {fp.name} err={e}")
             continue
         answer_part = extract_answer_part_from_json(data)
         idx[(id1, id2)] = answer_part
     return idx
 
 
+def format_seconds(seconds: float) -> str:
+    seconds = max(0, int(seconds))
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    s = seconds % 60
+    if h > 0:
+        return f"{h:02d}:{m:02d}:{s:02d}"
+    return f"{m:02d}:{s:02d}"
+
+
+# =========================
+# LLM
+# =========================
 
 class DashScopeLLM:
     """DashScope OpenAI-compatible API client."""
 
-    def __init__(self, config: ReportConfig):
-        """Initialize DashScope client."""
-        if not config.api_key or config.api_key.startswith("sk-xxx"):
+    def __init__(self, cfg: ReportConfig):
+        if not cfg.api_key or str(cfg.api_key).startswith("sk-xxx"):
             raise ValueError("Please configure a valid DASHSCOPE_API_KEY")
 
         self.client = OpenAI(
-            api_key=config.api_key,
-            base_url=config.base_url.rstrip("/")
+            api_key=cfg.api_key,
+            base_url=cfg.base_url.rstrip("/")
         )
-        self.model = config.model
+        self.model = cfg.model
 
     def _chat_stream(self, system_prompt: str, user_prompt: str) -> Tuple[str, str]:
-        """Stream call, return (answer_content, reasoning_content)."""
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -188,7 +204,6 @@ class DashScopeLLM:
         return answer_content.strip(), reasoning_content.strip()
 
     def generate_abstract(self, method_text: str, result_discussion_text: str) -> str:
-        """Generate Abstract (single paragraph, 250-300 words)."""
         system = (
             "You are a scientific writing assistant and an expert in the field of perovskite solar cells. "
             "Your task is to write an English ABSTRACT for a scientific paper (250–300 words) based only on the information provided by the user. "
@@ -201,11 +216,12 @@ class DashScopeLLM:
             "CONTENT REQUIREMENTS: "
             "The abstract should follow this logical structure: "
             "(1) giving the background, briefly mentioning the potential of inverted (p–i–n) perovskite solar cells; "
-            "(2) summarizing the key fabrication strategy or core process optimization(s), preferably in a 'from A to B' form (e.g., SAM, passivation agent or additive engineering); "
-            "(3) reporting the main performance indicators (PCE, VOC, JSC, FF) and their improvement range. Only mention parameters that show a clear increase; if an index is flat or slightly decreased, do not mention it; "
-            "(4) giving concise mechanism insights to explain why the improved recipe outperforms the control, without going into excessive detail; "
+            "(2) summarizing the key fabrication strategy or core process optimization(s), preferably in a 'from A to B' form; "
+            "(3) reporting the main performance indicators (PCE, VOC, JSC, FF) and their improvement range. "
+            "Only mention parameters that show a clear increase; if an index is flat or slightly decreased, do not mention it; "
+            "(4) giving concise mechanism insights to explain why the improved recipe outperforms the control; "
             "(5) concluding with the overall significance and potential impact of this optimization. "
-            "Be precise and factual; avoid citations, figure/table mentions, and avoid introducing any information that is not supported by the input."
+            "Be precise and factual; avoid citations, figure/table mentions, and avoid introducing unsupported information."
         )
 
         user = f"""
@@ -225,7 +241,6 @@ Do not add any explanations before or after the abstract.
         return answer
 
     def generate_conclusion_table(self, result_discussion_text: str) -> str:
-        """Generate Conclusion Markdown Table."""
         system = r"""
 You are a technical writing assistant for perovskite solar cells.
 
@@ -247,14 +262,9 @@ ROW RULES:
 - If a metric did not improve, do NOT make a row for it.
 
 COLUMN CONTENT:
-- F/P Optimization: describe the key formulation/process change using details from the input
-(e.g., replacing PEABr with MACl at 0.7 mg/mL and reducing PSP to 2.0 mg/mL).
-- Performance: write "from → to (+gain)" with units, for example:
-VOC: 0.99 V → 1.03 V (+0.04 V)
-JSC: 22.94 → 23.74 mA cm⁻² (+0.80 mA cm⁻²)
-FF: 69.16% → 74.46% (+5.30 pct)
-PCE: 15.76% → 18.35% (+2.59 pct)
-- Mechanism: Detailed description of the mechanism and reasons for performance changes (e.g., dipole-induced work-function shift, defect passivation, band alignment, recombination suppression.).
+- F/P Optimization: describe the key formulation/process change using details from the input.
+- Performance: write "from → to (+gain)" with units.
+- Mechanism: detailed description of the mechanism and reasons for performance changes.
 
 DATA:
 - Use ONLY numbers and mechanisms from the user's input.
@@ -275,6 +285,9 @@ Start your answer with the header row:
         return answer
 
 
+# =========================
+# Builder
+# =========================
 
 class ReportBuilder:
     """Build a single structured report."""
@@ -295,7 +308,11 @@ class ReportBuilder:
         rd_text = (result_discussion or "").strip()
 
         abstract, table_md = "", ""
-        if llm and method_text and rd_text:
+
+        # 没有结果时是否跳过 LLM 调用
+        if skip_if_empty and not rd_text:
+            pass
+        elif llm and method_text and rd_text:
             abstract = llm.generate_abstract(method_text, rd_text)
             table_md = llm.generate_conclusion_table(rd_text)
 
@@ -315,28 +332,119 @@ class ReportBuilder:
         }
 
 
+# =========================
+# Generator
+# =========================
 
 class ReportGenerator:
     """Report Generator - main entry point."""
 
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
-        """Initialize ReportGenerator with configuration."""
-        self.config = ReportConfig.from_dict(config)
-        self.llm = DashScopeLLM(self.config)
+    def __init__(self, cfg: Optional[Dict[str, Any]] = None):
+        self.config = ReportConfig.from_dict(cfg)
+        self._lock = Lock()
 
-    def run(self,
-            task_json_path: Optional[str] = None,
-            answer_folder: Optional[str] = None,
-            output_dir: Optional[str] = None) -> Dict[str, int]:
-        """Execute report generation process.
+    def _make_llm(self) -> DashScopeLLM:
+        """
+        每个任务单独创建 client，避免多线程共享 client 带来的潜在线程安全问题。
+        """
+        return DashScopeLLM(self.config)
+
+    def _process_one_task(
+        self,
+        i: int,
+        item: Dict[str, Any],
+        answer_index: Dict[Tuple[str, str], str],
+        out_dir: Path,
+        force: bool = False,
+    ) -> Dict[str, Any]:
+        try:
+            if not isinstance(item, dict):
+                return {
+                    "status": "skipped",
+                    "index": i,
+                    "msg": f"[SKIP] index={i}: non-dict task item"
+                }
+
+            meta = item.get("meta_info") or {}
+            id1 = extract_digits(meta.get("Sample_ID_1", ""))
+            id2 = extract_digits(meta.get("Sample_ID_2", ""))
+
+            if not id1 or not id2:
+                return {
+                    "status": "missing",
+                    "index": i,
+                    "msg": f"[MISS] index={i}: cannot extract id1/id2"
+                }
+
+            out_path = out_dir / f"{id1}_{id2}.json"
+
+            # 已有 report 跳过
+            if out_path.exists() and not force:
+                return {
+                    "status": "skipped_existing",
+                    "index": i,
+                    "msg": f"[SKIP] {out_path.name}: already exists"
+                }
+
+            rd = answer_index.get((id1, id2)) or answer_index.get((id2, id1)) or ""
+
+            llm = self._make_llm()
+
+            report = ReportBuilder.build(
+                task_item=item,
+                result_discussion=rd,
+                llm=llm,
+                skip_if_empty=self.config.skip_if_no_result,
+            )
+
+            write_json(out_path, report)
+
+            if rd.strip():
+                return {
+                    "status": "matched",
+                    "index": i,
+                    "msg": f"[OK] {out_path.name}"
+                }
+            else:
+                return {
+                    "status": "missing",
+                    "index": i,
+                    "msg": f"[MISS] {out_path.name}: no answer_part"
+                }
+
+        except Exception as e:
+            return {
+                "status": "error",
+                "index": i,
+                "msg": f"[ERROR] index={i}: {e}"
+            }
+
+    def run(
+        self,
+        task_json_path: Optional[str] = None,
+        answer_folder: Optional[str] = None,
+        output_dir: Optional[str] = None,
+        max_workers: int = 5,
+        force: bool = False,
+        start: int = 0,
+        end: Optional[int] = None,
+        print_every: int = 10,
+    ) -> Dict[str, int]:
+        """
+        Execute report generation process.
 
         Parameters:
-            task_json_path: Task JSON path (override config).
-            answer_folder: Answer file directory (override config).
-            output_dir: Output directory (override config).
+            task_json_path: override task path
+            answer_folder: override answer folder
+            output_dir: override output folder
+            max_workers: thread pool size
+            force: whether to rerun existing outputs
+            start: start index (inclusive)
+            end: end index (exclusive), None means all
+            print_every: print progress every N finished tasks
 
         Returns:
-            Statistics dict: {"total": N, "matched": N, "missing": N, "skipped": N}.
+            Statistics dict.
         """
         task_path = Path(task_json_path or self.config.task_json_path)
         ans_dir = Path(answer_folder or self.config.answer_folder)
@@ -347,63 +455,132 @@ class ReportGenerator:
         if not isinstance(task_data, list):
             raise ValueError("task.json top level must be a list")
 
+        total_all = len(task_data)
+        start = max(0, int(start))
+        end = total_all if end is None else min(int(end), total_all)
+        selected_tasks = task_data[start:end]
+
         answer_index = build_answer_index_by_pair(ans_dir)
 
-        stats = {"total": len(task_data), "matched": 0, "missing": 0, "skipped": 0}
+        stats = {
+            "total_selected": len(selected_tasks),
+            "matched": 0,
+            "missing": 0,
+            "skipped": 0,
+            "skipped_existing": 0,
+            "error": 0,
+        }
 
-        for i, item in enumerate(task_data):
-            if not isinstance(item, dict):
-                print(f"Skip non-dict task item: index={i}")
-                stats["skipped"] += 1
-                continue
+        begin_time = time.time()
 
-            meta = item.get("meta_info") or {}
-            id1 = extract_digits(meta.get("Sample_ID_1", ""))
-            id2 = extract_digits(meta.get("Sample_ID_2", ""))
+        print("=" * 80)
+        print("[INFO] Report generation started")
+        print(f"[INFO] task_json_path = {task_path}")
+        print(f"[INFO] answer_folder   = {ans_dir}")
+        print(f"[INFO] output_dir      = {out_dir}")
+        print(f"[INFO] total_all       = {total_all}")
+        print(f"[INFO] selected_range  = [{start}, {end})")
+        print(f"[INFO] total_selected  = {len(selected_tasks)}")
+        print(f"[INFO] max_workers     = {max_workers}")
+        print(f"[INFO] force           = {force}")
+        print(f"[INFO] print_every     = {print_every}")
+        print("=" * 80)
 
-            if not id1 or not id2:
-                print(f"task index={i} cannot extract id1/id2")
-                stats["missing"] += 1
-                continue
+        if not selected_tasks:
+            print("[INFO] No tasks selected, exit.")
+            return stats
 
-            rd = answer_index.get((id1, id2)) or answer_index.get((id2, id1)) or ""
+        futures = []
+        completed = 0
 
-            report = ReportBuilder.build(
-                task_item=item,
-                result_discussion=rd,
-                llm=self.llm,
-                skip_if_empty=self.config.skip_if_no_result,
-            )
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            for local_idx, item in enumerate(selected_tasks):
+                global_idx = start + local_idx
+                future = executor.submit(
+                    self._process_one_task,
+                    global_idx,
+                    item,
+                    answer_index,
+                    out_dir,
+                    force,
+                )
+                futures.append(future)
 
-            out_path = out_dir / f"{id1}_{id2}.json"
-            write_json(out_path, report)
+            for future in as_completed(futures):
+                result = future.result()
+                status = result["status"]
+                msg = result["msg"]
 
-            if rd.strip():
-                stats["matched"] += 1
-                print(f"{out_path.name}")
-            else:
-                stats["missing"] += 1
-                print(f"{out_path.name} (no answer_part)")
+                with self._lock:
+                    if status in stats:
+                        stats[status] += 1
+                    else:
+                        stats["error"] += 1
 
-        print(f"\nSUMMARY: total={stats['total']}, matched={stats['matched']}, missing={stats['missing']}, skipped={stats['skipped']}")
-        print(f"Output: {out_dir.resolve()}")
+                    completed += 1
+
+                    # 打印单条结果
+                    print(msg)
+
+                    # 控制进度打印频率
+                    if (completed % max(1, print_every) == 0) or (completed == stats["total_selected"]):
+                        elapsed = time.time() - begin_time
+                        speed = completed / elapsed if elapsed > 0 else 0.0
+                        remaining = stats["total_selected"] - completed
+                        eta = remaining / speed if speed > 0 else 0.0
+
+                        print("-" * 80)
+                        print(
+                            f"[PROGRESS] {completed}/{stats['total_selected']} "
+                            f"({completed / stats['total_selected'] * 100:.1f}%) | "
+                            f"matched={stats['matched']} | "
+                            f"missing={stats['missing']} | "
+                            f"skipped={stats['skipped']} | "
+                            f"skipped_existing={stats['skipped_existing']} | "
+                            f"error={stats['error']} | "
+                            f"elapsed={format_seconds(elapsed)} | "
+                            f"eta={format_seconds(eta)} | "
+                            f"speed={speed:.2f} task/s"
+                        )
+                        print("-" * 80)
+
+        elapsed = time.time() - begin_time
+
+        print("\n" + "=" * 80)
+        print("[SUMMARY]")
+        print(f"total_selected   : {stats['total_selected']}")
+        print(f"matched          : {stats['matched']}")
+        print(f"missing          : {stats['missing']}")
+        print(f"skipped          : {stats['skipped']}")
+        print(f"skipped_existing : {stats['skipped_existing']}")
+        print(f"error            : {stats['error']}")
+        print(f"elapsed          : {format_seconds(elapsed)}")
+        print(f"output           : {out_dir.resolve()}")
+        print("=" * 80)
+
         return stats
 
-    def rebuild_from_answers(self, answer_folder: str, output_dir: str) -> int:
-        """Rebuild reports from answer files only (no LLM call, for debugging/re-run).
-        
-        Returns:
-            Number of generated reports.
+    def rebuild_from_answers(self, answer_folder: str, output_dir: str, force: bool = False) -> int:
+        """
+        Rebuild reports from answer files only (no LLM call).
         """
         ans_dir = Path(answer_folder)
         out_dir = Path(output_dir)
         out_dir.mkdir(parents=True, exist_ok=True)
 
         count = 0
+        skipped_existing = 0
+
         for fp in ans_dir.glob("*.json"):
             id1, id2 = parse_answer_filename(fp.stem)
             if not id1 or not id2:
                 continue
+
+            out_path = out_dir / f"{id1}_{id2}.json"
+            if out_path.exists() and not force:
+                skipped_existing += 1
+                continue
+
             try:
                 data = read_json(fp)
                 rd = extract_answer_part_from_json(data)
@@ -419,44 +596,67 @@ class ReportGenerator:
                 "4_Conclusion": {"4_1_Table": ""},
                 "5_Supporting_Information": "",
             }
-            write_json(out_dir / f"{id1}_{id2}.json", report)
+            write_json(out_path, report)
             count += 1
 
-        print(f"Rebuilt {count} reports from answers → {out_dir}")
+        print(f"[INFO] Rebuilt {count} reports from answers → {out_dir}")
+        print(f"[INFO] Skipped existing: {skipped_existing}")
         return count
 
 
-# Command-line Entry
+# =========================
+# CLI
+# =========================
 
 def _parse_args():
-    import argparse
     parser = argparse.ArgumentParser(description="Perovskite Report Generator")
     parser.add_argument("--config", type=str, help="Config JSON path")
     parser.add_argument("--task", type=str, help="Task JSON path")
     parser.add_argument("--answers", type=str, help="Answer folder path")
     parser.add_argument("--output", type=str, help="Output directory")
     parser.add_argument("--rebuild-only", action="store_true", help="Only rebuild from answers (no LLM)")
+
+    # parallel / control
+    parser.add_argument("--workers", type=int, default=5, help="Max thread workers")
+    parser.add_argument("--force", action="store_true", help="Force regenerate even if report already exists")
+    parser.add_argument("--start", type=int, default=0, help="Start index (inclusive)")
+    parser.add_argument("--end", type=int, default=None, help="End index (exclusive)")
+    parser.add_argument("--print-every", type=int, default=10, help="Print progress every N finished tasks")
+
     return parser.parse_args()
 
 
 def main() -> None:
-    """Main entry point."""
     args = _parse_args()
-    config = ReportConfig.from_json(args.config) if args.config else ReportConfig()
+    cfg = ReportConfig.from_json(args.config) if args.config else ReportConfig()
 
     if args.task:
-        config.task_json_path = args.task
+        cfg.task_json_path = args.task
     if args.answers:
-        config.answer_folder = args.answers
+        cfg.answer_folder = args.answers
     if args.output:
-        config.output_dir = args.output
+        cfg.output_dir = args.output
 
-    generator = ReportGenerator(config)
+    generator = ReportGenerator(cfg)
 
     if args.rebuild_only:
-        generator.rebuild_from_answers(config.answer_folder, config.output_dir)
+        generator.rebuild_from_answers(
+            answer_folder=cfg.answer_folder,
+            output_dir=cfg.output_dir,
+            force=args.force,
+        )
     else:
-        generator.run()
+        generator.run(
+            task_json_path=cfg.task_json_path,
+            answer_folder=cfg.answer_folder,
+            output_dir=cfg.output_dir,
+            max_workers=args.workers,
+            force=args.force,
+            start=args.start,
+            end=args.end,
+            print_every=args.print_every,
+        )
+
 
 if __name__ == "__main__":
     main()

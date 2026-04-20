@@ -92,7 +92,7 @@ def run_generating_pipeline(args):
     if report_type == 'variable':
         print("\n Running Variable Report Pipeline...")
         pipeline = VariableReportPipeline()
-        success = pipeline.run(steps='all', rebuild_knowledge=args.rebuild_knowledge, verbose=True)
+        success = pipeline.run(steps='report', rebuild_knowledge=args.rebuild_knowledge, verbose=True)
         print("VariableReportPipeline", success)
         return success
         

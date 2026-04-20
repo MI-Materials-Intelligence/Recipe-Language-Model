@@ -76,7 +76,7 @@ class LLMConfig:
     base_url: str = None
     model: str = "qwen-plus"
     temperature: float = 0.4
-    max_concurrent: int = 5
+    max_concurrent: int = 10
     max_retries: int = 5
     retry_base_delay: int = 10
 
@@ -339,7 +339,20 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
             "material_names": names,
             "md_files": used_files,
         }
+    def _is_valid_result_json(self, file_path: str) -> bool:
+        """Check whether result json already exists and is valid."""
+        if not os.path.exists(file_path):
+            return False
 
+        try:
+            data = _read_json_file(file_path)
+            if not isinstance(data, dict):
+                return False
+
+            answer = str(data.get("answer_part", "") or "").strip()
+            return bool(answer)
+        except Exception:
+            return False
     def fetch_tasks(self, num_thres: int = 100) -> List[Dict[str, Any]]:
         """Fetch pending tasks from database."""
         conn = pymysql.connect(**self.config.db.to_dict())
@@ -410,29 +423,45 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         record_id = item.get("record_id")
         if not record_id:
             return
+
         sid1 = (item.get("meta_info", {}).get("Sample_ID_1", "") or "").split(",")[0].strip()
         sid2 = (item.get("meta_info", {}).get("Sample_ID_2", "") or "").split(",")[0].strip()
         fn = f"{_safe_filename(sid1) or 'X'}_{_safe_filename(sid2) or 'Y'}.json"
         save_path = osp.join(save_root, fn)
 
+        
+        if self._is_valid_result_json(save_path):
+            print(f"[SKIP] Existing result found: {fn} -> mark DB status=1")
+            success_ids.append(record_id)
+            return
+
         async with self._semaphore:
             for attempt in range(1, self.config.llm.max_retries + 1):
                 try:
-                    ref = (item.get("expert_data") or {}).get("summary_text") or json.dumps(item.get("expert_data", {}), ensure_ascii=False)
+                    ref = (item.get("expert_data") or {}).get("summary_text") or json.dumps(
+                        item.get("expert_data", {}), ensure_ascii=False
+                    )
                     mats = item.get("primary_materials") or []
-                    sys_prompt = self.SYS_PROMPT.format(primary_materials=", ".join(mats) if mats else "None")
+                    sys_prompt = self.SYS_PROMPT.format(
+                        primary_materials=", ".join(mats) if mats else "None"
+                    )
                     user_prompt = self.USER_PROMPT.format(
                         reference_analysis=ref,
                         control_device_fabrication=item.get("control_device_fabrication", ""),
                         target_device_fabrication=item.get("target_device_fabrication", ""),
                     )
+
                     response = await self._client.chat.completions.create(
                         model=self.config.llm.model,
-                        messages=[{"role": "system", "content": sys_prompt}, {"role": "user", "content": user_prompt}],
+                        messages=[
+                            {"role": "system", "content": sys_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
                         temperature=self.config.llm.temperature,
                         extra_body={"enable_thinking": True},
-                        stream=True
+                        stream=True,
                     )
+
                     reasoning, answer = "", ""
                     async for chunk in response:
                         choices = getattr(chunk, "choices", None)
@@ -445,7 +474,8 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
                             answer += delta.content
 
                     payload = {
-                        "think_part": reasoning.strip(), "answer_part": answer.strip(),
+                        "think_part": reasoning.strip(),
+                        "answer_part": answer.strip(),
                         "control_device_fabrication": item.get("control_device_fabrication", ""),
                         "target_device_fabrication": item.get("target_device_fabrication", ""),
                         "meta_info": item.get("meta_info", {}),
@@ -453,12 +483,19 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
                     _atomic_write_json(save_path, payload)
                     success_ids.append(record_id)
                     return
+
                 except Exception as e:
                     if attempt >= self.config.llm.max_retries:
-                        stub = {"error": repr(e), **{k: v for k, v in locals().items() if k in ["reasoning", "answer"]}}
+                        stub = {
+                            "error": repr(e),
+                            **{k: v for k, v in locals().items() if k in ["reasoning", "answer"]},
+                        }
                         _atomic_write_json(save_path, stub)
                         return
-                    await asyncio.sleep(self.config.llm.retry_base_delay * attempt + random.uniform(0, 1))
+
+                    await asyncio.sleep(
+                        self.config.llm.retry_base_delay * attempt + random.uniform(0, 1)
+                    )
 
     async def inference(self, tasks: List[Dict[str, Any]]) -> List[int]:
         """Execute batch inference asynchronously."""
@@ -503,6 +540,8 @@ Optimized parameters for perovskite formula and process: {target_device_fabricat
         _save_json_file(out, output_path)
         print(f"[INFO] dataset size: {len(out)} -> {output_path}")
         return out
+    
+    
 
     def rebuild_knowledge(self, output_root: Optional[str] = None) -> None:
         """Rebuild Markdown knowledge base from database."""

@@ -1102,7 +1102,7 @@ def main():
         get_tasks_from_db(
             expert_data_root=MECHANISM_DIR,
             save_path=task_save_path,
-            num_thres=1
+            num_thres=10
         )
 
     tasks = read_json_file(task_save_path)
